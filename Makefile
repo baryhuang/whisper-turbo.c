@@ -43,5 +43,9 @@ build/q8-bench: benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whi
 build/bench-health: benchmarks/cloud/health.c | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
+# Linux-only: explicit target, not part of the portable default build.
+build/measure: benchmarks/cloud/measure.c | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
 build/w8a8-bench: benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
