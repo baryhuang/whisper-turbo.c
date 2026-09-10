@@ -10,7 +10,8 @@ CORE := src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c \
         src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c
 HEADERS := $(wildcard src/generic/*.h)
 X86_CORE := src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c \
-            src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c
+            src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c \
+            src/x86/whisper_turbo_attention.c
 X86_HEADERS := $(wildcard src/x86/*.h)
 
 .PHONY: all clean
@@ -48,4 +49,7 @@ build/measure: benchmarks/cloud/measure.c | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 build/w8a8-bench: benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c $(HEADERS) $(X86_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
+
+build/attention-bench: benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)

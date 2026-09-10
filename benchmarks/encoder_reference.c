@@ -8,3 +8,8 @@ void wt_bench_encoder(int mode, const unsigned char *w, const float *x,
                           mode == 1 ? wt_q8_group_avx2 : whisper_turbo_q8_group_dot;
     linear_grouped(x,rows,k,w,CLLM_WHISPER_TURBO_Q8_RECORD,dot,NULL,n,y);
 }
+void wt_reference_attention(size_t frames,size_t state,size_t heads,float *q,
+                              const float *k,const float *v,float *s,float *out)
+{
+    self_attention(frames,state,heads,q,k,v,s,out);
+}
