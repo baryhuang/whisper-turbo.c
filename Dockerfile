@@ -11,7 +11,7 @@ COPY benchmarks ./benchmarks
 RUN make -j8 all x86-tools OPENMP=-fopenmp
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends gcc make libgomp1 libstdc++6 ca-certificates curl time util-linux && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev make libgomp1 libstdc++6 ca-certificates curl time util-linux && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /work/build/ /app/
 COPY --from=build /reference/build/ /reference/build/
