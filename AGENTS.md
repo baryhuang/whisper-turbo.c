@@ -16,6 +16,8 @@ Work in `/Users/buryhuang/git/whisper-turbo.c`. Its origin is
   bound uploads, queued requests, long-audio processing, and output buffers.
 - Inspect InstaCloud CPU architecture and resource limits before selecting CPU optimizations.
 - Preserve upstream source attribution and describe unverified behavior accurately.
+- Keep READMEs end-user-facing: document available features, usage, limitations,
+  and verified final results, not collaboration history, internal workflow, or plans.
 - Match the OpenAI transcription API contract; never manufacture timestamp or confidence data.
 - The C importer and x86 INT8 inference kernels are implemented; HTTP API work remains.
 - Keep W8A8 activation quantization opt-in until a wider accuracy corpus passes.
