@@ -1,11 +1,2 @@
-.DS_Store
-__pycache__/
 /build/
-/tmp/
-/tests/fixtures/gemma4_layer_official_*.bin
-*.safetensors.ranges.json
-*.g4task
-*.g4task.json
-*.whenc
-*.whenc.json
-.gstack/
+*.whtrbo
