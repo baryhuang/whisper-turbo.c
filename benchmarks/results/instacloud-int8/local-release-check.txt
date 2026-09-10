@@ -1,0 +1,15 @@
+./build/q8-bench 1 0
+{"case":0,"rows":1,"input":1280,"output":1280,"precision":"int8_weights_fp32_activations","mode":"generic","threads":1,"median_seconds":0.001544000,"max_abs_error":0,"peak_rss_bytes":2932736,"trials_seconds":[0.001882000,0.001679000,0.001544000,0.000735000,0.000626000]}
+./build/w8a8-bench 1 0
+{"case":0,"mode":"scalar_int8","threads":1,"trial":0,"seconds":0.000038000,"nrmse":0.00390324982,"max_abs_error":0.0405089855,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":1,"seconds":0.000037000,"nrmse":0.00390324982,"max_abs_error":0.0405089855,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":2,"seconds":0.000037000,"nrmse":0.00390324982,"max_abs_error":0.0405089855,"scratch_bytes":1320,"integer_parity":true}
+./build/attention-bench 1 1
+{"mode":"generic","frames":1,"threads":1,"seconds":0.000009000}
+{"mode":"scalar","frames":1,"threads":1,"seconds":0.000012000,"max_abs_error":0}
+./build/attention-bench 7 1
+{"mode":"generic","frames":7,"threads":1,"seconds":0.000213000}
+{"mode":"scalar","frames":7,"threads":1,"seconds":0.000170000,"max_abs_error":0}
+./build/attention-bench 64 1
+{"mode":"generic","frames":64,"threads":1,"seconds":0.009902000}
+{"mode":"scalar","frames":64,"threads":1,"seconds":0.005659000,"max_abs_error":0}

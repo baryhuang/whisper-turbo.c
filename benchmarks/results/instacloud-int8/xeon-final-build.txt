@@ -1,0 +1,8 @@
+mkdir -p build
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -DWHISPER_X86 -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c src/x86/whisper_turbo_w8a8.c -o build/whisper-turbo-x86  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic tools/import_ggml.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/import-ggml  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/q8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror benchmarks/cloud/health.c -o build/bench-health 
+debconf: delaying package configuration, since apt-utils is not installed
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":386703360,"initial_current_bytes":177278976,"peak_bytes":386703360,"peak_rss_bytes":1134592,"seconds":0.018219,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}

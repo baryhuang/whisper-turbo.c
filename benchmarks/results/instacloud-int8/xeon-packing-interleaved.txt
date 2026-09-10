@@ -1,0 +1,390 @@
+section=encoder boundary=stem duration_seconds=0.896043
+section=encoder boundary=layer layer=0 duration_seconds=0.400847
+section=encoder boundary=layer layer=1 duration_seconds=0.416401
+section=encoder boundary=layer layer=2 duration_seconds=0.415080
+section=encoder boundary=layer layer=3 duration_seconds=0.413429
+section=encoder boundary=layer layer=4 duration_seconds=0.422373
+section=encoder boundary=layer layer=5 duration_seconds=0.392515
+section=encoder boundary=layer layer=6 duration_seconds=0.395122
+section=encoder boundary=layer layer=7 duration_seconds=0.391095
+section=encoder boundary=layer layer=8 duration_seconds=0.385965
+section=encoder boundary=layer layer=9 duration_seconds=0.401970
+section=encoder boundary=layer layer=10 duration_seconds=0.497445
+section=encoder boundary=layer layer=11 duration_seconds=0.442238
+section=encoder boundary=layer layer=12 duration_seconds=0.539018
+section=encoder boundary=layer layer=13 duration_seconds=0.668563
+section=encoder boundary=layer layer=14 duration_seconds=0.403260
+section=encoder boundary=layer layer=15 duration_seconds=0.535466
+section=encoder boundary=layer layer=16 duration_seconds=0.434554
+section=encoder boundary=layer layer=17 duration_seconds=0.548246
+section=encoder boundary=layer layer=18 duration_seconds=0.691398
+section=encoder boundary=layer layer=19 duration_seconds=0.391957
+section=encoder boundary=layer layer=20 duration_seconds=0.422579
+section=encoder boundary=layer layer=21 duration_seconds=0.403806
+section=encoder boundary=layer layer=22 duration_seconds=0.398394
+section=encoder boundary=layer layer=23 duration_seconds=0.418227
+section=encoder boundary=layer layer=24 duration_seconds=0.406505
+section=encoder boundary=layer layer=25 duration_seconds=0.401292
+section=encoder boundary=layer layer=26 duration_seconds=0.404032
+section=encoder boundary=layer layer=27 duration_seconds=0.454858
+section=encoder boundary=layer layer=28 duration_seconds=0.466014
+section=encoder boundary=layer layer=29 duration_seconds=0.421848
+section=encoder boundary=layer layer=30 duration_seconds=0.539442
+section=encoder boundary=layer layer=31 duration_seconds=0.520168
+section=encoder boundary=final_norm duration_seconds=0.001932
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003832 output_head_seconds=0.034502
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.005835 output_head_seconds=0.000905
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.005120 output_head_seconds=0.001026
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004883 output_head_seconds=0.000831
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.004320 output_head_seconds=0.000947
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.004086 output_head_seconds=0.000983
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.004132 output_head_seconds=0.000968
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.004092 output_head_seconds=0.000944
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.004163 output_head_seconds=0.000903
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.004062 output_head_seconds=0.000962
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.004101 output_head_seconds=0.000910
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.004095 output_head_seconds=0.000899
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.004316 output_head_seconds=0.000961
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.004048 output_head_seconds=0.000898
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.004097 output_head_seconds=0.000895
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.004652 output_head_seconds=0.000926
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.004126 output_head_seconds=0.000962
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.004126 output_head_seconds=0.000938
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.004402 output_head_seconds=0.000932
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.004028 output_head_seconds=0.000974
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.004369 output_head_seconds=0.000933
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.004289 output_head_seconds=0.000928
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.004392 output_head_seconds=0.000976
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.004159 output_head_seconds=0.000915
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.004245 output_head_seconds=0.000909
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.004150 output_head_seconds=0.000927
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.004223 output_head_seconds=0.000971
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.013413 encoder_seconds=15.342084 decoder_core_seconds=0.357313 output_head_seconds=0.058826 total_seconds=15.774476 rtf=1.434043 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=62.479103 overall_text_tokens_per_second=1.648232
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+section=encoder boundary=stem duration_seconds=0.898044
+section=encoder boundary=layer layer=0 duration_seconds=0.457170
+section=encoder boundary=layer layer=1 duration_seconds=0.285739
+section=encoder boundary=layer layer=2 duration_seconds=0.292768
+section=encoder boundary=layer layer=3 duration_seconds=0.291290
+section=encoder boundary=layer layer=4 duration_seconds=0.294342
+section=encoder boundary=layer layer=5 duration_seconds=0.293988
+section=encoder boundary=layer layer=6 duration_seconds=0.291880
+section=encoder boundary=layer layer=7 duration_seconds=0.291988
+section=encoder boundary=layer layer=8 duration_seconds=0.289464
+section=encoder boundary=layer layer=9 duration_seconds=0.290448
+section=encoder boundary=layer layer=10 duration_seconds=0.292870
+section=encoder boundary=layer layer=11 duration_seconds=0.292053
+section=encoder boundary=layer layer=12 duration_seconds=0.363431
+section=encoder boundary=layer layer=13 duration_seconds=0.299409
+section=encoder boundary=layer layer=14 duration_seconds=0.296111
+section=encoder boundary=layer layer=15 duration_seconds=0.292362
+section=encoder boundary=layer layer=16 duration_seconds=0.287141
+section=encoder boundary=layer layer=17 duration_seconds=0.285676
+section=encoder boundary=layer layer=18 duration_seconds=0.296838
+section=encoder boundary=layer layer=19 duration_seconds=0.298139
+section=encoder boundary=layer layer=20 duration_seconds=0.291948
+section=encoder boundary=layer layer=21 duration_seconds=0.284818
+section=encoder boundary=layer layer=22 duration_seconds=0.290236
+section=encoder boundary=layer layer=23 duration_seconds=0.288403
+section=encoder boundary=layer layer=24 duration_seconds=0.291145
+section=encoder boundary=layer layer=25 duration_seconds=0.284799
+section=encoder boundary=layer layer=26 duration_seconds=0.288972
+section=encoder boundary=layer layer=27 duration_seconds=0.290010
+section=encoder boundary=layer layer=28 duration_seconds=0.288624
+section=encoder boundary=layer layer=29 duration_seconds=0.277911
+section=encoder boundary=layer layer=30 duration_seconds=0.310006
+section=encoder boundary=layer layer=31 duration_seconds=0.276558
+section=encoder boundary=final_norm duration_seconds=0.000785
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003863 output_head_seconds=0.031727
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.004631 output_head_seconds=0.000924
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.004427 output_head_seconds=0.000975
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004342 output_head_seconds=0.000844
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.004231 output_head_seconds=0.000880
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.004097 output_head_seconds=0.000955
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.004096 output_head_seconds=0.000984
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.004062 output_head_seconds=0.000916
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.004102 output_head_seconds=0.000939
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.004191 output_head_seconds=0.000937
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.004207 output_head_seconds=0.000940
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.004080 output_head_seconds=0.000936
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.004303 output_head_seconds=0.000970
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.004109 output_head_seconds=0.000976
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.004244 output_head_seconds=0.000927
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.004671 output_head_seconds=0.000922
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.004173 output_head_seconds=0.000983
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.004077 output_head_seconds=0.000939
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.004588 output_head_seconds=0.000969
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.004400 output_head_seconds=0.001038
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.004203 output_head_seconds=0.000932
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.004239 output_head_seconds=0.000927
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.004056 output_head_seconds=0.000909
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.004063 output_head_seconds=0.000960
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.004006 output_head_seconds=0.000905
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.004071 output_head_seconds=0.000902
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.004045 output_head_seconds=0.000921
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.011782 encoder_seconds=10.445364 decoder_core_seconds=0.326227 output_head_seconds=0.056138 total_seconds=10.842298 rtf=0.985663 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=67.997904 overall_text_tokens_per_second=2.398016
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+section=encoder boundary=stem duration_seconds=0.878338
+section=encoder boundary=layer layer=0 duration_seconds=0.291982
+section=encoder boundary=layer layer=1 duration_seconds=0.283550
+section=encoder boundary=layer layer=2 duration_seconds=0.292589
+section=encoder boundary=layer layer=3 duration_seconds=0.317728
+section=encoder boundary=layer layer=4 duration_seconds=0.311304
+section=encoder boundary=layer layer=5 duration_seconds=0.279863
+section=encoder boundary=layer layer=6 duration_seconds=0.284677
+section=encoder boundary=layer layer=7 duration_seconds=0.296625
+section=encoder boundary=layer layer=8 duration_seconds=0.279629
+section=encoder boundary=layer layer=9 duration_seconds=0.278823
+section=encoder boundary=layer layer=10 duration_seconds=0.278557
+section=encoder boundary=layer layer=11 duration_seconds=0.283599
+section=encoder boundary=layer layer=12 duration_seconds=0.275243
+section=encoder boundary=layer layer=13 duration_seconds=0.277512
+section=encoder boundary=layer layer=14 duration_seconds=0.270509
+section=encoder boundary=layer layer=15 duration_seconds=0.270628
+section=encoder boundary=layer layer=16 duration_seconds=0.275931
+section=encoder boundary=layer layer=17 duration_seconds=0.272799
+section=encoder boundary=layer layer=18 duration_seconds=0.281260
+section=encoder boundary=layer layer=19 duration_seconds=0.271576
+section=encoder boundary=layer layer=20 duration_seconds=0.275292
+section=encoder boundary=layer layer=21 duration_seconds=0.275116
+section=encoder boundary=layer layer=22 duration_seconds=0.268074
+section=encoder boundary=layer layer=23 duration_seconds=0.302893
+section=encoder boundary=layer layer=24 duration_seconds=0.283793
+section=encoder boundary=layer layer=25 duration_seconds=0.274417
+section=encoder boundary=layer layer=26 duration_seconds=0.272956
+section=encoder boundary=layer layer=27 duration_seconds=0.271307
+section=encoder boundary=layer layer=28 duration_seconds=0.267907
+section=encoder boundary=layer layer=29 duration_seconds=0.261979
+section=encoder boundary=layer layer=30 duration_seconds=0.269643
+section=encoder boundary=layer layer=31 duration_seconds=0.261751
+section=encoder boundary=final_norm duration_seconds=0.000573
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003646 output_head_seconds=0.013219
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.004064 output_head_seconds=0.001005
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.004293 output_head_seconds=0.000919
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004306 output_head_seconds=0.000879
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.004002 output_head_seconds=0.000966
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.003983 output_head_seconds=0.000902
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.003975 output_head_seconds=0.000925
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.004031 output_head_seconds=0.000948
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.003942 output_head_seconds=0.000981
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.003946 output_head_seconds=0.000930
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.003875 output_head_seconds=0.000920
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.003936 output_head_seconds=0.000942
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.004156 output_head_seconds=0.000976
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.003976 output_head_seconds=0.000967
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.003928 output_head_seconds=0.000916
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.005125 output_head_seconds=0.000957
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.004076 output_head_seconds=0.000929
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.004085 output_head_seconds=0.000911
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.004743 output_head_seconds=0.000898
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.004492 output_head_seconds=0.000926
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.004267 output_head_seconds=0.000920
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.004110 output_head_seconds=0.000916
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.003991 output_head_seconds=0.000948
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.003991 output_head_seconds=0.000887
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.003925 output_head_seconds=0.000886
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.003944 output_head_seconds=0.000901
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.003909 output_head_seconds=0.000885
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.012980 encoder_seconds=9.838423 decoder_core_seconds=0.293631 output_head_seconds=0.037356 total_seconds=10.185112 rtf=0.925919 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=78.552824 overall_text_tokens_per_second=2.552746
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+section=encoder boundary=stem duration_seconds=0.859200
+section=encoder boundary=layer layer=0 duration_seconds=0.377235
+section=encoder boundary=layer layer=1 duration_seconds=0.373706
+section=encoder boundary=layer layer=2 duration_seconds=0.382493
+section=encoder boundary=layer layer=3 duration_seconds=0.387050
+section=encoder boundary=layer layer=4 duration_seconds=0.375731
+section=encoder boundary=layer layer=5 duration_seconds=0.376839
+section=encoder boundary=layer layer=6 duration_seconds=0.381234
+section=encoder boundary=layer layer=7 duration_seconds=0.379629
+section=encoder boundary=layer layer=8 duration_seconds=0.378011
+section=encoder boundary=layer layer=9 duration_seconds=0.391152
+section=encoder boundary=layer layer=10 duration_seconds=0.382572
+section=encoder boundary=layer layer=11 duration_seconds=0.374514
+section=encoder boundary=layer layer=12 duration_seconds=0.378830
+section=encoder boundary=layer layer=13 duration_seconds=0.379133
+section=encoder boundary=layer layer=14 duration_seconds=0.389561
+section=encoder boundary=layer layer=15 duration_seconds=0.388089
+section=encoder boundary=layer layer=16 duration_seconds=0.380516
+section=encoder boundary=layer layer=17 duration_seconds=0.380951
+section=encoder boundary=layer layer=18 duration_seconds=0.380571
+section=encoder boundary=layer layer=19 duration_seconds=0.371747
+section=encoder boundary=layer layer=20 duration_seconds=0.383129
+section=encoder boundary=layer layer=21 duration_seconds=0.377493
+section=encoder boundary=layer layer=22 duration_seconds=0.384557
+section=encoder boundary=layer layer=23 duration_seconds=0.382446
+section=encoder boundary=layer layer=24 duration_seconds=0.373739
+section=encoder boundary=layer layer=25 duration_seconds=0.377699
+section=encoder boundary=layer layer=26 duration_seconds=0.380048
+section=encoder boundary=layer layer=27 duration_seconds=0.375974
+section=encoder boundary=layer layer=28 duration_seconds=0.371210
+section=encoder boundary=layer layer=29 duration_seconds=0.379105
+section=encoder boundary=layer layer=30 duration_seconds=0.376746
+section=encoder boundary=layer layer=31 duration_seconds=0.372813
+section=encoder boundary=final_norm duration_seconds=0.000603
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003688 output_head_seconds=0.018316
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.003912 output_head_seconds=0.000960
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.004326 output_head_seconds=0.000857
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004043 output_head_seconds=0.000890
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.004002 output_head_seconds=0.000933
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.003898 output_head_seconds=0.000981
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.003977 output_head_seconds=0.000916
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.003909 output_head_seconds=0.000936
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.004135 output_head_seconds=0.000959
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.003895 output_head_seconds=0.000985
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.003938 output_head_seconds=0.000932
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.003874 output_head_seconds=0.000930
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.003942 output_head_seconds=0.000929
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.003977 output_head_seconds=0.000947
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.004163 output_head_seconds=0.000989
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.004209 output_head_seconds=0.000925
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.003963 output_head_seconds=0.000934
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.003881 output_head_seconds=0.000944
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.003941 output_head_seconds=0.001001
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.004070 output_head_seconds=0.000923
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.003939 output_head_seconds=0.000918
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.003889 output_head_seconds=0.000935
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.004108 output_head_seconds=0.000978
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.003879 output_head_seconds=0.000913
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.004059 output_head_seconds=0.000947
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.003932 output_head_seconds=0.000934
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.003940 output_head_seconds=0.000968
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.011362 encoder_seconds=13.004325 decoder_core_seconds=0.296169 output_head_seconds=0.042781 total_seconds=13.357198 rtf=1.214291 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=76.707492 overall_text_tokens_per_second=1.946516
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+section=encoder boundary=stem duration_seconds=0.875426
+section=encoder boundary=layer layer=0 duration_seconds=0.388319
+section=encoder boundary=layer layer=1 duration_seconds=0.385560
+section=encoder boundary=layer layer=2 duration_seconds=0.385565
+section=encoder boundary=layer layer=3 duration_seconds=0.392000
+section=encoder boundary=layer layer=4 duration_seconds=0.387702
+section=encoder boundary=layer layer=5 duration_seconds=0.379297
+section=encoder boundary=layer layer=6 duration_seconds=0.386375
+section=encoder boundary=layer layer=7 duration_seconds=0.385817
+section=encoder boundary=layer layer=8 duration_seconds=0.387283
+section=encoder boundary=layer layer=9 duration_seconds=0.384405
+section=encoder boundary=layer layer=10 duration_seconds=0.387185
+section=encoder boundary=layer layer=11 duration_seconds=0.388418
+section=encoder boundary=layer layer=12 duration_seconds=0.383718
+section=encoder boundary=layer layer=13 duration_seconds=0.374168
+section=encoder boundary=layer layer=14 duration_seconds=0.376372
+section=encoder boundary=layer layer=15 duration_seconds=0.396993
+section=encoder boundary=layer layer=16 duration_seconds=0.384483
+section=encoder boundary=layer layer=17 duration_seconds=0.381740
+section=encoder boundary=layer layer=18 duration_seconds=0.373531
+section=encoder boundary=layer layer=19 duration_seconds=0.373662
+section=encoder boundary=layer layer=20 duration_seconds=0.381423
+section=encoder boundary=layer layer=21 duration_seconds=0.375028
+section=encoder boundary=layer layer=22 duration_seconds=0.374348
+section=encoder boundary=layer layer=23 duration_seconds=0.377730
+section=encoder boundary=layer layer=24 duration_seconds=0.379031
+section=encoder boundary=layer layer=25 duration_seconds=0.379881
+section=encoder boundary=layer layer=26 duration_seconds=0.380855
+section=encoder boundary=layer layer=27 duration_seconds=0.379196
+section=encoder boundary=layer layer=28 duration_seconds=0.372393
+section=encoder boundary=layer layer=29 duration_seconds=0.372134
+section=encoder boundary=layer layer=30 duration_seconds=0.377209
+section=encoder boundary=layer layer=31 duration_seconds=0.372602
+section=encoder boundary=final_norm duration_seconds=0.000656
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003600 output_head_seconds=0.015525
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.003845 output_head_seconds=0.000990
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.004099 output_head_seconds=0.000948
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004108 output_head_seconds=0.000928
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.003957 output_head_seconds=0.000902
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.003954 output_head_seconds=0.000933
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.003894 output_head_seconds=0.000938
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.004003 output_head_seconds=0.000922
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.004099 output_head_seconds=0.000976
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.003946 output_head_seconds=0.000919
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.003927 output_head_seconds=0.000916
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.003956 output_head_seconds=0.000935
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.003888 output_head_seconds=0.000974
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.003973 output_head_seconds=0.000929
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.003924 output_head_seconds=0.000916
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.004662 output_head_seconds=0.000923
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.003919 output_head_seconds=0.000969
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.003940 output_head_seconds=0.000915
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.003927 output_head_seconds=0.000910
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.003926 output_head_seconds=0.000929
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.003894 output_head_seconds=0.000972
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.003922 output_head_seconds=0.000914
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.003849 output_head_seconds=0.000911
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.004142 output_head_seconds=0.000934
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.003876 output_head_seconds=0.000929
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.003869 output_head_seconds=0.001010
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.003878 output_head_seconds=0.000909
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.011238 encoder_seconds=13.080507 decoder_core_seconds=0.293849 output_head_seconds=0.039876 total_seconds=13.428157 rtf=1.220742 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=77.908262 overall_text_tokens_per_second=1.936230
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+section=encoder boundary=stem duration_seconds=0.870812
+section=encoder boundary=layer layer=0 duration_seconds=0.276889
+section=encoder boundary=layer layer=1 duration_seconds=0.274551
+section=encoder boundary=layer layer=2 duration_seconds=0.278978
+section=encoder boundary=layer layer=3 duration_seconds=0.280572
+section=encoder boundary=layer layer=4 duration_seconds=0.280641
+section=encoder boundary=layer layer=5 duration_seconds=0.277441
+section=encoder boundary=layer layer=6 duration_seconds=0.273725
+section=encoder boundary=layer layer=7 duration_seconds=0.273983
+section=encoder boundary=layer layer=8 duration_seconds=0.272673
+section=encoder boundary=layer layer=9 duration_seconds=0.273974
+section=encoder boundary=layer layer=10 duration_seconds=0.272228
+section=encoder boundary=layer layer=11 duration_seconds=0.270821
+section=encoder boundary=layer layer=12 duration_seconds=0.270694
+section=encoder boundary=layer layer=13 duration_seconds=0.272838
+section=encoder boundary=layer layer=14 duration_seconds=0.272797
+section=encoder boundary=layer layer=15 duration_seconds=0.273529
+section=encoder boundary=layer layer=16 duration_seconds=0.271483
+section=encoder boundary=layer layer=17 duration_seconds=0.272580
+section=encoder boundary=layer layer=18 duration_seconds=0.271397
+section=encoder boundary=layer layer=19 duration_seconds=0.268522
+section=encoder boundary=layer layer=20 duration_seconds=0.273991
+section=encoder boundary=layer layer=21 duration_seconds=0.271601
+section=encoder boundary=layer layer=22 duration_seconds=0.266234
+section=encoder boundary=layer layer=23 duration_seconds=0.274190
+section=encoder boundary=layer layer=24 duration_seconds=0.272766
+section=encoder boundary=layer layer=25 duration_seconds=0.273321
+section=encoder boundary=layer layer=26 duration_seconds=0.276464
+section=encoder boundary=layer layer=27 duration_seconds=0.271040
+section=encoder boundary=layer layer=28 duration_seconds=0.274843
+section=encoder boundary=layer layer=29 duration_seconds=0.261052
+section=encoder boundary=layer layer=30 duration_seconds=0.270820
+section=encoder boundary=layer layer=31 duration_seconds=0.266006
+section=encoder boundary=final_norm duration_seconds=0.000664
+section=decode position=3 input_token=50364 next_token=400 top_logit=8.57750988 duration_seconds=0.003712 output_head_seconds=0.018962
+section=decode position=4 input_token=400 next_token=370 top_logit=22.4274597 duration_seconds=0.003848 output_head_seconds=0.001019
+section=decode position=5 input_token=370 next_token=11 top_logit=22.7221756 duration_seconds=0.004299 output_head_seconds=0.000880
+section=decode position=6 input_token=11 next_token=452 top_logit=22.0451984 duration_seconds=0.004138 output_head_seconds=0.000899
+section=decode position=7 input_token=452 next_token=7177 top_logit=18.602829 duration_seconds=0.003996 output_head_seconds=0.000953
+section=decode position=8 input_token=7177 next_token=6280 top_logit=17.0274773 duration_seconds=0.003910 output_head_seconds=0.000900
+section=decode position=9 input_token=6280 next_token=11 top_logit=17.028595 duration_seconds=0.004086 output_head_seconds=0.000923
+section=decode position=10 input_token=11 next_token=1029 top_logit=18.2043114 duration_seconds=0.003914 output_head_seconds=0.000939
+section=decode position=11 input_token=1029 next_token=406 top_logit=20.5681381 duration_seconds=0.003903 output_head_seconds=0.001012
+section=decode position=12 input_token=406 next_token=437 top_logit=23.3654251 duration_seconds=0.003967 output_head_seconds=0.000918
+section=decode position=13 input_token=437 next_token=428 top_logit=25.3895988 duration_seconds=0.003909 output_head_seconds=0.000977
+section=decode position=14 input_token=428 next_token=1941 top_logit=21.2706242 duration_seconds=0.004211 output_head_seconds=0.000938
+section=decode position=15 input_token=1941 next_token=393 top_logit=26.9761715 duration_seconds=0.003886 output_head_seconds=0.001019
+section=decode position=16 input_token=393 next_token=360 top_logit=27.5572853 duration_seconds=0.003927 output_head_seconds=0.000923
+section=decode position=17 input_token=360 next_token=337 top_logit=28.08535 duration_seconds=0.003900 output_head_seconds=0.000969
+section=decode position=18 input_token=337 next_token=291 top_logit=27.4308834 duration_seconds=0.004018 output_head_seconds=0.000938
+section=decode position=19 input_token=291 next_token=11 top_logit=20.1351986 duration_seconds=0.004166 output_head_seconds=0.001053
+section=decode position=20 input_token=11 next_token=1029 top_logit=21.6087456 duration_seconds=0.004213 output_head_seconds=0.000922
+section=decode position=21 input_token=1029 next_token=437 top_logit=26.2715416 duration_seconds=0.003994 output_head_seconds=0.000966
+section=decode position=22 input_token=437 next_token=291 top_logit=23.709753 duration_seconds=0.003939 output_head_seconds=0.000937
+section=decode position=23 input_token=291 next_token=393 top_logit=27.1071587 duration_seconds=0.003909 output_head_seconds=0.001012
+section=decode position=24 input_token=393 next_token=360 top_logit=27.1249485 duration_seconds=0.003893 output_head_seconds=0.000905
+section=decode position=25 input_token=360 next_token=337 top_logit=28.4920654 duration_seconds=0.003891 output_head_seconds=0.000960
+section=decode position=26 input_token=337 next_token=428 top_logit=27.3012505 duration_seconds=0.003944 output_head_seconds=0.000898
+section=decode position=27 input_token=428 next_token=1941 top_logit=21.1019554 duration_seconds=0.003905 output_head_seconds=0.000929
+section=decode position=28 input_token=1941 next_token=13 top_logit=17.9766579 duration_seconds=0.003941 output_head_seconds=0.000960
+section=decode position=29 input_token=13 next_token=50257 top_logit=10.2169724 duration_seconds=0.003873 output_head_seconds=0.000906
+section=result window=fixed30 audio_seconds=11.000000 input_frames=3000 output_frames=1500 frontend_seconds=0.011006 encoder_seconds=9.604119 decoder_core_seconds=0.295743 output_head_seconds=0.043618 total_seconds=9.957148 rtf=0.905195 decoder_cache_bytes=79857520 generated_tokens=26 decoder_text_tokens_per_second=76.614638 overall_text_tokens_per_second=2.611190
+transcript_utf8_bytes=109
+TRANSCRIPT:  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":11997184,"peak_bytes":955305984,"peak_rss_bytes":928378880,"seconds":16.018984,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":11214848,"peak_bytes":955305984,"peak_rss_bytes":935890944,"seconds":10.862239,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":14270464,"peak_bytes":955305984,"peak_rss_bytes":936062976,"seconds":10.203781,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":12259328,"peak_bytes":955305984,"peak_rss_bytes":928428032,"seconds":13.374629,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":14082048,"peak_bytes":955305984,"peak_rss_bytes":928706560,"seconds":13.445661,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":955305984,"initial_current_bytes":11206656,"peak_bytes":955305984,"peak_rss_bytes":935936000,"seconds":9.974939,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}

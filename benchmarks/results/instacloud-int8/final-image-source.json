@@ -1,0 +1,37 @@
+{
+  "service": {
+    "id": "17985dc0-2029-4062-af08-c2da92ef88ef",
+    "name": "kernel-bench"
+  },
+  "source": {
+    "type": "github",
+    "id": "313677c8-3134-4454-9920-4f6a11088606",
+    "owner": "baryhuang",
+    "repo": "whisper-turbo.c",
+    "branch": "bench/x86-int8",
+    "root_dir": null,
+    "auto_deploy": false,
+    "watch_paths": null,
+    "public": true,
+    "installation_id": null,
+    "repo_id": "1363585601",
+    "build_command": null,
+    "start_command": null,
+    "created_at": "2026-09-10T08:12:09.723Z",
+    "updated_at": "2026-09-10T08:12:09.723Z",
+    "last_build": {
+      "id": "04738486-cacd-4ea3-9e5d-58bb00055c08",
+      "repo_binding_id": null,
+      "project_id": "af78250c-3790-44b0-8441-feaf4cefde30",
+      "service_id": "17985dc0-2029-4062-af08-c2da92ef88ef",
+      "branch_id": "c40c1ee3-87ee-4fed-8d4c-dcfd5ed276c8",
+      "commit_sha": "1ec5c41a7786129296f4673811e228f6ec93d821",
+      "status": "live",
+      "image_ref": "728301184821.dkr.ecr.us-east-1.amazonaws.com/insta-compute-builds-us-east-1@sha256:e06d66e890ea573cd0dd1543bfd8bbafcbc4d3dd609270fd47e9f478b2035c41",
+      "error": null,
+      "created_at": "2026-09-10T08:12:09.723Z",
+      "updated_at": "2026-09-10T08:12:54.667Z",
+      "source_id": "313677c8-3134-4454-9920-4f6a11088606"
+    }
+  }
+}

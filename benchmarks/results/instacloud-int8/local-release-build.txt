@@ -1,0 +1,9 @@
+mkdir -p build
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/whisper-turbo-transcribe   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic benchmarks/whisper_turbo_encoder_bench.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/whisper-turbo-encoder-bench   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -DWHISPER_X86 -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c src/x86/whisper_turbo_w8a8.c -o build/whisper-turbo-x86   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic tools/import_ggml.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/import-ggml   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/q8-bench   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench   -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror benchmarks/cloud/health.c -o build/bench-health 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror  -Isrc/generic benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c -o build/attention-bench   -lm

@@ -1,0 +1,53 @@
+
+ And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country. And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country. And so, my fellow Americans, ask not what your country can do for you,load_backend: loaded CPU backend from /reference/build/bin/libggml-cpu-zen4.so
+whisper_init_from_file_with_params_no_state: loading model from '/data/cpp-q8.bin'
+whisper_init_with_params_no_state: use gpu    = 0
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+whisper_init_with_params_no_state: devices    = 1
+whisper_init_with_params_no_state: backends   = 1
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51866
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 1280
+whisper_model_load: n_audio_head  = 20
+whisper_model_load: n_audio_layer = 32
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 1280
+whisper_model_load: n_text_head   = 20
+whisper_model_load: n_text_layer  = 4
+whisper_model_load: n_mels        = 128
+whisper_model_load: ftype         = 7
+whisper_model_load: qntvr         = 2
+whisper_model_load: type          = 5 (large v3)
+whisper_model_load: adding 1609 extra tokens
+whisper_model_load: n_langs       = 100
+whisper_model_load:          CPU total size =   873.55 MB
+whisper_model_load: model size    =  873.55 MB
+whisper_backend_init_gpu: no GPU found
+whisper_init_state: kv self size  =   10.49 MB
+whisper_init_state: kv cross size =   31.46 MB
+whisper_init_state: kv pad  size  =    7.86 MB
+whisper_init_state: compute buffer (conv)   =   36.15 MB
+whisper_init_state: compute buffer (encode) =   55.35 MB
+whisper_init_state: compute buffer (cross)  =    9.27 MB
+whisper_init_state: compute buffer (decode) =   99.12 MB
+read_audio_data: reading audio data from '/data/jfk-repeat30.wav' ...
+read_audio_data: trying to decode with miniaudio
+
+system_info: n_threads = 8 / 9 | WHISPER : VITISAI = 0 | COREML = 0 | OPENVINO = 0 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | OPENMP = 1 | REPACK = 1 | 
+
+main: processing '/data/jfk-repeat30.wav' (480000 samples, 30.0 sec), 8 threads, 1 processors, 1 beams + best of 1, lang = en, task = transcribe, timestamps = 0 ...
+
+
+whisper_print_timings:     load time = 10785.21 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =    42.44 ms
+whisper_print_timings:   sample time =    31.97 ms /     1 runs (    31.97 ms per run)
+whisper_print_timings:   encode time =  5619.77 ms /     1 runs (  5619.77 ms per run)
+whisper_print_timings:   decode time =   232.57 ms /    69 runs (     3.37 ms per run)
+whisper_print_timings:   batchd time =    12.86 ms /     4 runs (     3.21 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time = 16959.04 ms
+OBSERVATION {"counter":"execution_cgroup_lifetime_peak","prior_peak_bytes":7626752,"initial_current_bytes":7069696,"peak_bytes":1963679744,"peak_rss_bytes":1060761600,"seconds":17.640855,"exit_code":0,"model_initial_resident_pages":0,"swap_configured":false}

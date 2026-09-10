@@ -1,0 +1,4 @@
+bab4e97984f15276de3b7dbdce70624b0600d102619ce561d0a35cf9f2bba3b3  /data/turbo-q8.whtrbo
+317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1  /data/cpp-q8.bin
+59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e  /app/jfk.wav
+712169d8a78022fdda7d946aa478e3bbeea7f7dc75608d7327b4cc2a65a266cb  /data/jfk-repeat30.wav

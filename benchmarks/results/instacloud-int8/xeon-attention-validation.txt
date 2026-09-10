@@ -1,0 +1,108 @@
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [338 kB]
+Fetched 9376 kB in 1s (11.9 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libc-dev-bin libcrypt-dev libnsl-dev libnsl2 libtirpc-common libtirpc-dev
+  libtirpc3 linux-libc-dev rpcsvc-proto
+Suggested packages:
+  glibc-doc manpages-dev
+Recommended packages:
+  manpages manpages-dev libc-devtools
+The following NEW packages will be installed:
+  libc-dev-bin libc6-dev libcrypt-dev libnsl-dev libnsl2 libtirpc-common
+  libtirpc-dev libtirpc3 linux-libc-dev rpcsvc-proto
+0 upgraded, 10 newly installed, 0 to remove and 1 not upgraded.
+Need to get 4887 kB of archives.
+After this operation, 21.7 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 libc-dev-bin amd64 2.36-9+deb12u14 [48.1 kB]
+Get:2 http://deb.debian.org/debian-security bookworm-security/main amd64 linux-libc-dev amd64 6.1.187-1 [2357 kB]
+Get:3 http://deb.debian.org/debian bookworm/main amd64 libcrypt-dev amd64 1:4.4.33-2 [118 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 libtirpc-common all 1.3.3+ds-1 [14.0 kB]
+Get:5 http://deb.debian.org/debian bookworm/main amd64 libtirpc3 amd64 1.3.3+ds-1 [85.2 kB]
+Get:6 http://deb.debian.org/debian bookworm/main amd64 libnsl2 amd64 1.3.0-2 [39.5 kB]
+Get:7 http://deb.debian.org/debian bookworm/main amd64 libtirpc-dev amd64 1.3.3+ds-1 [191 kB]
+Get:8 http://deb.debian.org/debian bookworm/main amd64 libnsl-dev amd64 1.3.0-2 [66.4 kB]
+Get:9 http://deb.debian.org/debian bookworm/main amd64 rpcsvc-proto amd64 1.4.3-1 [63.3 kB]
+Get:10 http://deb.debian.org/debian bookworm/main amd64 libc6-dev amd64 2.36-9+deb12u14 [1904 kB]
+Fetched 4887 kB in 0s (191 MB/s)
+Selecting previously unselected package libc-dev-bin.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 7481 files and directories currently installed.)
+Preparing to unpack .../0-libc-dev-bin_2.36-9+deb12u14_amd64.deb ...
+Unpacking libc-dev-bin (2.36-9+deb12u14) ...
+Selecting previously unselected package linux-libc-dev:amd64.
+Preparing to unpack .../1-linux-libc-dev_6.1.187-1_amd64.deb ...
+Unpacking linux-libc-dev:amd64 (6.1.187-1) ...
+Selecting previously unselected package libcrypt-dev:amd64.
+Preparing to unpack .../2-libcrypt-dev_1%3a4.4.33-2_amd64.deb ...
+Unpacking libcrypt-dev:amd64 (1:4.4.33-2) ...
+Selecting previously unselected package libtirpc-common.
+Preparing to unpack .../3-libtirpc-common_1.3.3+ds-1_all.deb ...
+Unpacking libtirpc-common (1.3.3+ds-1) ...
+Selecting previously unselected package libtirpc3:amd64.
+Preparing to unpack .../4-libtirpc3_1.3.3+ds-1_amd64.deb ...
+Unpacking libtirpc3:amd64 (1.3.3+ds-1) ...
+Selecting previously unselected package libnsl2:amd64.
+Preparing to unpack .../5-libnsl2_1.3.0-2_amd64.deb ...
+Unpacking libnsl2:amd64 (1.3.0-2) ...
+Selecting previously unselected package libtirpc-dev:amd64.
+Preparing to unpack .../6-libtirpc-dev_1.3.3+ds-1_amd64.deb ...
+Unpacking libtirpc-dev:amd64 (1.3.3+ds-1) ...
+Selecting previously unselected package libnsl-dev:amd64.
+Preparing to unpack .../7-libnsl-dev_1.3.0-2_amd64.deb ...
+Unpacking libnsl-dev:amd64 (1.3.0-2) ...
+Selecting previously unselected package rpcsvc-proto.
+Preparing to unpack .../8-rpcsvc-proto_1.4.3-1_amd64.deb ...
+Unpacking rpcsvc-proto (1.4.3-1) ...
+Selecting previously unselected package libc6-dev:amd64.
+Preparing to unpack .../9-libc6-dev_2.36-9+deb12u14_amd64.deb ...
+Unpacking libc6-dev:amd64 (2.36-9+deb12u14) ...
+Setting up libtirpc-common (1.3.3+ds-1) ...
+Setting up linux-libc-dev:amd64 (6.1.187-1) ...
+Setting up rpcsvc-proto (1.4.3-1) ...
+Setting up libcrypt-dev:amd64 (1:4.4.33-2) ...
+Setting up libc-dev-bin (2.36-9+deb12u14) ...
+Setting up libtirpc3:amd64 (1.3.3+ds-1) ...
+Setting up libtirpc-dev:amd64 (1.3.3+ds-1) ...
+Setting up libnsl2:amd64 (1.3.0-2) ...
+Setting up libnsl-dev:amd64 (1.3.0-2) ...
+Setting up libc6-dev:amd64 (2.36-9+deb12u14) ...
+Processing triggers for libc-bin (2.36-9+deb12u14) ...
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/whisper-turbo-transcribe  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/whisper_turbo_encoder_bench.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/whisper-turbo-encoder-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -DWHISPER_X86 -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c -o build/whisper-turbo-x86  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic tools/import_ggml.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/import-ggml  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c -o build/q8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic benchmarks/cloud/health.c -o build/bench-health 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic benchmarks/cloud/measure.c -o build/measure 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c -o build/attention-bench  -fopenmp -lm
+debconf: delaying package configuration, since apt-utils is not installed
+tools/import_ggml.c: In function 'entry':
+tools/import_ggml.c:38:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   38 |     if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");return d;
+      |     ^~
+tools/import_ggml.c:38:68: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   38 |     if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");return d;
+      |                                                                    ^~~~~~
+tools/import_ggml.c: In function 'main':
+tools/import_ggml.c:109:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  109 |         if(len>=128||type>1)die("bad name length or tensor type");read_exact(dims,rank*4);
+      |         ^~
+tools/import_ggml.c:109:67: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  109 |         if(len>=128||type>1)die("bad name length or tensor type");read_exact(dims,rank*4);
+      |                                                                   ^~~~~~~~~~
+tools/import_ggml.c:128:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  128 |     if(fclose(output))die("close failed");fclose(input);
+      |     ^~
+tools/import_ggml.c:128:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  128 |     if(fclose(output))die("close failed");fclose(input);
+      |                                           ^~~~~~
+/sys/fs/cgroup/cgroup.subtree_control: Device or resource busy

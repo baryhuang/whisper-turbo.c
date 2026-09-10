@@ -1,0 +1,26 @@
+6.18.35
+-rw-r--r-- 1 root root 0 Sep 10 07:49 /sys/fs/cgroup/memory.max
+-rw-r--r-- 1 root root 0 Sep 10 07:49 /sys/fs/cgroup/memory.peak
+-rw-r--r-- 1 root root 0 Sep 10 07:49 /sys/fs/cgroup/memory.swap.max
+177205248
+436613120
+{"mode":"generic","frames":1,"threads":8,"seconds":0.000317873}
+{"mode":"scalar","frames":1,"threads":8,"seconds":0.000004942,"max_abs_error":0}
+{"mode":"avx2","frames":1,"threads":8,"seconds":0.000002900,"max_abs_error":0}
+{"mode":"avx512","frames":1,"threads":8,"seconds":0.000002793,"max_abs_error":0}
+{"mode":"generic","frames":7,"threads":8,"seconds":0.000317617}
+{"mode":"scalar","frames":7,"threads":8,"seconds":0.000029894,"max_abs_error":0}
+{"mode":"avx2","frames":7,"threads":8,"seconds":0.000014457,"max_abs_error":0}
+{"mode":"avx512","frames":7,"threads":8,"seconds":0.000015156,"max_abs_error":0}
+{"mode":"generic","frames":64,"threads":8,"seconds":0.001907409}
+{"mode":"scalar","frames":64,"threads":8,"seconds":0.000903404,"max_abs_error":0}
+{"mode":"avx2","frames":64,"threads":8,"seconds":0.000262228,"max_abs_error":0}
+{"mode":"avx512","frames":64,"threads":8,"seconds":0.000246983,"max_abs_error":0}
+{"mode":"generic","frames":550,"threads":8,"seconds":0.086743203}
+{"mode":"scalar","frames":550,"threads":8,"seconds":0.062623968,"max_abs_error":0}
+{"mode":"avx2","frames":550,"threads":8,"seconds":0.013092268,"max_abs_error":0}
+{"mode":"avx512","frames":550,"threads":8,"seconds":0.014335483,"max_abs_error":0}
+{"mode":"generic","frames":1500,"threads":8,"seconds":1.012403249}
+{"mode":"scalar","frames":1500,"threads":8,"seconds":0.831226556,"max_abs_error":0}
+{"mode":"avx2","frames":1500,"threads":8,"seconds":0.217266755,"max_abs_error":0}
+{"mode":"avx512","frames":1500,"threads":8,"seconds":0.209602486,"max_abs_error":0}

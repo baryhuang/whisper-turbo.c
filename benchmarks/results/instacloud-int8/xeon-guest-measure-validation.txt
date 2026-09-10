@@ -1,0 +1,31 @@
+mkdir -p build
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -DWHISPER_X86 -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c -o build/whisper-turbo-x86  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic tools/import_ggml.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/import-ggml  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c -o build/q8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic benchmarks/cloud/health.c -o build/bench-health 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic benchmarks/cloud/measure.c -o build/measure 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Isrc/generic benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c -o build/attention-bench  -fopenmp -lm
+tools/import_ggml.c: In function 'entry':
+tools/import_ggml.c:38:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   38 |     if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");return d;
+      |     ^~
+tools/import_ggml.c:38:68: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   38 |     if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");return d;
+      |                                                                    ^~~~~~
+tools/import_ggml.c: In function 'main':
+tools/import_ggml.c:109:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  109 |         if(len>=128||type>1)die("bad name length or tensor type");read_exact(dims,rank*4);
+      |         ^~
+tools/import_ggml.c:109:67: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  109 |         if(len>=128||type>1)die("bad name length or tensor type");read_exact(dims,rank*4);
+      |                                                                   ^~~~~~~~~~
+tools/import_ggml.c:128:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  128 |     if(fclose(output))die("close failed");fclose(input);
+      |     ^~
+tools/import_ggml.c:128:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  128 |     if(fclose(output))die("close failed");fclose(input);
+      |                                           ^~~~~~
+/sys/fs/cgroup/memory.max: Operation not permitted
+/sys/fs/cgroup/memory.max: Operation not permitted
+/sys/fs/cgroup/memory.swap.max: Operation not permitted

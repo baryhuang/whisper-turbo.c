@@ -21,6 +21,9 @@ The implementation includes the generic C11 runtime, a streaming C INT8 model
 importer, runtime-dispatched AVX2/AVX-512 kernels, SIMD attention, and experimental
 INT8-activation/VNNI encoder kernels. The HTTP API is not implemented yet.
 Inference benchmarks are not a certification of the future API's memory budget.
+See the [InstaCloud INT8 results](docs/instacloud-int8.md): three newly provisioned
+instances, approximately 0.95 GB measured native inference peaks versus 1.96 GB
+for the matched whisper.cpp cold-run comparisons, with explicit scope and caveats.
 
 ## Build and run
 

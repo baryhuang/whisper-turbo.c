@@ -1,0 +1,19 @@
+mkdir -p build
+cc  -O1 -g -std=c11 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined  -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/q8-bench -fsanitize=address,undefined  -lm
+cc  -O1 -g -std=c11 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined  -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench -fsanitize=address,undefined  -lm
+cc  -O1 -g -std=c11 -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined  -Isrc/generic benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c -o build/attention-bench -fsanitize=address,undefined  -lm
+./build/q8-bench 1 0
+{"case":0,"rows":1,"input":1280,"output":1280,"precision":"int8_weights_fp32_activations","mode":"generic","threads":1,"median_seconds":0.002567000,"max_abs_error":0,"peak_rss_bytes":18055168,"trials_seconds":[0.002560000,0.002567000,0.002551000,0.002610000,0.002591000]}
+./build/w8a8-bench 1 0
+{"case":0,"mode":"scalar_int8","threads":1,"trial":0,"seconds":0.003271000,"nrmse":0.00390325125,"max_abs_error":0.0405080318,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":1,"seconds":0.003167000,"nrmse":0.00390325125,"max_abs_error":0.0405080318,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":2,"seconds":0.003117000,"nrmse":0.00390325125,"max_abs_error":0.0405080318,"scratch_bytes":1320,"integer_parity":true}
+./build/attention-bench 1 1
+{"mode":"generic","frames":1,"threads":1,"seconds":0.000007000}
+{"mode":"scalar","frames":1,"threads":1,"seconds":0.000034000,"max_abs_error":0}
+./build/attention-bench 7 1
+{"mode":"generic","frames":7,"threads":1,"seconds":0.000217000}
+{"mode":"scalar","frames":7,"threads":1,"seconds":0.000252000,"max_abs_error":0}
+./build/attention-bench 64 1
+{"mode":"generic","frames":64,"threads":1,"seconds":0.018425000}
+{"mode":"scalar","frames":64,"threads":1,"seconds":0.017769000,"max_abs_error":0}

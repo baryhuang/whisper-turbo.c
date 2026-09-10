@@ -1,0 +1,60 @@
+mkdir -p build
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -DWHISPER_X86 -Isrc/generic src/whisper_turbo_transcribe.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c src/x86/whisper_turbo_w8a8.c -o build/whisper-turbo-x86  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic tools/import_ggml.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_frontend.c src/generic/whisper_turbo_decoder.c -o build/import-ggml  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/q8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c -o build/w8a8-bench  -fopenmp -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror benchmarks/cloud/health.c -o build/bench-health 
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/generic benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c -o build/attention-bench  -fopenmp -lm
+./build/q8-bench 1 0
+{"case":0,"rows":1,"input":1280,"output":1280,"precision":"int8_weights_fp32_activations","mode":"generic","threads":1,"median_seconds":0.000783668,"max_abs_error":0,"peak_rss_bytes":3633152,"trials_seconds":[0.000786490,0.000783668,0.000818026,0.000777130,0.000748500]}
+{"case":0,"rows":1,"input":1280,"output":1280,"precision":"int8_weights_fp32_activations","mode":"avx2","threads":1,"median_seconds":0.000096127,"max_abs_error":2.38418579e-06,"peak_rss_bytes":3633152,"trials_seconds":[0.000152244,0.000096127,0.000121361,0.000091026,0.000095576]}
+{"case":0,"rows":1,"input":1280,"output":1280,"precision":"int8_weights_fp32_activations","mode":"avx512","threads":1,"median_seconds":0.000089670,"max_abs_error":2.62260437e-06,"peak_rss_bytes":3633152,"trials_seconds":[0.000098190,0.000093652,0.000089670,0.000088428,0.000088120]}
+./build/w8a8-bench 1 0
+{"case":0,"mode":"scalar_int8","threads":1,"trial":0,"seconds":0.000252762,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":1,"seconds":0.000289588,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"scalar_int8","threads":1,"trial":2,"seconds":0.000301601,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx2_int8","threads":1,"trial":0,"seconds":0.000110085,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx2_int8","threads":1,"trial":1,"seconds":0.000104499,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx2_int8","threads":1,"trial":2,"seconds":0.000105948,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx512_vnni","threads":1,"trial":0,"seconds":0.000077946,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx512_vnni","threads":1,"trial":1,"seconds":0.000076843,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+{"case":0,"mode":"avx512_vnni","threads":1,"trial":2,"seconds":0.000075076,"nrmse":0.00390325147,"max_abs_error":0.0405097008,"scratch_bytes":1320,"integer_parity":true}
+./build/attention-bench 1 1
+{"mode":"generic","frames":1,"threads":1,"seconds":0.000012505}
+{"mode":"scalar","frames":1,"threads":1,"seconds":0.000007492,"max_abs_error":0}
+{"mode":"avx2","frames":1,"threads":1,"seconds":0.000003325,"max_abs_error":0}
+{"mode":"avx512","frames":1,"threads":1,"seconds":0.000003850,"max_abs_error":0}
+./build/attention-bench 7 1
+{"mode":"generic","frames":7,"threads":1,"seconds":0.000125529}
+{"mode":"scalar","frames":7,"threads":1,"seconds":0.000095027,"max_abs_error":0}
+{"mode":"avx2","frames":7,"threads":1,"seconds":0.000020116,"max_abs_error":0}
+{"mode":"avx512","frames":7,"threads":1,"seconds":0.000025191,"max_abs_error":0}
+./build/attention-bench 64 1
+{"mode":"generic","frames":64,"threads":1,"seconds":0.009314553}
+{"mode":"scalar","frames":64,"threads":1,"seconds":0.006454387,"max_abs_error":0}
+{"mode":"avx2","frames":64,"threads":1,"seconds":0.001360604,"max_abs_error":0}
+{"mode":"avx512","frames":64,"threads":1,"seconds":0.001308977,"max_abs_error":0}
+{"mode":"generic","frames":64,"threads":8,"seconds":0.001496588}
+{"mode":"scalar","frames":64,"threads":8,"seconds":0.001194939,"max_abs_error":0}
+{"mode":"avx2","frames":64,"threads":8,"seconds":0.000261715,"max_abs_error":0}
+{"mode":"avx512","frames":64,"threads":8,"seconds":0.000252192,"max_abs_error":0}
+{"mode":"generic","frames":550,"threads":8,"seconds":0.086880607}
+{"mode":"scalar","frames":550,"threads":8,"seconds":0.066135215,"max_abs_error":0}
+{"mode":"avx2","frames":550,"threads":8,"seconds":0.013292538,"max_abs_error":0}
+{"mode":"avx512","frames":550,"threads":8,"seconds":0.014505288,"max_abs_error":0}
+{"mode":"generic","frames":1500,"threads":8,"seconds":1.065755098}
+{"mode":"scalar","frames":1500,"threads":8,"seconds":0.871130681,"max_abs_error":0}
+{"mode":"avx2","frames":1500,"threads":8,"seconds":0.219782635,"max_abs_error":0}
+{"mode":"avx512","frames":1500,"threads":8,"seconds":0.216133152,"max_abs_error":0}
+{"mode":"generic","frames":64,"threads":8,"seconds":0.001583997}
+{"mode":"scalar","frames":64,"threads":8,"seconds":0.001048736,"max_abs_error":0}
+{"mode":"avx2","frames":64,"threads":8,"seconds":0.000311868,"max_abs_error":0}
+{"mode":"avx512","frames":64,"threads":8,"seconds":0.000246314,"max_abs_error":0}
+{"mode":"generic","frames":550,"threads":8,"seconds":0.086674817}
+{"mode":"scalar","frames":550,"threads":8,"seconds":0.071693270,"max_abs_error":0}
+{"mode":"avx2","frames":550,"threads":8,"seconds":0.013511037,"max_abs_error":0}
+{"mode":"avx512","frames":550,"threads":8,"seconds":0.013488565,"max_abs_error":0}
+{"mode":"generic","frames":1500,"threads":8,"seconds":1.029064046}
+{"mode":"scalar","frames":1500,"threads":8,"seconds":0.526902528,"max_abs_error":0}
+{"mode":"avx2","frames":1500,"threads":8,"seconds":0.091501038,"max_abs_error":0}
+{"mode":"avx512","frames":1500,"threads":8,"seconds":0.093821377,"max_abs_error":0}
