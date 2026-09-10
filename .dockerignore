@@ -1,0 +1,11 @@
+*
+!Dockerfile
+!Makefile
+!src/
+!src/**
+!tools/
+!tools/import_ggml.c
+!benchmarks/
+!benchmarks/*.c
+!benchmarks/cloud/
+!benchmarks/cloud/*.c

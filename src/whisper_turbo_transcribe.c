@@ -152,6 +152,10 @@ static int append_piece(const cllm_whisper_turbo_decoder_weights *decoder,
 
 int main(int argc, char **argv)
 {
+#ifdef WHISPER_X86
+    extern void wt_q8_init(void);
+    wt_q8_init();
+#endif
     cllm_whisper_turbo_model model;
     cllm_whisper_turbo_encoder_metrics encoder_metrics;
     cllm_whisper_turbo_decoder_state decoder_state;
