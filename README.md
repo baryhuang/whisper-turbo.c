@@ -17,9 +17,10 @@ Both targets use an initial eight-thread inference budget. See the
 [service target specification](docs/service-targets.md) for the memory accounting,
 implementation plan, and acceptance criteria.
 
-The current implementation contains the inherited generic C11 runtime, CLI,
-and encoder benchmark. The HTTP API and optimized x86 kernels are not yet
-implemented, and the service memory target has not yet been validated.
+The implementation includes the generic C11 runtime, a streaming C INT8 model
+importer, runtime-dispatched AVX2/AVX-512 kernels, SIMD attention, and experimental
+INT8-activation/VNNI encoder kernels. The HTTP API is not implemented yet.
+Inference benchmarks are not a certification of the future API's memory budget.
 
 ## Build and run
 
@@ -36,15 +37,34 @@ The inherited CLI accepts mono 16-bit PCM WAV at 16 kHz, forces English and
 greedy decoding, and reads at most the first 30 seconds. Its output includes
 benchmark logs. It is not yet suitable as an API transcription implementation.
 
-Supply an existing packed `.whtrbo` model separately. Weights are not included.
-The original Python model converter has been excluded; a C model importer is
-required before this repository can prepare checkpoints on its own.
+Weights are not included. Import the published original GGML F16/F32 Turbo
+checkpoint using C (prequantized GGML input is not accepted):
+
+```sh
+make x86-tools OPENMP=-fopenmp
+./build/import-ggml ggml-large-v3-turbo.bin turbo-q8.whtrbo
+OMP_NUM_THREADS=8 ./build/whisper-turbo-x86 turbo-q8.whtrbo speech.wav 96 fixed30
+```
+
+The original checkpoint's SHA-256 must be
+`1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69`.
+The validated imported image is 847,660,800 bytes. The importer creates its
+output exclusively: choose a new destination when retrying a failed conversion.
+
+`WHISPER_SIMD=scalar|avx2|avx512` selects a supported path, with automatic
+feature-checked dispatch by default. `WHISPER_ACTIVATIONS=int8` enables the
+experimental W8A8 encoder; decoder activations remain FP32. Leave this unset
+for the FP32-activation reference path. W8A8 passes the current kernel and JFK
+checks, but needs a wider accuracy corpus before becoming a production default.
 
 ## Layout
 
 - `src/generic/`: encoder, cached decoder, log-Mel frontend, image loader, quantization definitions.
 - `src/whisper_turbo_transcribe.c`: inherited transcription CLI.
-- `benchmarks/`: C encoder benchmark.
+- `src/x86/`: runtime-dispatched C intrinsics and INT8 kernels.
+- `tools/import_ggml.c`: streaming C checkpoint conversion.
+- `benchmarks/`: C parity, performance and Linux memory-observation tools.
+- `benchmarks/results/instacloud-int8/`: raw cloud experiment outputs.
 - `docs/pins.json`: pinned checkpoint identities and architecture.
 - `docs/upstream/`: historical Turbo results for Jetson Orin and RK3588.
   These are reference records from the original repository, not supported
@@ -63,6 +83,11 @@ Implementation, model preparation, serving, and tests must be in C. Do not add
 Python scripts, Python build dependencies, Python inference services, or C++
 runtime backends. Makefiles, deployment configuration, and documentation are
 allowed.
+
+The root Dockerfile is a **benchmark-only** image: it additionally builds a
+pinned external whisper.cpp comparison executable using that project's C++
+toolchain. That executable is not linked into, invoked by, or required to build
+the native C application. Neither benchmark path executes Python.
 
 The API target is `POST /v1/audio/transcriptions`, with the multipart request
 and response contract documented in the
