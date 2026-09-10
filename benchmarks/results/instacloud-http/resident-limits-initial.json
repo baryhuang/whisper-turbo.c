@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "stdout": "HTTP_RESULT {\"case\":\"jfk_english\",\"trial\":1,\"audio_seconds\":11.000,\"seconds\":15.008753,\"status\":200,\"transcript_checked\":true}\nFAIL 238: strstr(r, \"country\") && strlen(r) > (test ? 50U : 1000U)\nHTTP listening on 127.0.0.1:8081; one resident model, one active transcription\nOBSERVATION {\"counter\":\"execution_cgroup_lifetime_peak\",\"prior_peak_bytes\":7786496,\"initial_current_bytes\":7663616,\"peak_bytes\":1009000448,\"peak_rss_bytes\":987009024,\"seconds\":59.051614,\"exit_code\":1,\"model_count\":1,\"model_initial_resident_pages\":0,\"swap_configured\":false}\n",
+  "stderr": ""
+}

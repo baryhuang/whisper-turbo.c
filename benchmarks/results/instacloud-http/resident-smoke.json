@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "HTTP_RESULT {\"case\":\"jfk_english\",\"trial\":1,\"audio_seconds\":11.000,\"seconds\":14.747480,\"status\":200,\"transcript_checked\":true}\nReal-model C HTTP checks passed; no transcript content logged.\nHTTP listening on 127.0.0.1:8081; one resident model, one active transcription\nOBSERVATION {\"counter\":\"execution_cgroup_lifetime_peak\",\"prior_peak_bytes\":7258112,\"initial_current_bytes\":7135232,\"peak_bytes\":954466304,\"peak_rss_bytes\":937738240,\"seconds\":14.936668,\"exit_code\":0,\"model_count\":1,\"model_initial_resident_pages\":0,\"swap_configured\":false}\n",
+  "stderr": ""
+}

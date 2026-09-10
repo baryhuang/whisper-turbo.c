@@ -1,0 +1,2 @@
+HTTP listening on 127.0.0.1:49769; one resident model, one active transcription
+C HTTP tests passed: multipart, auth, JSON/text, bounds, overload, timeout, cancellation, recovery.

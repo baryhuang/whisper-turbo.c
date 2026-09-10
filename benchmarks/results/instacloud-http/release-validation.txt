@@ -1,0 +1,17 @@
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -DWHISPER_X86 -Isrc/server -Isrc/generic src/server/main.c src/server/api.c src/server/http.c src/server/inference.c src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c src/x86/whisper_turbo_w8a8.c -o build/whisper-turbo-server  -fopenmp -pthread -lm
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -Isrc/server tests/http_test.c src/server/api.c src/server/http.c -o build/http-test  -pthread
+./build/http-test
+C HTTP tests passed: multipart, auth, JSON/text, bounds, overload, timeout, cancellation, recovery.
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -Isrc/server tests/http_model_test.c src/server/api.c -o build/http-model-test
+bdcd336a16ac812d535466c0836759f9b12c625864925900467ad6d79587fab1  src/server/api.c
+a4239b9dff164131882a5ad17ddbb76b8a722a5e5de595fc5895a4cbd8af6fef  src/server/api.h
+37c48f6fc4506cc71c319cfa2cd6fe74205f0ea3a303fce0f1a841eae90fb31a  src/server/http.c
+b98a2ce63b0caada5e9f5bb03277d28eedbb5a02afd468a7658ad71e75ff49f9  src/server/inference.c
+f0e713a7fdcf466aca3574f81968e77d4726e079070e0b82c6e9f4fcd327081e  src/server/inference.h
+c03420951bf755e965a1ce027ec4f053b005cbdfef77bf2b3b210f8a33d9f96e  src/server/languages.h
+c9ec6ee299012ce10ffeda79a38bbb170309eb6dad471a5815b2651f2a33ec25  src/server/main.c
+8010da67ce352db31318d96fc6f2c092f7bb693a5897d7ac90e2c730e723fa09  src/generic/whisper_turbo_image.c
+4b6821b0817871289d5a9f6e28740bc686db2521cec206297f761bdc41be71d6  src/generic/whisper_turbo_image.h
+0d57f2b14dd03048f843084207544fe7b0541acb0128b05c9c773390504845df  tests/http_test.c
+93c62b70f6e3a40f5f1c8c8c9cf8d9f2ced0e750dd1cde185ebaa9a86bb86040  tests/http_model_test.c
+5ea40ecf4f076e4667b07e805ba4fce671e3c877869b1512a687e7e7999161b0  build/whisper-turbo-server

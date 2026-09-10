@@ -7,8 +7,10 @@ interface backed by Whisper large-v3-turbo, with peak total service memory
 **strictly below 1,500,000,000 bytes** on both supported CPU targets.
 The threshold uses decimal GB, approximately 1430.5 MiB, not 1.5 GiB.
 
-This document sets development and release requirements. It does not claim an
-implemented HTTP server, completed CPU optimizations, or measured memory compliance.
+This document sets development and release requirements. The resident C HTTP
+server implements the subset documented in [http-api.md](http-api.md). Full API
+compatibility and complete memory/accuracy acceptance remain release requirements,
+not claims established by a short-clip benchmark.
 
 ## CPU targets
 

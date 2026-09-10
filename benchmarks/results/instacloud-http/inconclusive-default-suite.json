@@ -1,0 +1,8 @@
+{
+  "workload": "resident default-activation server, multi-request model suite",
+  "result": "inconclusive",
+  "platform_error": "the compute provider could not run the command (HTTP 502)",
+  "measurement_returned": false,
+  "included_in_successful_results": false,
+  "recovery": "isolated service restarted; single-request default-activation test subsequently passed"
+}

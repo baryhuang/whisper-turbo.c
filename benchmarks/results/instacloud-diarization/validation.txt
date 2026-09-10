@@ -1,0 +1,44 @@
+cc  -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp -Isrc/diarization tests/diarization_test.c src/diarization/checkpoint.c src/diarization/network.c src/diarization/cluster.c src/diarization/audio.c -o build/diarization-test  -fopenmp -lm -lz
+diarization C checks passed
+two-speaker A-B-A identity checks passed (not a DER evaluation)
+327414907f85f7a5ee9ca5409f14bfcad68448461953bf13c8ebed45ed3c4c4b  src/diarization/audio.c
+68d06079b687cba17b560de30fe14793f42530bc124e78b489bc523f4a38ef19  src/diarization/checkpoint.c
+420a3a8a764d789b4bfc275e69f917da915c15b8cf82989dfab9f6f6753e6516  src/diarization/cluster.c
+2e194524572fd8368e33f302c2b9845b3de215b6dab04831588d36d806426e90  src/diarization/main.c
+68896da5038fb64fac7b59ec0826cc79e71b40f14754bc1e359fc2894a8b0952  src/diarization/network.c
+3b8130e39666722e151f8d732b9c7109715203993c332d1bbd9d7cfed5a931a5  src/diarization/audio.h
+3d7d9d19cc827d3a3886cfabdd45047a7a41c09ae3bda4ba6fd9b0e9225e3763  src/diarization/checkpoint.h
+13c5344ab4291c9d3bd27fd74f5216261d496ea79d57654edd7d31990bd9a5ba  src/diarization/cluster.h
+53bc4040f1e895983cfbf41ddba3c27e8e7590dac0b7d865761f8b379f91bf64  src/diarization/network.h
+39e3b59705496dd1517cd4a11f36e4223f081459343e21b336da347f96f2a1d6  benchmarks/cloud/observe.c
+7a106c0240ee5b5c0113e65cbe57429c717ac9e41b1ccfe31aceefdebeaf48ad  tests/diarization_test.c
+359452e3122dfe0a93fb91da2c6d5e9a514f3b90206209c18bba362bc77e6010  build/diarize-community
+973c619146c8ca09425163fc2dd3b194321fa5bd71cd8c6aafb1152321277096  build/observe
+9223a96a0126d865a49637575b633cf96e9105f790af445a583c5d045dafb5d6  /app/whisper-turbo-x86
+8b004f0f80e74570f84b600067fb39769b1324d2c3998c6321aa5ed42f695e92  /reference/build/bin/whisper-cli
+	linux-vdso.so.1 (0x00007fd904c56000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fd904b59000)
+	libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007fd904b3a000)
+	libgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x00007fd904af2000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd904910000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fd904c58000)
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  9
+On-line CPU(s) list:                     0-8
+Vendor ID:                               GenuineIntel
+Model name:                              Intel(R) Xeon(R) 6975P-C
+BIOS Model name:                           CPU @ 0.0GHz
+BIOS CPU family:                         0
+CPU family:                              6
+Model:                                   173
+Thread(s) per core:                      1
+Core(s) per socket:                      9
+Socket(s):                               1
+Stepping:                                1
+BogoMIPS:                                5400.00
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 wbnoinvd arat avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect cldemote movdiri movdir64b md_clear serialize avx512_fp16 flush_l1d arch_capabilities
+Hypervisor vendor:                       KVM
+Virtualization type:                     full

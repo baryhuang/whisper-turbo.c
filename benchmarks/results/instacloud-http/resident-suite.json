@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "HTTP_RESULT {\"case\":\"jfk_english\",\"trial\":1,\"audio_seconds\":11.000,\"seconds\":14.347850,\"status\":200,\"transcript_checked\":true}\nHTTP_RESULT {\"case\":\"jfk_english\",\"trial\":2,\"audio_seconds\":11.000,\"seconds\":10.762503,\"status\":200,\"transcript_checked\":true}\nHTTP_RESULT {\"case\":\"jfk_autodetect\",\"trial\":3,\"audio_seconds\":11.000,\"seconds\":10.490872,\"status\":200,\"transcript_checked\":true}\nHTTP_RESULT {\"case\":\"speech_after_30s_text\",\"audio_seconds\":42.000,\"seconds\":10.506196,\"status\":200,\"transcript_checked\":true}\nReal-model C HTTP checks passed; no transcript content logged.\nHTTP listening on 127.0.0.1:8081; one resident model, one active transcription\nOBSERVATION {\"counter\":\"execution_cgroup_lifetime_peak\",\"prior_peak_bytes\":7356416,\"initial_current_bytes\":7118848,\"peak_bytes\":1002192896,\"peak_rss_bytes\":983998464,\"seconds\":46.349686,\"exit_code\":0,\"model_count\":1,\"model_initial_resident_pages\":0,\"swap_configured\":false}\n",
+  "stderr": ""
+}

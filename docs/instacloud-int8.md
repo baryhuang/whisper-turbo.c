@@ -149,7 +149,7 @@ describes cgroup peak accounting and reset semantics. `measure.c` is an optional
 runner for separately delegated Linux cgroups; its mutation modes are not usable
 on these InstaCloud guests. The read-only observer is the tool used for results.
 
-The API does not exist yet. These measurements include the benchmark execution
+These measurements predate the HTTP server. They include the benchmark execution
 and its charged cache, but do not exercise HTTP uploads, request queues, codec
 processes, resident-service reuse, cancellations or concurrent requests. Do not
 present them as complete-service API acceptance.

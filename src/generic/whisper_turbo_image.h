@@ -57,4 +57,11 @@ int cllm_whisper_turbo_encode_mel(const cllm_whisper_turbo_model *model,
                                   float *output,
                                   cllm_whisper_turbo_encoder_metrics *metrics);
 
+/* Cooperative cancellation checked before the stem and each encoder layer. */
+int cllm_whisper_turbo_encode_mel_cancel(const cllm_whisper_turbo_model *model,
+                                         const float *mel, size_t input_frames,
+                                         size_t layer_count, float *output,
+                                         cllm_whisper_turbo_encoder_metrics *metrics,
+                                         int (*cancel)(void *), void *cancel_context);
+
 #endif

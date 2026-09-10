@@ -417,6 +417,16 @@ int cllm_whisper_turbo_encode_mel(const cllm_whisper_turbo_model *model,
                                   float *output,
                                   cllm_whisper_turbo_encoder_metrics *metrics)
 {
+    return cllm_whisper_turbo_encode_mel_cancel(model, mel, input_frames, layer_count,
+                                               output, metrics, NULL, NULL);
+}
+
+int cllm_whisper_turbo_encode_mel_cancel(const cllm_whisper_turbo_model *model,
+                                         const float *mel, size_t input_frames,
+                                         size_t layer_count, float *output,
+                                         cllm_whisper_turbo_encoder_metrics *metrics,
+                                         int (*cancel)(void *), void *cancel_context)
+{
     const size_t frames = cllm_whisper_turbo_stem_output_frames(input_frames);
     const size_t state_count = frames * (size_t)N_STATE;
     const size_t stem_count = input_frames * (size_t)N_STATE;
@@ -435,6 +445,7 @@ int cllm_whisper_turbo_encode_mel(const cllm_whisper_turbo_model *model,
         metrics == NULL || input_frames == 0U || input_frames > 3000U ||
         layer_count > ENCODER_LAYERS || frames > MAX_FRAMES)
         return -1;
+    if (cancel != NULL && cancel(cancel_context)) return -1;
     if (state_count > SIZE_MAX / 8U || stem_count > SIZE_MAX - state_count * 8U ||
         frames * (size_t)N_MLP > SIZE_MAX - stem_count - state_count * 8U)
         return -1;
@@ -469,6 +480,7 @@ int cllm_whisper_turbo_encode_mel(const cllm_whisper_turbo_model *model,
     metrics->stem_seconds = monotonic_seconds() - started;
 
     for (size_t layer = 0U; layer < layer_count; ++layer) {
+        if (cancel != NULL && cancel(cancel_context)) goto cleanup;
         started = monotonic_seconds();
         if (cllm_whisper_turbo_encoder_block(state_a, frames, &model->layers[layer],
                 &workspace, after_attention, state_b) != 0)

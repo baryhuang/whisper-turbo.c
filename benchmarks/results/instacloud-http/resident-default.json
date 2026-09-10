@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "HTTP listening on 127.0.0.1:8081; one resident model, one active transcription\nUnexpected HTTP status 408 (expected 429)\nFAIL 39: status == expected\nOBSERVATION {\"counter\":\"execution_cgroup_lifetime_peak\",\"prior_peak_bytes\":7880704,\"initial_current_bytes\":7438336,\"peak_bytes\":20889600,\"peak_rss_bytes\":3411968,\"seconds\":30.343714,\"exit_code\":1,\"model_count\":1,\"model_initial_resident_pages\":0,\"swap_configured\":false}\n"
+}

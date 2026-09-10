@@ -1,4 +1,5 @@
 CC ?= cc
+.DEFAULT_GOAL := all
 CPPFLAGS ?=
 CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Wpedantic
 LDFLAGS ?=
@@ -17,7 +18,46 @@ X86_HEADERS := $(wildcard src/x86/*.h)
 X86_INCLUDED := src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_decoder.c
 
 .PHONY: all clean check
-all: build/whisper-turbo-transcribe build/whisper-turbo-encoder-bench
+
+HTTP_CORE := src/server/api.c src/server/http.c
+SERVER_CORE := $(HTTP_CORE) src/server/inference.c
+SERVER_HEADERS := $(wildcard src/server/*.h)
+.PHONY: server
+server: build/whisper-turbo-server
+
+build/http-test: tests/http_test.c $(HTTP_CORE) $(SERVER_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Isrc/server $(filter %.c,$^) -o $@ $(LDFLAGS) -pthread
+
+build/http-model-test: tests/http_model_test.c src/server/api.c src/server/api.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Isrc/server $(filter %.c,$^) -o $@ $(LDFLAGS)
+
+.PHONY: check-http
+check-http: build/http-test
+	./build/http-test
+
+build/whisper-turbo-server: src/server/main.c $(SERVER_CORE) $(SERVER_HEADERS) $(X86_CORE) $(X86_INCLUDED) $(HEADERS) $(X86_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -DWHISPER_X86 -Isrc/server -Isrc/generic $(filter-out $(X86_INCLUDED),$(filter %.c,$^)) -o $@ $(LDFLAGS) $(OPENMP) -pthread -lm
+
+build/inspect-diarization: tools/inspect_diarization.c src/diarization/checkpoint.c src/diarization/checkpoint.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Isrc/diarization $(filter %.c,$^) -o $@ $(LDFLAGS) -lz
+
+DIAR_CORE := src/diarization/checkpoint.c src/diarization/network.c src/diarization/cluster.c src/diarization/audio.c
+DIAR_HEADERS := $(wildcard src/diarization/*.h)
+.PHONY: diarization
+diarization: build/diarize-community build/inspect-diarization
+build/diarize-community: src/diarization/main.c $(DIAR_CORE) $(DIAR_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/diarization $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) -lm -lz
+
+build/diarization-test: tests/diarization_test.c $(DIAR_CORE) $(DIAR_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/diarization $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) -lm -lz
+.PHONY: check-diarization
+check-diarization: build/diarization-test
+	./build/diarization-test
+
+build/diarization-fixture: tools/diarization_fixture.c src/diarization/audio.c src/diarization/audio.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Isrc/diarization $(filter %.c,$^) -o $@ $(LDFLAGS) -lm
+
+all: build/whisper-turbo-server build/whisper-turbo-transcribe build/whisper-turbo-encoder-bench
 
 build:
 	mkdir -p $@
@@ -29,9 +69,11 @@ build/whisper-turbo-encoder-bench: benchmarks/whisper_turbo_encoder_bench.c $(CO
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
 clean:
+	$(RM) build/whisper-turbo-server build/http-test build/http-model-test
 	$(RM) build/whisper-turbo-transcribe build/whisper-turbo-encoder-bench \
 	    build/whisper-turbo-x86 build/import-ggml build/q8-bench build/w8a8-bench \
 	    build/attention-bench build/bench-health build/measure build/observe build/repeat-wav
+	$(RM) build/diarize-community build/inspect-diarization build/diarization-test build/diarization-fixture
 
 .PHONY: x86-tools
 x86-tools: build/whisper-turbo-x86 build/import-ggml build/q8-bench build/w8a8-bench build/bench-health
@@ -64,9 +106,11 @@ build/w8a8-bench: benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86
 build/attention-bench: benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c src/generic/whisper_turbo_encoder.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter-out $(X86_INCLUDED),$(filter %.c,$^)) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
-check: build/q8-bench build/w8a8-bench build/attention-bench
+check: build/q8-bench build/w8a8-bench build/attention-bench build/diarization-test build/http-test
 	./build/q8-bench 1 0
 	./build/w8a8-bench 1 0
 	./build/attention-bench 1 1
 	./build/attention-bench 7 1
 	./build/attention-bench 64 1
+	./build/diarization-test
+	./build/http-test

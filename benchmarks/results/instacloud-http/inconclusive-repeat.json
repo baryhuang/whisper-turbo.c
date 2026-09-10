@@ -1,0 +1,10 @@
+{
+  "workload": "ten requests against one resident INT8-activation server",
+  "result": "inconclusive",
+  "platform_error": "the compute provider could not run the command (HTTP 502)",
+  "recovered_successful_responses": 7,
+  "complete_suite_verdict": false,
+  "memory_observation_returned": false,
+  "included_in_successful_memory_results": false,
+  "recovery": "isolated instance restarted; seven response records recovered from persistent logs"
+}
