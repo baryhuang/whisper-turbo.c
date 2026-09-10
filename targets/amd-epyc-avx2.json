@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "amd-epyc-avx2",
-  "status": "planned",
+  "status": "avx2_verified_on_intel_amd_hardware_pending",
   "architecture": "x86_64",
   "observed_cpu": "AMD EPYC, family 25 model 1",
   "required_cpu_flags": ["avx2", "fma", "f16c"],
@@ -11,7 +11,7 @@
   "memory_limit_exclusive_bytes": 1500000000,
   "memory_scope": "complete_service_cgroup_including_file_cache",
   "swap_allowed": false,
-  "initial_weight_candidate": "q4",
+  "initial_weight_candidate": "q8",
   "implementation_language": "C",
   "api_endpoint": "POST /v1/audio/transcriptions"
 }

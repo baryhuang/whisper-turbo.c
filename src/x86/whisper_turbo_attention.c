@@ -2,6 +2,7 @@
 #include "whisper_turbo_q8.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -86,21 +87,42 @@ void wt_attention(size_t frames,size_t state,size_t heads,float *q,const float *
     }
 #endif
     const float scale=1.0f/sqrtf(64.0f);
+    /* Head-major K/V avoids a 5120-byte stride and repeated page/cache-set
+     * conflicts in the full-window attention loops. Bounded to 15.36 MB for
+     * Turbo's 1500 x 1280 K/V tensors; allocation failure retains the original
+     * layout. Values and accumulation order are unchanged. */
+    float *packed=NULL;
+    const char *packing=getenv("WHISPER_ATTENTION_PACK");
+    if((!packing||strcmp(packing,"0"))&&frames<=SIZE_MAX/state/sizeof(float)/2)
+        packed=malloc(2*frames*state*sizeof(float));
+    if(packed) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+        for(size_t h=0;h<heads;h++)for(size_t f=0;f<frames;f++) {
+            memcpy(packed+h*frames*64+f*64,k+f*state+h*64,64*sizeof(float));
+            memcpy(packed+frames*state+h*frames*64+f*64,v+f*state+h*64,64*sizeof(float));
+        }
+    }
 #ifdef _OPENMP
 #pragma omp parallel for collapse(2) schedule(static)
 #endif
     for(size_t h=0;h<heads;h++)for(size_t row=0;row<frames;row++) {
         float *p=scores;
+        const float *head_k=packed?packed+h*frames*64:k+h*64;
+        const float *head_v=packed?packed+frames*state+h*frames*64:v+h*64;
+        const size_t stride=packed?64:state;
 #ifdef _OPENMP
         p+=(size_t)omp_get_thread_num()*frames;
 #endif
         float max=-INFINITY;double denominator=0;
         for(size_t f=0;f<frames;f++) {
-            p[f]=(float)dot(q+row*state+h*64,k+f*state+h*64)*scale;
+            p[f]=(float)dot(q+row*state+h*64,head_k+f*stride)*scale;
             if(p[f]>max)max=p[f];
         }
         for(size_t f=0;f<frames;f++){p[f]=expf(p[f]-max);denominator+=p[f];}
         for(size_t f=0;f<frames;f++)p[f]=(float)((double)p[f]/denominator);
-        context(p,v+h*64,frames,state,out+row*state+h*64);
+        context(p,head_v,frames,stride,out+row*state+h*64);
     }
+    free(packed);
 }
