@@ -3,6 +3,7 @@
 Work in `/Users/buryhuang/git/whisper-turbo.c`. Its origin is
 `https://github.com/baryhuang/whisper-turbo.c.git`.
 
+- Work directly on `main`; do not create new branches unless explicitly requested.
 - Implement Whisper Turbo in C, including model preparation, HTTP serving, and tests.
 - No Python or C++ implementation or runtime/build dependencies.
 - Do not import A113X sources or target that board.
