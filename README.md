@@ -56,6 +56,13 @@ feature-checked dispatch by default. `WHISPER_ACTIVATIONS=int8` enables the
 experimental W8A8 encoder; decoder activations remain FP32. Leave this unset
 for the FP32-activation reference path. W8A8 passes the current kernel and JFK
 checks, but needs a wider accuracy corpus before becoming a production default.
+Attention packs K/V by head into at most 15.36 MB of scratch for cache locality;
+`WHISPER_ATTENTION_PACK=0` disables this for comparisons. Both paths retain
+double-precision attention accumulation and pass the current parity tests.
+
+Run `make check` for deterministic C kernel checks. Linux cloud benchmarks use
+`make build/observe build/repeat-wav OPENMP=-fopenmp`; the memory observer checks
+model cache eviction and reports the execution cgroup's lifetime peak explicitly.
 
 ## Layout
 

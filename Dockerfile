@@ -8,7 +8,7 @@ COPY Makefile ./
 COPY src ./src
 COPY tools/import_ggml.c ./tools/import_ggml.c
 COPY benchmarks ./benchmarks
-RUN make -j8 all x86-tools OPENMP=-fopenmp
+RUN make -j8 all x86-tools build/attention-bench build/observe build/repeat-wav OPENMP=-fopenmp
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev make libgomp1 libstdc++6 ca-certificates curl time util-linux && rm -rf /var/lib/apt/lists/*
