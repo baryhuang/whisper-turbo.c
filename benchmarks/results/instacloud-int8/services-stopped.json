@@ -1,0 +1,108 @@
+[
+  {
+    "id": "17985dc0-2029-4062-af08-c2da92ef88ef",
+    "project_id": "af78250c-3790-44b0-8441-feaf4cefde30",
+    "type": "compute",
+    "name": "kernel-bench",
+    "spec": {
+      "cpus": 8,
+      "cpu_kind": "shared",
+      "memory_mb": 8192
+    },
+    "machine_count": 1,
+    "region": "us-east",
+    "domain": "prod-x86-q4-kernel-bench-013369-00vqhwysbdn.compute.instacloud-edge.com",
+    "status": "active",
+    "created_at": "2026-09-10T07:25:39.320Z",
+    "updated_at": "2026-09-10T08:21:11.247Z",
+    "desired_state": "stopped",
+    "public": false,
+    "branch_id": "c40c1ee3-87ee-4fed-8d4c-dcfd5ed276c8",
+    "lineage_id": "536ab975-ba60-47bb-9d6d-9358f164d573",
+    "image": "728301184821.dkr.ecr.us-east-1.amazonaws.com/insta-compute-builds-us-east-1@sha256:e06d66e890ea573cd0dd1543bfd8bbafcbc4d3dd609270fd47e9f478b2035c41",
+    "port": 8080,
+    "always_on": false,
+    "volume_gib": 10,
+    "template_deployment_id": null,
+    "template_modified": false,
+    "websocket": false,
+    "pg_version": null,
+    "template_code": null,
+    "template_logo_url": null,
+    "source": {
+      "type": "github",
+      "owner": "baryhuang",
+      "repo": "whisper-turbo.c",
+      "branch": "bench/x86-int8",
+      "auto_deploy": false
+    }
+  },
+  {
+    "id": "3987e53e-dad2-4c0d-86f1-44e3395336e0",
+    "project_id": "af78250c-3790-44b0-8441-feaf4cefde30",
+    "type": "compute",
+    "name": "cpu-survey-eu",
+    "spec": {
+      "cpus": 4,
+      "cpu_kind": "shared",
+      "memory_mb": 1280
+    },
+    "machine_count": 1,
+    "region": "eu-central",
+    "domain": "prod-x86-q4-cpu-survey-eu-843dd1-00qfmkfgwhn.compute.instacloud-edge.com",
+    "status": "active",
+    "created_at": "2026-09-10T07:58:25.025Z",
+    "updated_at": "2026-09-10T08:21:11.317Z",
+    "desired_state": "stopped",
+    "public": false,
+    "branch_id": "c40c1ee3-87ee-4fed-8d4c-dcfd5ed276c8",
+    "lineage_id": "b145217a-d4ba-4c17-83bb-20615521db64",
+    "image": "728301184821.dkr.ecr.us-east-1.amazonaws.com/insta-compute-builds-us-east-1@sha256:e06d66e890ea573cd0dd1543bfd8bbafcbc4d3dd609270fd47e9f478b2035c41",
+    "port": 8080,
+    "always_on": false,
+    "volume_gib": 10,
+    "template_deployment_id": null,
+    "template_modified": false,
+    "websocket": false,
+    "pg_version": null,
+    "template_code": null,
+    "template_logo_url": null,
+    "source": {
+      "type": "image"
+    }
+  },
+  {
+    "id": "ec4eea2d-4d28-417b-b6e7-ada3e125c942",
+    "project_id": "af78250c-3790-44b0-8441-feaf4cefde30",
+    "type": "compute",
+    "name": "cpu-survey-ap",
+    "spec": {
+      "cpus": 8,
+      "cpu_kind": "shared",
+      "memory_mb": 8192
+    },
+    "machine_count": 1,
+    "region": "ap-southeast",
+    "domain": "prod-x86-q4-cpu-survey-ap-071a8b-20wwptzwhaw.compute.instacloud-edge.com",
+    "status": "active",
+    "created_at": "2026-09-10T07:58:40.285Z",
+    "updated_at": "2026-09-10T08:21:12.756Z",
+    "desired_state": "stopped",
+    "public": false,
+    "branch_id": "c40c1ee3-87ee-4fed-8d4c-dcfd5ed276c8",
+    "lineage_id": "9f6d28fc-4f26-4306-a876-f1bad44b0f27",
+    "image": "728301184821.dkr.ecr.us-east-1.amazonaws.com/insta-compute-builds-us-east-1@sha256:e06d66e890ea573cd0dd1543bfd8bbafcbc4d3dd609270fd47e9f478b2035c41",
+    "port": 8080,
+    "always_on": false,
+    "volume_gib": 10,
+    "template_deployment_id": null,
+    "template_modified": false,
+    "websocket": false,
+    "pg_version": null,
+    "template_code": null,
+    "template_logo_url": null,
+    "source": {
+      "type": "image"
+    }
+  }
+]

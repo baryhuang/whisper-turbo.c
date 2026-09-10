@@ -225,3 +225,17 @@ Actual AMD-host benchmarking; a wider independent multilingual accuracy corpus;
 resident C inference API and bounded long-audio processing; HTTP multipart and
 OpenAI-compatible response/error behavior; real timestamps; complete-service
 memory/load/overload tests. W8A8 stays experimental until its accuracy gate passes.
+
+## Handoff state
+
+All three benchmark services were taken offline after testing. At 08:21 UTC,
+their desired state was `stopped`, live runtime state was `suspended`, and
+`always_on` was false. The persistent model volumes were retained for the next
+stage; storage remains allocated. No production/main service was changed.
+The recorded configuration is in
+[services-stopped.json](../benchmarks/results/instacloud-int8/services-stopped.json).
+Resume a benchmark explicitly with, for example:
+
+```sh
+insta --agent compute start kernel-bench --branch x86-q4
+```

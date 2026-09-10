@@ -1,0 +1,10 @@
+{
+  "observed_at_utc": "2026-09-10T08:21:00Z",
+  "timestamp_precision": "minute",
+  "branch": "x86-q4",
+  "services": [
+    {"name": "kernel-bench", "desiredState": "stopped", "state": "suspended"},
+    {"name": "cpu-survey-eu", "desiredState": "stopped", "state": "suspended"},
+    {"name": "cpu-survey-ap", "desiredState": "stopped", "state": "suspended"}
+  ]
+}
