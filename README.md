@@ -4,9 +4,22 @@ Whisper large-v3-turbo extracted from
 [llm-in-c](https://github.com/baryhuang/llm-in-c) at commit
 `da2d24deb33c6663617d179522bfa1aebb95b2cf`.
 
-This repository currently contains the original generic C11 inference runtime,
-CLI, and encoder benchmark. The intended next deliverable is a native C server
-matching the OpenAI transcription API. That HTTP API is not implemented yet.
+The goal is a native C Whisper large-v3-turbo API service matching the OpenAI
+transcription interface, using **less than 1.5 GB of total service memory**
+on two x86-64 CPU targets:
+
+| Target | Processor | Kernel direction |
+| --- | --- | --- |
+| `amd-epyc-avx2` | AMD EPYC, family 25 model 1 | AVX2, FMA, F16C |
+| `intel-xeon-avx512` | Intel Xeon 6975P-C | AVX-512, with optional VNNI, BF16 and FP16 paths |
+
+Both targets use an initial eight-thread inference budget. See the
+[service target specification](docs/service-targets.md) for the memory accounting,
+implementation plan, and acceptance criteria.
+
+The current implementation contains the inherited generic C11 runtime, CLI,
+and encoder benchmark. The HTTP API and optimized x86 kernels are not yet
+implemented, and the service memory target has not yet been validated.
 
 ## Build and run
 

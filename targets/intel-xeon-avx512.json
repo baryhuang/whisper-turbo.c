@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "intel-xeon-avx512",
+  "status": "planned",
+  "architecture": "x86_64",
+  "observed_cpu": "Intel Xeon 6975P-C",
+  "required_cpu_flags": ["avx2", "fma", "f16c", "avx512f", "avx512dq", "avx512bw", "avx512vl"],
+  "optional_cpu_flags": ["avx512_vnni", "avx512_bf16", "avx512_fp16"],
+  "requires_os_vector_state_check": true,
+  "default_inference_threads": 8,
+  "default_active_inference_requests": 1,
+  "memory_limit_exclusive_bytes": 1500000000,
+  "memory_scope": "complete_service_cgroup_including_file_cache",
+  "swap_allowed": false,
+  "initial_weight_candidate": "q4",
+  "implementation_language": "C",
+  "api_endpoint": "POST /v1/audio/transcriptions"
+}
