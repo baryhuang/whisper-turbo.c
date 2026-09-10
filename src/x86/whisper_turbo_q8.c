@@ -1,4 +1,5 @@
 #include "whisper_turbo_q8.h"
+#include "whisper_turbo_w8a8.h"
 #include "../generic/whisper_turbo_quant.h"
 #include <stdlib.h>
 #if defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
@@ -73,4 +74,24 @@ float wt_q8_row_auto(const unsigned char *p,const float *x,size_t n) {
     float s=0;
     for(size_t g=0;g<n/128;g++)s+=cllm_whisper_turbo_bf16(p+130*g)*selected(p+130*g+2,x+128*g);
     return s;
+}
+void wt_q8_gemm_auto(const unsigned char *w,const float *x,size_t rows,size_t k,
+                       size_t n,const float *bias,float *y) {
+    const char *activations=getenv("WHISPER_ACTIVATIONS");
+    if(activations&&!strcmp(activations,"int8")) {
+        const char *simd=getenv("WHISPER_SIMD");
+        int mode=simd&&!strcmp(simd,"scalar")?0:simd&&!strcmp(simd,"avx2")?1:2;
+        if(!wt_w8a8_gemm(mode,w,x,rows,k,n,bias,y))return;
+        /* Memory pressure: bounded FP32-activation path requires no scratch. */
+    }
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(size_t col=0;col<n;col++)for(size_t row=0;row<rows;row++) {
+        float sum=bias?bias[col]:0;
+        const unsigned char *wr=w+col*(k/128)*130;
+        for(size_t g=0;g<k/128;g++)sum+=cllm_whisper_turbo_bf16(wr+g*130)*
+            selected(wr+g*130+2,x+row*k+g*128);
+        y[row*n+col]=sum;
+    }
 }

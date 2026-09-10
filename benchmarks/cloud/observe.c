@@ -30,7 +30,7 @@ int main(int argc,char **argv) {
     double seconds=now()-start;
     unsigned long long after=number("/sys/fs/cgroup/memory.peak");
     int code=WIFEXITED(status)?WEXITSTATUS(status):128+WTERMSIG(status);
-    fprintf(stderr,"OBSERVATION {\"counter\":\"whole_service_lifetime_peak\",\"prior_peak_bytes\":%llu,\"initial_current_bytes\":%llu,\"peak_bytes\":%llu,\"peak_rss_bytes\":%llu,\"seconds\":%.6f,\"exit_code\":%d,\"swap_configured\":false}\n",
+    fprintf(stderr,"OBSERVATION {\"counter\":\"execution_cgroup_lifetime_peak\",\"prior_peak_bytes\":%llu,\"initial_current_bytes\":%llu,\"peak_bytes\":%llu,\"peak_rss_bytes\":%llu,\"seconds\":%.6f,\"exit_code\":%d,\"swap_configured\":false}\n",
         before,initial,after,(unsigned long long)usage.ru_maxrss*1024,seconds,code);
     return code;
 }

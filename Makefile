@@ -11,7 +11,7 @@ CORE := src/generic/whisper_turbo_image.c src/generic/whisper_turbo_encoder.c \
 HEADERS := $(wildcard src/generic/*.h)
 X86_CORE := src/generic/whisper_turbo_image.c src/generic/whisper_turbo_frontend.c \
             src/x86/whisper_turbo_encoder.c src/x86/whisper_turbo_decoder.c src/x86/whisper_turbo_q8.c \
-            src/x86/whisper_turbo_attention.c
+            src/x86/whisper_turbo_attention.c src/x86/whisper_turbo_w8a8.c
 X86_HEADERS := $(wildcard src/x86/*.h)
 
 .PHONY: all clean
@@ -38,7 +38,7 @@ build/whisper-turbo-x86: src/whisper_turbo_transcribe.c $(X86_CORE) $(HEADERS) $
 build/import-ggml: tools/import_ggml.c $(CORE) $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
-build/q8-bench: benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c $(HEADERS) $(X86_HEADERS) | build
+build/q8-bench: benchmarks/q8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
 build/bench-health: benchmarks/cloud/health.c | build
@@ -51,5 +51,5 @@ build/measure: benchmarks/cloud/measure.c | build
 build/w8a8-bench: benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
-build/attention-bench: benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_attention.c $(HEADERS) $(X86_HEADERS) | build
+build/attention-bench: benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)

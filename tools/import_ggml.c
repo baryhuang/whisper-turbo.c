@@ -35,7 +35,8 @@ static struct desc *entry(const char *name,uint32_t kind,uint32_t rank,const uin
     for(uint32_t i=0;i<count;i++)if(!strcmp(name,descriptors[i].name))die("duplicate tensor");
     struct desc *d=&descriptors[count++];strcpy(d->name,name);d->kind=kind;d->rank=rank;
     memcpy(d->shape,shape,rank*4);d->offset=align64((uint64_t)ftello(output));
-    if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");return d;
+    if(fseeko(output,(off_t)d->offset,SEEK_SET))die("seek failed");
+    return d;
 }
 static void finish_entry(struct desc *d){d->bytes=(uint64_t)ftello(output)-d->offset;}
 static void payload(const char *name,uint32_t kind,uint32_t rank,const uint32_t *shape,const void *p,size_t bytes) {
@@ -106,7 +107,8 @@ int main(int argc,char **argv) {
     for(;;) {
         uint32_t rank;size_t got=fread(&rank,1,4,input);if(!got)break;if(got!=4||rank<1||rank>3)die("bad tensor rank");
         uint32_t len=u32(),type=u32(),dims[4]={0},shape4[4]={0};
-        if(len>=128||type>1)die("bad name length or tensor type");read_exact(dims,rank*4);
+        if(len>=128||type>1)die("bad name length or tensor type");
+        read_exact(dims,rank*4);
         uint64_t elements=1;for(uint32_t i=0;i<rank;i++){if(!dims[i]||dims[i]>100000)die("bad tensor shape");elements*=dims[i];shape4[rank-i-1]=dims[i];}
         char name[128]={0},mapped[96];read_exact(name,len);if(!map_name(name,mapped,sizeof(mapped)))die(name);
         if(strstr(mapped,".bias")&&elements==1280){rank=1;shape4[0]=1280;shape4[1]=shape4[2]=0;}
@@ -125,7 +127,8 @@ int main(int argc,char **argv) {
     uint64_t bytes=align64((uint64_t)ftello(output));if(fflush(output)||ftruncate(fileno(output),(off_t)bytes))die("finalize failed");
     struct header h={"WHTRBO01",3,count,32,128,1280,20,5120,1500,sizeof(struct header),data_offset,bytes,0};
     rewind(output);write_exact(&h,sizeof(h));write_exact(descriptors,count*sizeof(descriptors[0]));
-    if(fclose(output))die("close failed");fclose(input);
+    if(fclose(output))die("close failed");
+    fclose(input);
     cllm_whisper_turbo_model model;if(cllm_whisper_turbo_model_open(argv[2],&model))die("runtime rejected imported image");
     cllm_whisper_turbo_model_close(&model);
     printf("{\"format\":\"WHTRBO01\",\"precision\":\"q8\",\"descriptors\":%u,\"bytes\":%llu}\n",count,(unsigned long long)bytes);
