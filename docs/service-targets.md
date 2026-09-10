@@ -38,8 +38,9 @@ initially. Keep the pending queue bounded, with bounded request metadata.
 Do not spawn a new model-loading inference process for each HTTP request.
 Reject overload explicitly before reserving another inference workspace.
 
-Start by evaluating packed Q4 weights; compare Q5 if quality requires it.
-The existing C core already represents Q4/Q5/Q8 matrices. Quantization is a
+Use packed INT8 weights as the active optimization target, per the updated
+requirement. The existing C core also represents Q4/Q5 matrices, but smaller
+bit widths do not satisfy this INT8 benchmark task. Quantization is a
 quality decision and must pass a fixed transcription regression corpus on both
 targets. Keep quantized weights packed and dequantize small tiles; never expand
 the complete checkpoint into floating-point weights in the serving process.
@@ -48,11 +49,11 @@ The following is a planning budget, not an allocation measurement:
 
 | Component | Budget, decimal MB |
 | --- | ---: |
-| Resident model, tokenizer and model metadata | 600 |
-| Encoder/decoder workspaces and KV caches | 350 |
-| Audio decoding, resampling and window buffers | 100 |
-| HTTP uploads, bounded queue and response buffers | 100 |
-| Executable, libraries, thread stacks and allocator overhead | 150 |
+| Resident INT8 model, tokenizer and model metadata | 900 |
+| Encoder/decoder workspaces and KV caches | 250 |
+| Audio decoding, resampling and window buffers | 50 |
+| HTTP uploads, bounded queue and response buffers | 25 |
+| Executable, libraries, thread stacks and allocator overhead | 75 |
 | Planned working total | 1300 |
 
 Leave the remaining 200 MB as headroom below the strict 1500 MB threshold.
