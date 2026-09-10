@@ -1,2 +1,17 @@
 /build/
 *.whtrbo
+
+# Local agent credentials
+.insta/agent-session.json
+
+.insta/.agent-session-*.tmp
+
+# InstaCloud: local observe-hook state (regenerated per machine, not source)
+.insta/observe/
+.insta/audit.jsonl
+
+# InstaCloud: agent skills installed by `npx skills add` (regenerable, not source)
+.claude/skills/
+.agents/skills/
+.github/skills/
+skills-lock.json
