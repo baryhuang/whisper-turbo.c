@@ -1,0 +1,48 @@
+#include "alignment.h"
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    float q[6 * 8 * 30];
+    size_t bounds[4];
+    for (size_t h = 0; h < 6; ++h)
+        for (size_t t = 0; t < 8; ++t)
+            for (size_t f = 0; f < 30; ++f) {
+                double center = t < 3 || t == 7 ? 15 : (t - 3) * 9;
+                double dx = f - center;
+                q[(h * 8 + t) * 30 + f] = (float)(-dx * dx / 12);
+            }
+    assert(!wt_align(q, 8, 3, 30, 30, 8, bounds));
+    assert(bounds[0] == 0 && bounds[1] > 0 && bounds[2] > bounds[1] && bounds[3] > bounds[2] && bounds[3] < 30);
+    assert(wt_align(q, 7, 3, 30, 30, 8, bounds));
+    q[0] = NAN;
+    assert(wt_align(q, 8, 3, 30, 30, 8, bounds));
+    wt_result r = {.duration=26, .length=14, .word_count=3};
+    r.text = malloc(15); assert(r.text); memcpy(r.text, "Hello Hi Again", 15);
+    r.words = calloc(3, sizeof(wt_word)); assert(r.words);
+    r.words[0] = (wt_word){0,5,1,2};
+    r.words[1] = (wt_word){5,3,11,12};
+    r.words[2] = (wt_word){8,6,21,22};
+    diar_interval turns[] = {{0,8,0},{9,17,1},{18,26,0}};
+    diar_result d = {.exclusive=turns,.exclusive_count=3,.speakers=2};
+    char names[32][64] = {{0}}; strcpy(names[0], "agent");
+    wt_request req = {.diarize=1,.diarized_json=1,.stream=1}; wt_error e = {0};
+    assert(!wt_assign_speakers(&r,&d,(const char (*)[64])names,&req,&e));
+    assert(r.segment_count==3 && !strcmp(r.segments[0].speaker,"agent") &&
+           !strcmp(r.segments[1].speaker,"A") && !strcmp(r.segments[2].speaker,"agent"));
+    size_t offset=0;
+    for(size_t i=0;i<r.segment_count;++i) {
+        assert(!memcmp(r.text+offset,r.segments[i].text,r.segments[i].length));
+        offset+=r.segments[i].length;
+    }
+    assert(offset==r.length && !strcmp((char *)r.text,"Hello Hi Again"));
+    char *out=NULL; size_t n; const char *type;
+    assert(!wt_render(&req,&r,&out,&n,&type));
+    assert(strstr(out,"\"delta\":\" Hi\"") && strstr(out,"\"delta\":\" Again\""));
+    free(out); wt_result_free(&r);
+    puts("C alignment tests passed: DTW, bounds, A-B-A labels, unchanged text, SSE whitespace.");
+    return 0;
+}

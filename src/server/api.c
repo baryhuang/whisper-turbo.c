@@ -81,7 +81,8 @@ int wt_boundary(const char *type, char out[71]) {
             return -1;
     return 0;
 }
-/* Linear-time binary search: adversarial repeated boundary prefixes stay bounded. */
+/* Linear-time binary search: adversarial repeated boundary prefixes stay
+ * bounded. */
 static const unsigned char *find(const unsigned char *s, size_t n, const char *key, size_t k) {
     size_t prefix[80] = {0}, matched = 0;
     if (!k || k > sizeof(prefix) / sizeof(*prefix))
@@ -182,10 +183,16 @@ int wt_multipart(const unsigned char *body, size_t n, const char *boundary, wt_r
             bit = 32;
         else if (!strcmp(name, "stream"))
             bit = 64;
+        else if (!strcmp(name, "chunking_strategy"))
+            bit = 128;
+        else if (!strcmp(name, "known_speaker_names[]"))
+            bit = 256;
+        else if (!strcmp(name, "known_speaker_references[]"))
+            bit = 512;
         else
             return wt_fail(e, 400, "Unsupported multipart parameter.", NULL,
                            "unsupported_parameter");
-        if (seen & bit)
+        if ((seen & bit) && bit < 256)
             return wt_fail(e, 400, "Duplicate multipart parameter.", NULL, "duplicate_parameter");
         seen |= bit;
         if (bit == 1) {
@@ -194,21 +201,56 @@ int wt_multipart(const unsigned char *body, size_t n, const char *boundary, wt_r
                                "invalid_file");
             r->file = value;
             r->file_size = len;
+        } else if (bit == 512) {
+            if (filename || r->reference_count >= 4 || len > 430000 || !len ||
+                memchr(value, 0, len))
+                return wt_fail(e, 400, "Provide at most four 2–10 second WAV data URLs.",
+                               "known_speaker_references", "invalid_value");
+            r->references[r->reference_count] = value;
+            r->reference_lengths[r->reference_count++] = len;
         } else {
             char text[257];
             if (filename || len >= sizeof(text) || memchr(value, 0, len))
                 goto malformed;
             memcpy(text, value, len);
             text[len] = 0;
-            if (bit == 2 && strcmp(text, "whisper-1") && strcmp(text, "whisper-large-v3-turbo"))
+            if (bit == 256) {
+                if (!len || len >= sizeof(r->names[0]) || r->name_count >= 4)
+                    return wt_fail(e, 400,
+                                   "Provide at most four nonempty names of at most 63 UTF-8 bytes.",
+                                   "known_speaker_names", "invalid_value");
+                for (size_t i = 0; i < len; ++i)
+                    if ((unsigned char)text[i] < 32 || (unsigned char)text[i] == 127)
+                        return wt_fail(e, 400, "Speaker names cannot contain control characters.",
+                                       "known_speaker_names", "invalid_value");
+                for (unsigned i = 0; i < r->name_count; ++i)
+                    if (!strcmp(r->names[i], text))
+                        return wt_fail(e, 400, "Speaker names must be unique.",
+                                       "known_speaker_names", "invalid_value");
+                memcpy(r->names[r->name_count++], text, len + 1);
+            }
+            if (bit == 2 && strcmp(text, "whisper-1") && strcmp(text, "whisper-large-v3-turbo") &&
+                strcmp(text, "gpt-4o-transcribe-diarize"))
                 return wt_fail(e, 400,
-                               "Use whisper-1 (local Turbo alias) or whisper-large-v3-turbo.",
+                               "Use whisper-1, whisper-large-v3-turbo, or "
+                               "gpt-4o-transcribe-diarize (local aliases).",
                                "model", "model_not_found");
             if (bit == 4) {
-                if (strcmp(text, "json") && strcmp(text, "text"))
-                    return wt_fail(e, 400, "Only json and text response formats are implemented.",
-                                   "response_format", "unsupported_parameter");
+                if (strcmp(text, "json") && strcmp(text, "text") && strcmp(text, "diarized_json"))
+                    return wt_fail(e, 400, "Use json, text, or diarized_json.", "response_format",
+                                   "unsupported_parameter");
                 r->plain_text = !strcmp(text, "text");
+                r->diarized_json = !strcmp(text, "diarized_json");
+            }
+            if (bit == 2)
+                r->diarize = !strcmp(text, "gpt-4o-transcribe-diarize");
+            if (bit == 64)
+                r->stream = !strcmp(text, "true");
+            if (bit == 128) {
+                if (strcmp(text, "auto"))
+                    return wt_fail(e, 400, "Only chunking_strategy=auto is supported.",
+                                   "chunking_strategy", "unsupported_parameter");
+                r->chunk_auto = 1;
             }
             if (bit == 8) {
                 if (len < 2 || len > 3)
@@ -232,7 +274,8 @@ int wt_multipart(const unsigned char *body, size_t n, const char *boundary, wt_r
                                "unsupported_parameter");
             if (bit == 64 && strcmp(text, "false") && strcmp(text, "true"))
                 return wt_fail(e, 400,
-                               "stream must be true or false; Whisper responses are non-streaming.",
+                               "stream must be true or false; Whisper responses are "
+                               "non-streaming.",
                                "stream", "invalid_value");
         }
         pos = (size_t)(delimiter - body) + m;
@@ -245,6 +288,14 @@ int wt_multipart(const unsigned char *body, size_t n, const char *boundary, wt_r
             if ((seen & 3) != 3)
                 return wt_fail(e, 400, "file and model are required.",
                                (seen & 1) ? "model" : "file", "missing_required_parameter");
+            if (r->name_count != r->reference_count)
+                return wt_fail(e, 400, "Speaker names and references must have equal counts.",
+                               "known_speaker_references", "invalid_value");
+            if (!r->diarize && (r->diarized_json || r->chunk_auto || r->name_count))
+                return wt_fail(e, 400, "Diarization options require gpt-4o-transcribe-diarize.",
+                               "model", "invalid_value");
+            if (!r->diarize)
+                r->stream = 0;
             return 0;
         }
     }
@@ -254,9 +305,7 @@ malformed:
 static uint32_t u32(const unsigned char *p) {
     return (uint32_t)p[0] | (uint32_t)p[1] << 8 | (uint32_t)p[2] << 16 | (uint32_t)p[3] << 24;
 }
-static unsigned u16(const unsigned char *p) {
-    return p[0] | (unsigned)p[1] << 8;
-}
+static unsigned u16(const unsigned char *p) { return p[0] | (unsigned)p[1] << 8; }
 int wt_wav(const unsigned char *data, size_t n, const unsigned char **pcm, size_t *samples,
            wt_error *e) {
     int fmt = 0, found = 0;

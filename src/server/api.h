@@ -8,6 +8,7 @@
 #define WT_UPLOAD_LIMIT 25000000U
 #define WT_TEXT_LIMIT 262144U
 #define WT_AUDIO_LIMIT (16000U * 120U)
+#define WT_SEGMENT_LIMIT 512U
 typedef struct {
     int status;
     const char *message, *param, *code;
@@ -17,10 +18,31 @@ typedef struct {
     size_t file_size;
     char language[4]; /* Empty means model-based language detection. */
     int plain_text;
+    int diarize, diarized_json, stream, chunk_auto;
+    unsigned name_count, reference_count;
+    char names[4][64];
+    const unsigned char *references[4];
+    size_t reference_lengths[4];
 } wt_request;
+typedef struct {
+    double start, end;
+    char speaker[64];
+    unsigned char *text;
+    size_t length;
+} wt_segment;
+typedef struct {
+    size_t offset, length;
+    double start, end;
+} wt_word;
 typedef struct {
     unsigned char *text;
     size_t length;
+    double duration;
+    wt_segment *segments;
+    size_t segment_count;
+    /* Internal alignment metadata; not serialized as an API field. */
+    wt_word *words;
+    size_t word_count, asr_windows, diarization_passes;
 } wt_result;
 typedef int (*wt_cancel)(void *);
 typedef int (*wt_backend)(void *, const wt_request *, wt_result *, wt_error *, wt_cancel, void *);
@@ -37,5 +59,10 @@ int wt_wav(const unsigned char *data, size_t length, const unsigned char **pcm, 
            wt_error *error);
 /* Allocated UTF-8 JSON string, including surrounding quotes. */
 char *wt_json_string(const unsigned char *data, size_t length);
+void wt_result_free(wt_result *);
+/* Bounded complete response; SSE events are buffered until inference completes.
+ */
+int wt_render(const wt_request *, const wt_result *, char **, size_t *, const char **);
+int wt_reference_wav(const unsigned char *, size_t, unsigned char **, size_t *, wt_error *);
 int wt_serve(const wt_server_options *, wt_backend, void *, atomic_int *stop);
 #endif

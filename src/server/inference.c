@@ -1,4 +1,5 @@
 #include "inference.h"
+#include "alignment.h"
 #include "languages.h"
 #include "whisper_turbo_frontend.h"
 #include <math.h>
@@ -27,23 +28,19 @@ static void suppression(const cllm_whisper_turbo_decoder_weights *d, unsigned ch
         mask[EOT] = 1;
     }
 }
-int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *error,
-                  wt_cancel cancel, void *cancel_context) {
-    wt_engine *engine = opaque;
+static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t samples,
+                      const char *requested_language, wt_result *out, wt_error *error,
+                      wt_cancel cancel, void *cancel_context, int aligned) {
     const cllm_whisper_turbo_model *m = &engine->model;
     const cllm_whisper_turbo_decoder_weights *d = &m->decoder;
-    const unsigned char *pcm;
-    size_t samples;
-    if (wt_wav(r->file, r->file_size, &pcm, &samples, error))
-        return -1;
 #ifdef _OPENMP
     omp_set_dynamic(0);
     omp_set_num_threads((int)engine->threads);
 #endif
     uint32_t language = 0;
-    if (r->language[0]) {
+    if (requested_language[0]) {
         for (uint32_t i = 50259; i < 50359; ++i)
-            if (language_token(i, r->language)) {
+            if (language_token(i, requested_language)) {
                 language = i;
                 break;
             }
@@ -60,12 +57,15 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
     float *encoder = malloc(encoded_frames * 1280 * sizeof(float));
     unsigned char *mask = malloc(CLLM_WHISPER_TURBO_VOCABULARY);
     unsigned char *text = malloc(WT_TEXT_LIMIT + 1);
+    float *alignment = aligned ? malloc(6 * 448 * encoded_frames * sizeof(float)) : NULL;
+    wt_word *words = aligned ? calloc(4 * 448, sizeof(wt_word)) : NULL;
+    size_t word_count = 0;
     size_t length = 0;
     int result = -1;
     cllm_whisper_turbo_decoder_state state = {0};
     cllm_whisper_turbo_decoder_metrics metrics;
     cllm_whisper_turbo_encoder_metrics encoder_metrics;
-    if (!audio || !mel || !scratch || !encoder || !mask || !text) {
+    if (!audio || !mel || !scratch || !encoder || !mask || !text || (aligned && (!alignment || !words))) {
         wt_fail(error, 503, "Inference allocation failed.", NULL, "resource_exhausted");
         goto done;
     }
@@ -83,6 +83,7 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
         }
         if (!nonzero)
             continue; /* Exact digital silence; no energy-threshold speech gating. */
+        ++out->asr_windows;
         if (cllm_whisper_turbo_log_mel(audio, WINDOW, m->mel_filters, mel, scratch,
                                        scratch_count) ||
             cllm_whisper_turbo_encode_mel_cancel(m, mel, frames, 32, encoder, &encoder_metrics,
@@ -93,6 +94,7 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
         if (cllm_whisper_turbo_decoder_state_init(d, encoder, encoded_frames, 448, &state,
                                                   &metrics))
             goto failed;
+        state.alignment = alignment;
         if (!language) {
             memset(mask, 1, CLLM_WHISPER_TURBO_VOCABULARY);
             for (uint32_t i = 50259; i < 50359; ++i)
@@ -111,6 +113,7 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
         uint32_t token = NO_TIMESTAMPS, next = 0;
         int ended = 0;
         size_t before = length;
+        size_t token_offsets[449], token_count = 0;
         for (unsigned generated = 0; generated + 4 < 448; ++generated) {
             if (cancel && cancel(cancel_context))
                 goto cancelled;
@@ -126,6 +129,7 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
             }
             if (next >= EOT || d->token_special[next])
                 goto failed;
+            token_offsets[token_count++] = length;
             size_t start = d->token_offsets[next], piece = d->token_offsets[next + 1] - start;
             if (piece > WT_TEXT_LIMIT - length) {
                 wt_fail(error, 422, "Transcription exceeds the output limit.", "file",
@@ -136,19 +140,52 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
             length += piece;
             token = next;
         }
-        cllm_whisper_turbo_decoder_state_free(&state);
         if (!ended) {
             wt_fail(error, 422, "Decoder context exhausted; use shorter audio segments.", "file",
                     "context_length_exceeded");
             goto done;
         }
+        token_offsets[token_count] = length;
+        if (aligned && token_count) {
+            /* The last generated text token has already been consumed when EOT
+               is predicted. Consume EOT only for the normalization sentinel;
+               reuse all encoder/self/cross caches, without another ASR pass. */
+            if (cllm_whisper_turbo_decoder_consume(d, &state, EOT, NULL, &metrics)) goto failed;
+            size_t bounds[449], real_frames = used / 320;
+            if (!real_frames) real_frames = 1;
+            if (wt_align(alignment, state.token_count, token_count, real_frames,
+                         encoded_frames, 448, bounds)) goto failed;
+            for (size_t first_token = 0; first_token < token_count;) {
+                size_t last = first_token + 1;
+                /* Keep subword pieces together. Space-prefixed token boundaries
+                   yield whole words for space-delimited languages. */
+                while (last < token_count) {
+                    unsigned char c = text[token_offsets[last]];
+                    if ((c == ' ' || c == '\n' || c == '\t') && bounds[last] > bounds[first_token]) break;
+                    ++last;
+                }
+                if (word_count == 4 * 448 || bounds[last] <= bounds[first_token]) {
+                    wt_fail(error, 422, "Cannot obtain a positive-duration text alignment.", "file", "alignment_failed");
+                    goto done;
+                }
+                size_t begin = token_offsets[first_token];
+                if (first_token == 0) begin = before;
+                words[word_count++] = (wt_word){begin, token_offsets[last] - begin,
+                    offset / 16000.0 + bounds[first_token] * 0.02,
+                    fmin(samples / 16000.0, offset / 16000.0 + bounds[last] * 0.02)};
+                first_token = last;
+            }
+        }
+        cllm_whisper_turbo_decoder_state_free(&state);
         if (length > before && offset + used < samples && text[length - 1] != ' ') {
             if (length == WT_TEXT_LIMIT)
                 goto failed;
             text[length++] = ' ';
+            if (aligned && word_count) ++words[word_count - 1].length;
         }
     }
-    /* Match the text endpoint's surrounding-whitespace behavior without changing words. */
+    /* Match the text endpoint's surrounding-whitespace behavior without changing
+     * words. */
     while (length && (text[length - 1] == ' ' || text[length - 1] == '\n'))
         --length;
     size_t first = 0;
@@ -156,9 +193,20 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
         ++first;
     memmove(text, text + first, length - first);
     length -= first;
+    for (size_t i = 0; i < word_count; ++i) {
+        size_t a = words[i].offset, b = a + words[i].length;
+        if (a < first) a = first;
+        if (b > first + length) b = first + length;
+        words[i].offset = a - first;
+        words[i].length = b > a ? b - a : 0;
+    }
     text[length] = 0;
     out->text = text;
     out->length = length;
+    out->duration = samples / 16000.0;
+    out->words = words;
+    out->word_count = word_count;
+    words = NULL;
     text = NULL;
     result = 0;
     goto done;
@@ -177,5 +225,17 @@ done:
     free(encoder);
     free(mask);
     free(text);
+    free(alignment);
+    free(words);
     return result;
+}
+int wt_transcribe_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
+                       const char *language, wt_result *out, wt_error *error,
+                       wt_cancel cancel, void *context) {
+    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 0);
+}
+int wt_transcribe_aligned_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
+                               const char *language, wt_result *out, wt_error *error,
+                               wt_cancel cancel, void *context) {
+    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 1);
 }

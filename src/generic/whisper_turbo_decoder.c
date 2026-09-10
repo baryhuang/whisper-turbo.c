@@ -242,7 +242,7 @@ static void attention(const float *query,
                       const float *value,
                       size_t frames,
                       float *scores,
-                      float *output)
+                      float *output, float *alignment, size_t layer, size_t stride)
 {
 #ifdef _OPENMP
     (void)scores;
@@ -261,12 +261,19 @@ static void attention(const float *query,
 #else
         float *head_scores = scores;
 #endif
+        /* large-v3-turbo alignment heads, as published by OpenAI Whisper and
+           whisper.cpp: (2,4), (2,11), (3,3), (3,6), (3,11), (3,14). */
+        int selected = layer == 2 ? (head == 4 ? 0 : head == 11 ? 1 : -1)
+                     : layer == 3 ? (head == 3 ? 2 : head == 6 ? 3 : head == 11 ? 4 : head == 14 ? 5 : -1)
+                     : -1;
         for (size_t frame = 0U; frame < frames; ++frame) {
             double sum = 0.0;
             for (size_t channel = 0U; channel < HEAD_WIDTH; ++channel)
                 sum += (double)query[offset + channel] *
                        key[frame * WIDTH + offset + channel];
             head_scores[frame] = (float)sum * 0.125f;
+            if (alignment && selected >= 0)
+                alignment[(size_t)selected * stride + frame] = head_scores[frame];
             if (head_scores[frame] > maximum) maximum = head_scores[frame];
         }
         for (size_t frame = 0U; frame < frames; ++frame) {
@@ -402,7 +409,7 @@ static int decoder_step_internal(const cllm_whisper_turbo_decoder_weights *weigh
         attention(query,
                   state->self_key + layer * state->maximum_tokens * WIDTH,
                   state->self_value + layer * state->maximum_tokens * WIDTH,
-                  position + 1U, scores, context);
+                  position + 1U, scores, context, NULL, 0, 0);
         matrix_vector(&w->self_output, context, w->self_output_bias, temporary);
         for (size_t index = 0U; index < WIDTH; ++index) hidden[index] += temporary[index];
 
@@ -411,7 +418,9 @@ static int decoder_step_internal(const cllm_whisper_turbo_decoder_weights *weigh
         attention(query,
                   state->cross_key + layer * state->audio_frames * WIDTH,
                   state->cross_value + layer * state->audio_frames * WIDTH,
-                  state->audio_frames, scores, context);
+                  state->audio_frames, scores, context,
+                  state->alignment ? state->alignment + position * state->audio_frames : NULL,
+                  layer, state->maximum_tokens * state->audio_frames);
         matrix_vector(&w->cross_output, context, w->cross_output_bias, temporary);
         for (size_t index = 0U; index < WIDTH; ++index) hidden[index] += temporary[index];
 

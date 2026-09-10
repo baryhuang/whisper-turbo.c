@@ -62,6 +62,9 @@ typedef struct {
     float *cross_value;
     float *workspace;
     size_t allocated_bytes;
+    /* Optional caller-owned raw alignment scores: [6][maximum_tokens][audio_frames].
+       Capture only; enabling this must not change inference arithmetic. */
+    float *alignment;
 } cllm_whisper_turbo_decoder_state;
 
 typedef struct {

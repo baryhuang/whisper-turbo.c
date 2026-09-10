@@ -75,6 +75,16 @@ static int backend(void *unused, const wt_request *r, wt_result *out, wt_error *
     CHECK(out->text);
     memcpy(out->text, text, sizeof(text));
     out->length = sizeof(text) - 1;
+    if (r->diarize) {
+        out->duration = 0.01;
+        out->segments = calloc(1, sizeof(wt_segment));
+        CHECK(out->segments);
+        out->segment_count = 1;
+        out->segments[0] = (wt_segment){.start = 0, .end = 0.01, .speaker = "A",
+                                       .text = malloc(sizeof(text)), .length = sizeof(text)-1};
+        CHECK(out->segments[0].text);
+        memcpy(out->segments[0].text, text, sizeof(text));
+    }
     return 0;
 }
 static void *serve(void *unused) {
@@ -307,6 +317,20 @@ int main(void) {
         close(idle[i]);
     nanosleep(&settle, NULL);
     CHECK(request("GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n", NULL, 0, response) == 200);
+    for (int stream = 0; stream < 2; ++stream) {
+        n = multipart(body, stream ? "--test\r\nContent-Disposition: form-data; name=response_format\r\n\r\ndiarized_json\r\n--test\r\nContent-Disposition: form-data; name=stream\r\n\r\ntrue\r\n"
+                                   : "--test\r\nContent-Disposition: form-data; name=response_format\r\n\r\ndiarized_json\r\n");
+        char *model = strstr((char *)body, "whisper-1");
+        CHECK(model);
+        size_t off = (size_t)(model-(char *)body), extra = strlen("gpt-4o-transcribe-diarize")-9;
+        memmove(body+off+9+extra, body+off+9, n-off-9);
+        memcpy(body+off, "gpt-4o-transcribe-diarize", 9+extra); n += extra;
+        post_header(header,n,"");
+        CHECK(request(header,body,n,response)==200);
+        CHECK(strstr(response,"\"speaker\":\"A\"") && strstr(response,"\"id\":\"seg_001\""));
+        if (stream) CHECK(strstr(response,"Content-Type: text/event-stream") && strstr(response,"transcript.text.done"));
+        else CHECK(strstr(response,"\"usage\":{\"type\":\"duration\""));
+    }
     stopping = 1;
     CHECK(!pthread_join(thread, NULL));
     CHECK(calls >= 16);

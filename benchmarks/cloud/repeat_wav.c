@@ -1,4 +1,4 @@
-/* C-only stress fixture: repeat a PCM16/16kHz/mono clip to exactly 30 seconds.
+/* C-only stress fixture: repeat a PCM16/16kHz/mono clip (default 30 seconds).
  * This is synthetic benchmark audio, not an independent accuracy corpus. */
 #include <stdint.h>
 #include <stdio.h>
@@ -7,7 +7,10 @@
 static uint32_t le32(const unsigned char *p){return (uint32_t)p[0]|(uint32_t)p[1]<<8|(uint32_t)p[2]<<16|(uint32_t)p[3]<<24;}
 static void put32(unsigned char *p,uint32_t n){for(int i=0;i<4;i++)p[i]=(unsigned char)(n>>(i*8));}
 int main(int argc,char **argv) {
-    if(argc!=3)return 2;
+    if(argc!=3&&argc!=4)return 2;
+    unsigned seconds=30;
+    if(argc==4){char *end;unsigned long n=strtoul(argv[3],&end,10);if(!*argv[3]||*end||n<1||n>120)return 2;seconds=(unsigned)n;}
+    const size_t output_bytes=(size_t)seconds*32000;
     FILE *f=fopen(argv[1],"rb");unsigned char h[44],*pcm=NULL;size_t bytes=0;
     if(!f||fread(h,1,12,f)!=12||memcmp(h,"RIFF",4)||memcmp(h+8,"WAVE",4))return 2;
     int format=0;
@@ -24,11 +27,11 @@ int main(int argc,char **argv) {
     }
     fclose(f);if(!format||!pcm)return 2;
     unsigned char header[44]={'R','I','F','F',0,0,0,0,'W','A','V','E','f','m','t',' ',16,0,0,0,1,0,1,0};
-    put32(header+4,960036);put32(header+24,16000);put32(header+28,32000);
-    header[32]=2;header[34]=16;memcpy(header+36,"data",4);put32(header+40,960000);
+    put32(header+4,(uint32_t)output_bytes+36);put32(header+24,16000);put32(header+28,32000);
+    header[32]=2;header[34]=16;memcpy(header+36,"data",4);put32(header+40,(uint32_t)output_bytes);
     f=fopen(argv[2],"wbx");if(!f||fwrite(header,1,44,f)!=44)return 2;
-    for(size_t pos=0;pos<960000;) {
-        size_t n=960000-pos;if(n>bytes)n=bytes;
+    for(size_t pos=0;pos<output_bytes;) {
+        size_t n=output_bytes-pos;if(n>bytes)n=bytes;
         if(fwrite(pcm,1,n,f)!=n)return 2;
         pos+=n;
     }

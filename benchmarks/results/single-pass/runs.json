@@ -1,0 +1,123 @@
+{
+  "date": "2026-09-10",
+  "platform": "InstaCloud",
+  "cpu": "Intel Xeon 6975P-C",
+  "threads": 8,
+  "configured_memory_mib": 8192,
+  "compiler": "GCC 12.2.0",
+  "flags": "-O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp",
+  "activations": "int8",
+  "workload": "std30.wav",
+  "audio_seconds": 27.27,
+  "language": "en",
+  "response_format": "diarized_json",
+  "mode": "resident; one excluded warm-up followed by three measured requests; no restarts or cache eviction between requests",
+  "startup_time_included": false,
+  "warmup_time_included": false,
+  "direct_runs": [
+    {
+      "trial": 0,
+      "warmup": true,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 19.30144,
+      "success": true
+    },
+    {
+      "trial": 1,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 19.51575,
+      "success": true
+    },
+    {
+      "trial": 2,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 19.547507,
+      "success": true
+    },
+    {
+      "trial": 3,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 19.46084,
+      "success": true
+    }
+  ],
+  "http_runs": [
+    {
+      "trial": 0,
+      "warmup": true,
+      "status": 200,
+      "seconds": 19.243638
+    },
+    {
+      "trial": 1,
+      "warmup": false,
+      "status": 200,
+      "seconds": 19.238235
+    },
+    {
+      "trial": 2,
+      "warmup": false,
+      "status": 200,
+      "seconds": 19.114012
+    },
+    {
+      "trial": 3,
+      "warmup": false,
+      "status": 200,
+      "seconds": 19.255878
+    }
+  ],
+  "direct_median_seconds": 19.51575,
+  "http_median_seconds": 19.238235,
+  "json_byte_equivalence": true,
+  "asr_only_text_equivalence": true,
+  "aba_check": {
+    "audio_seconds": 26,
+    "anonymous_labels": [
+      "A",
+      "B",
+      "A"
+    ],
+    "reference_seconds": 8,
+    "named_labels": [
+      "agent",
+      "A",
+      "agent"
+    ],
+    "sse_event_count": 7,
+    "named_sse_seconds": 18.693373,
+    "asr_text_preserved": true,
+    "delta_concatenation_matches_done": true
+  },
+  "process_lifetime_peak_rss_bytes": 1001713664,
+  "memory_note": "RSS sampled after warm-up, short-clip and A-B-A checks, before the long-audio check; not a new cgroup peak-memory acceptance measurement.",
+  "cost_scenario": {
+    "request": 0.0012698389394099998,
+    "audio_hour": 0.16763550355247522,
+    "memory_assumption_bytes": 1100000000,
+    "cpu_assumption": 8,
+    "cpu_rate_per_minute_usd": 0.0004632,
+    "ram_rate_per_gb_minute_usd": 0.0002316,
+    "includes_idle": false,
+    "provider_metered": false
+  },
+  "source_sha256": {
+    "src/server/alignment.c": "0dfa96a4c56d27abd066a4c18c429dc88a42819a7d5cc6300ea6fb6e5236ec6b",
+    "src/server/diarized.c": "1fc5dddf5514ff2174b0266813ed2d47ccae8a3132c38a833831e4962edcbb7c",
+    "src/server/inference.c": "09a079d4331024aa6a1ac34473dd7c3e9218a23f4c53cc5cf11e85774413f4fe",
+    "src/generic/whisper_turbo_decoder.c": "c5cddf79d1695a383f1793de2a8bea4c13841a0909e4f0b18c7c99e0f5549ae6"
+  },
+  "binary_sha256": {
+    "whisper-turbo-server": "13a75abd34c1ed4df6928ba7eea7da4b1eaeff400cd0e4721a7b96adff5d6f14",
+    "resident-pipeline-bench": "b419a400a7267ed53ff3e0652157d594187e8bb210a69afa261d69f7547cfef3"
+  },
+  "long_audio_check": {"audio_seconds":42,"http_status":200,"transcript_extends_past_30_seconds":true,"text_concatenation_preserved":true,"included_in_latency_or_cost":false},
+  "private_audio_and_transcripts_excluded": true
+}

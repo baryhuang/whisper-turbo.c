@@ -120,15 +120,15 @@ static const char *reason(int code) {
 }
 static void reply(int fd, int status, const char *type, const void *body, size_t length) {
     char header[512];
-    int n = snprintf(
-        header, sizeof(header),
-        "HTTP/1.1 %d %s\r\nContent-Type: %s\r\nContent-Length: %zu\r\n"
-        "Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n%s\r\n",
-        status, reason(status), type, length,
-        status == 429 || status == 503 ? "Retry-After: 1\r\n"
-        : status == 401                ? "WWW-Authenticate: Bearer\r\n"
-        : status == 405                ? "Allow: POST\r\n"
-                                       : "");
+    int n = snprintf(header, sizeof(header),
+                     "HTTP/1.1 %d %s\r\nContent-Type: %s\r\nContent-Length: %zu\r\n"
+                     "Connection: close\r\nCache-Control: "
+                     "no-store\r\nX-Content-Type-Options: nosniff\r\n%s\r\n",
+                     status, reason(status), type, length,
+                     status == 429 || status == 503 ? "Retry-After: 1\r\n"
+                     : status == 401                ? "WWW-Authenticate: Bearer\r\n"
+                     : status == 405                ? "Allow: POST\r\n"
+                                                    : "");
     double deadline = now() + 5;
     if (n > 0 && (size_t)n < sizeof(header) && !send_all(fd, header, (size_t)n, deadline))
         (void)send_all(fd, body, length, deadline);
@@ -138,7 +138,8 @@ static void error_reply(int fd, wt_error e) {
     char *param = e.param ? wt_json_string((const unsigned char *)e.param, strlen(e.param)) : NULL;
     char buffer[2048];
     int n = snprintf(buffer, sizeof(buffer),
-                     "{\"error\":{\"message\":%s,\"type\":\"%s\",\"param\":%s,\"code\":\"%s\"}}",
+                     "{\"error\":{\"message\":%s,\"type\":\"%s\",\"param\":%s,"
+                     "\"code\":\"%s\"}}",
                      message ? message : "\"Request failed.\"",
                      e.status == 401   ? "authentication_error"
                      : e.status == 429 ? "rate_limit_error"
@@ -394,26 +395,15 @@ static void *handle(void *opaque) {
         e = c->error;
         goto fail;
     }
-    if (c->request.plain_text)
-        reply(c->fd, 200, "text/plain; charset=utf-8", c->result.text, c->result.length);
-    else {
-        char *quoted = wt_json_string(c->result.text, c->result.length);
-        if (!quoted) {
-            wt_fail(&e, 503, "Response allocation failed.", NULL, "resource_exhausted");
-            goto fail;
-        }
-        size_t length = strlen(quoted) + 10;
-        char *json = malloc(length);
-        if (!json) {
-            free(quoted);
-            wt_fail(&e, 503, "Response allocation failed.", NULL, "resource_exhausted");
-            goto fail;
-        }
-        int n = snprintf(json, length, "{\"text\":%s}", quoted);
-        reply(c->fd, 200, "application/json", json, (size_t)n);
-        free(json);
-        free(quoted);
+    char *rendered = NULL;
+    size_t rendered_size = 0;
+    const char *rendered_type = NULL;
+    if (wt_render(&c->request, &c->result, &rendered, &rendered_size, &rendered_type)) {
+        wt_fail(&e, 500, "Invalid or oversized transcription response.", NULL, "inference_error");
+        goto fail;
     }
+    reply(c->fd, 200, rendered_type, rendered, rendered_size);
+    free(rendered);
     goto cleanup;
 too_large:
     wt_fail(&e, 413, "Upload exceeds 25000000 bytes.", "file", "upload_too_large");
@@ -424,7 +414,7 @@ fail:
     error_reply(c->fd, e);
 cleanup:
     free(body);
-    free(c->result.text);
+    wt_result_free(&c->result);
     pthread_mutex_lock(&s->mutex);
     close(c->fd);
     c->fd = -1;
@@ -458,7 +448,18 @@ int wt_serve(const wt_server_options *options, wt_backend backend, void *context
         return -1;
     }
     pthread_t inference;
-    if (pthread_create(&inference, NULL, worker, &s)) {
+    pthread_attr_t inference_attr;
+    if (pthread_attr_init(&inference_attr)) {
+        close(listener);
+        return -1;
+    }
+    /* Checkpoint descriptors and C numerical kernels exceed macOS's default
+       512 KiB pthread stack. Keep a fixed, accounted two-MiB worker stack. */
+    int create_error = pthread_attr_setstacksize(&inference_attr, 2U * 1024U * 1024U);
+    if (!create_error)
+        create_error = pthread_create(&inference, &inference_attr, worker, &s);
+    pthread_attr_destroy(&inference_attr);
+    if (create_error) {
         close(listener);
         return -1;
     }
@@ -505,16 +506,16 @@ int wt_serve(const wt_server_options *options, wt_backend backend, void *context
         }
         pthread_mutex_unlock(&s.mutex);
         if (!c) {
-            const char body[] =
-                "{\"error\":{\"message\":\"Connection limit "
-                "reached.\",\"type\":\"server_error\",\"param\":null,\"code\":\"server_busy\"}}";
+            const char body[] = "{\"error\":{\"message\":\"Connection limit "
+                                "reached.\",\"type\":\"server_error\",\"param\":null,"
+                                "\"code\":\"server_busy\"}}";
             char response[512];
-            int size =
-                snprintf(response, sizeof(response),
-                         "HTTP/1.1 503 Service Unavailable\r\n"
-                         "Connection: close\r\nContent-Type: application/json\r\nRetry-After: 1\r\n"
-                         "Content-Length: %zu\r\n\r\n%s",
-                         sizeof(body) - 1, body);
+            int size = snprintf(response, sizeof(response),
+                                "HTTP/1.1 503 Service Unavailable\r\n"
+                                "Connection: close\r\nContent-Type: "
+                                "application/json\r\nRetry-After: 1\r\n"
+                                "Content-Length: %zu\r\n\r\n%s",
+                                sizeof(body) - 1, body);
 #ifdef MSG_NOSIGNAL
             (void)send(fd, response, (size_t)size, MSG_NOSIGNAL);
 #else

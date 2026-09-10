@@ -1,45 +1,47 @@
 # whisper-turbo.c
 
-## CPU performance
+## ASR + diarization cost comparison
 
-Measured on InstaCloud: **Intel Xeon 6975P-C, eight threads**, using the same
-27.27-second recording (`std30.wav`). Times are medians of three cold-model runs;
-memory figures are the highest peaks observed across those runs.
+USD, checked **September 10, 2026**. Native latency is the median of three
+requests to an already-running service after a discarded warm-up request.
+**Startup, model initialization and warm-up are excluded from latency and cost.**
+The recording is 27.27 seconds (`std30.wav`); an audio-hour estimate extrapolates
+many short requests, not a tested one-hour upload.
 
-| Implementation | Task | Wall time | Peak process RSS | Peak cgroup memory |
-| --- | --- | ---: | ---: | ---: |
-| whisper-turbo.c | Transcription | 13.91 s | 939.8 MB | 955.1 MB |
-| whisper.cpp Q8_0 | Transcription | 12.63 s | 1,060.6 MB | 1,962.9 MB |
-| Community-1 in C | Speaker diarization | 8.60 s | 70.4 MB | 78.4 MB |
-| whisper-turbo.c + Community-1 in C | Transcription, then diarization | 22.54 s | 940.0 MB | 955.7 MB |
+| Implementation / hosting | Result | Cost per 27.27 s of audio | Cost per audio hour |
+| --- | --- | ---: | ---: |
+| whisper-turbo.c, InstaCloud | Speaker-labeled text; **19.24 s** warm HTTP | **~$0.00127** | **~$0.168** |
+| [OpenAI `gpt-4o-transcribe-diarize`](https://developers.openai.com/api/docs/pricing) | Speaker-labeled transcript | ~$0.00273 | ~$0.36 |
+| [AssemblyAI Universal-2 + diarization](https://www.assemblyai.com/pricing) | Speaker-labeled transcript | ~$0.00129 | $0.17 |
+| [AssemblyAI Universal-3.5 Pro + diarization](https://www.assemblyai.com/pricing) | Speaker-labeled transcript | ~$0.00174 | $0.23 |
 
-Units are decimal. Native transcription uses opt-in INT8 encoder activations and
-AVX-512/VNNI; the diarizer uses FP32, AVX2/FMA, and OpenMP. The combined row is a
-measured sequential execution of two CLIs, not an HTTP service or a
-speaker-attributed transcript. whisper.cpp is a transcription-only baseline.
+The native estimate assumes eight fully utilized CPUs and **1.1 GB RAM** during
+the measured request, at [InstaCloud's published rates](https://instacloud.com/pricing).
+This is a consistent resource scenario, **not a metered bill or a measured RAM cap**.
+An always-on service also pays for resident memory between requests; idle time,
+network, storage, account fees and credits are outside the active-request estimate.
+Hosted API rows use published prices, not measured requests. No equal-accuracy or
+hosted latency comparison is claimed. See [calculations and assumptions](docs/cost-comparison.md).
 
-Wall time includes process startup and cold model loading, but excludes VM
-startup. Cgroup memory includes reclaimable file cache; it is not a minimum RAM
-requirement. These short-clip results do not establish general accuracy,
-long-audio performance, or an HTTP-service memory guarantee. AMD EPYC performance
-is not verified. See [measurements and reproduction](docs/instacloud-diarization.md)
-and [additional transcription benchmarks](docs/instacloud-int8.md).
+## Resident CPU performance
 
-The **resident HTTP server** was also tested on the same Xeon with eight threads:
+InstaCloud **Intel Xeon 6975P-C, eight threads**, opt-in INT8 encoder activations,
+27.27-second recording. Each path keeps its model loaded, discards one warm-up,
+and measures three sequential requests. No restart or cache eviction occurs between
+requests. Startup and warm-up are not included.
 
-| HTTP workload | Request time |
-| --- | ---: |
-| 11-second JFK, default FP32 activations, cold weights | 73.23 s |
-| 11-second JFK, INT8 activations, warm weights | 10.76 s |
-| 120-second repeated speech, INT8 activations | 44.76 s |
-| 24,999,000-byte WAV upload, 11 seconds of speech, INT8 activations | 10.73 s |
+| Path | Work | Median request time | Measured range |
+| --- | --- | ---: | ---: |
+| HTTP API | ASR + alignment + diarization + JSON response | **19.24 s** | 19.11–19.26 s |
+| Direct calls to the shared pipeline | ASR + alignment + diarization + JSON rendering | **19.52 s** | 19.46–19.55 s |
 
-These are individual observations, not medians or matched precision comparisons.
-The highest completed HTTP-test peak was **1,030.0 MB cgroup memory** and
-**1,012.1 MB process RSS**, including the near-limit upload test. Repeated requests,
-automatic language detection, and speech after 30 seconds passed. See
-[HTTP validation and limits](docs/http-api.md#validation); these results do not
-certify full API compatibility or all production workloads.
+The 1.4% difference does not establish a transport speed advantage; these are
+small samples on shared CPUs. Both produce identical output and perform one ASR
+window and one diarization pass for this recording. A two-speaker A–B–A fixture
+retains the returning speaker's identity without changing the full-recording ASR text.
+See [resident benchmark protocol and records](benchmarks/results/single-pass/README.md)
+and [API validation and limits](docs/http-api.md#validation). Broad accuracy,
+sustained-load behavior and AMD performance remain unverified.
 
 ## Overview
 
@@ -49,14 +51,34 @@ require no Python or C++ dependencies.
 
 The application provides a command-line transcriber and a [C HTTP server](docs/http-api.md)
 with `POST /v1/audio/transcriptions`, multipart uploads, and JSON/text responses.
-The endpoint supports a documented subset of the OpenAI Whisper interface;
-compressed audio, prompts, and timestamp/diarized response formats are not yet supported.
+The endpoint supports a documented subset of the OpenAI transcription interface,
+including `gpt-4o-transcribe-diarize`-shaped speaker-segment responses. All accepted
+model names select local C inference, not OpenAI-hosted weights.
 
-An [experimental C-only Community-1 diarizer](docs/diarization.md) also provides
-timestamped speaker labels. It runs separately from transcription; automatic
-speaker assignment to transcript words is not supported.
+The [experimental C-only Community-1 diarizer](docs/diarization.md) can run
+standalone or in the shared CLI/HTTP transcription pipeline. Whisper transcribes
+the recording once; Community-1 diarizes it once. Cross-attention alignment assigns
+the existing text to speakers without retranscribing turns. Overlapping voices
+are not separated.
 
 ## HTTP transcription
+
+For a speaker-labeled transcript, start the server with
+`WHISPER_DIARIZATION_MODELS=/path/to/community-1` and send:
+
+```sh
+curl http://127.0.0.1:8080/v1/audio/transcriptions \
+  -F file=@speech.wav -F model=gpt-4o-transcribe-diarize \
+  -F response_format=diarized_json -F chunking_strategy=auto
+```
+
+Returns `task`, `duration`, combined `text`, timestamped `segments` with
+`speaker` labels (`A`, `B`, …), and duration `usage`. Optional reference names and
+2–10-second WAV data URLs can label matching speakers. `stream=true` returns SSE
+delta, segment, and done events, buffered until inference completes.
+See [diarized transcription](docs/http-api.md#diarized-transcription) for limits.
+
+For transcription without diarization:
 
 ```sh
 curl http://127.0.0.1:8080/v1/audio/transcriptions \
@@ -70,7 +92,19 @@ up to 120 seconds in bounded windows. See [API options and limits](docs/http-api
 
 ## Audio and output
 
-Input must be mono 16-bit PCM WAV at 16 kHz. The command-line transcriber processes only the
+The combined CLI uses exactly the same inference and response code as the HTTP
+diarization endpoint, including automatic language detection and the 120-second
+limit:
+
+```sh
+OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 ./build/whisper-turbo-diarize \
+  turbo-q8.whtrbo /path/to/community-1 speech.wav en
+```
+
+It writes diarized JSON to stdout and pass counts/timing to stderr. Omit `en` for
+automatic language detection. Build with `make diarized-cli OPENMP=-fopenmp`.
+
+Input must be mono 16-bit PCM WAV at 16 kHz. The older ASR-only command-line transcriber processes only the
 first 30 seconds, uses English greedy decoding, and prints text on a `TRANSCRIPT:`
 line alongside timing logs. Language detection, timestamps, and long-audio
 processing are not supported by that CLI. The HTTP server supports language
@@ -107,12 +141,14 @@ OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 \
 ## License
 
 MIT, with Apache-2.0 components in the optional diarizer. See [LICENSE](LICENSE)
-and [diarization attribution](THIRD_PARTY_DIARIZATION.md). Based on the Whisper Turbo implementation in
+and [diarization attribution](THIRD_PARTY_DIARIZATION.md), plus
+[alignment attribution](THIRD_PARTY.md). Based on the Whisper Turbo implementation in
 [llm-in-c](https://github.com/baryhuang/llm-in-c).
 
 ## Setup and compilation
 
-Requires a C11 compiler, Make, POSIX APIs, and libm. For multithreaded x86 inference,
+Requires a C11 compiler, Make, POSIX APIs, libm, and zlib development headers.
+For multithreaded x86 inference,
 use a compiler with OpenMP support:
 
 ```sh

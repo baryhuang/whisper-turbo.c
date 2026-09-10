@@ -6,7 +6,10 @@ It produces timestamped speaker segments and an exclusive timeline with no
 simultaneous speakers. The executable uses C11, libm, POSIX APIs, and zlib—no
 Python, PyTorch, ONNX Runtime, or C++ runtime dependency.
 
-This is a standalone diarizer. It does not transcribe audio, assign speakers to
+This executable is a standalone diarizer. The same C pipeline is also available
+inside the [diarized transcription HTTP endpoint](http-api.md#diarized-transcription),
+which combines one ASR pass with one diarization pass and alignment-based speaker
+assignment. The standalone executable does not transcribe audio, assign speakers to
 Whisper words, or provide an HTTP API.
 
 ## Build

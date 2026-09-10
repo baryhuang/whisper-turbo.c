@@ -83,7 +83,9 @@ without leaving the resident service unusable.
 5. Add and validate AVX2 and AVX-512 kernels against generic C, then measure
    service memory, accuracy, and throughput on both CPU targets.
 
-The compatibility target is the Whisper transcription contract. Explicitly
+The compatibility target includes the Whisper transcription contract and the
+`gpt-4o-transcribe-diarize` transcription response/event shapes. Speech synthesis,
+translations, voices and voice-consent endpoints are outside scope. Explicitly
 document the local Turbo model identity and any model alias. Do not claim
 proprietary OpenAI model equivalence or fabricate unsupported output fields.
 Full interface compatibility is an acceptance requirement; unsupported features

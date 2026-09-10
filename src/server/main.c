@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,
                 "usage: %s MODEL.whtrbo [PORT [BIND_IPV4]]\n"
                 "Environment: WHISPER_API_KEY, OMP_NUM_THREADS (1-8), WHISPER_REQUEST_TIMEOUT "
-                "(1-3600 seconds).\n",
+                "(1-3600 seconds), WHISPER_DIARIZATION_MODELS (checkpoint directory).\n",
                 argv[0]);
         return 2;
     }
@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
     wt_engine engine = {.threads =
                             getenv("OMP_NUM_THREADS") ? number(getenv("OMP_NUM_THREADS"), 8) : 8};
     engine.model.image.fd = -1;
+    engine.diarization_directory = getenv("WHISPER_DIARIZATION_MODELS");
     if (!options.port || !options.timeout_seconds || !engine.threads ||
         (options.api_key && strlen(options.api_key) > 1024)) {
         fprintf(stderr, "Invalid port, thread count, timeout, or API key length.\n");

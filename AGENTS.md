@@ -22,10 +22,14 @@ Work in `/Users/buryhuang/git/whisper-turbo.c`. Its origin is
 - Match the OpenAI transcription API contract; never manufacture timestamp or confidence data.
 - The C importer, x86 INT8 inference kernels, and resident HTTP transcription server
   are implemented. docs/http-api.md records the supported subset; full compatibility
-  (codecs, prompts, sampling, and real timestamps/diarized transcripts) remains incomplete.
+  (codecs, prompts, sampling, word timestamps and incremental SSE) remains incomplete.
 - The optional Community-1 diarizer in `src/diarization/` is experimental and
-  standalone. Upstream parity, overlap accuracy, and resident HTTP-service memory
-  are unverified. Sequential CLI memory is measured in docs/instacloud-diarization.md.
+  available standalone and integrated through the gpt-4o-transcribe-diarize alias.
+  HTTP and the combined CLI share one full-recording ASR pass and one diarization
+  pass, using captured cross-attention DTW alignment for speaker assignment.
+  Never retranscribe individual speaker turns. This is not overlap separation.
+  Upstream parity and production memory remain
+  unverified. Historical sequential CLI memory is in docs/instacloud-diarization.md.
   Keep model files, credentials, and private test audio untracked.
 - Keep W8A8 activation quantization opt-in until a wider accuracy corpus passes.
 - Cloud memory counters are lifetime peaks: restart the isolated benchmark service

@@ -2,9 +2,11 @@
 
 `whisper-turbo-server` is a native C11 HTTP server with one resident Whisper
 large-v3-turbo model and one active transcription. It exposes
-`POST /v1/audio/transcriptions` using multipart requests and JSON/text responses.
-No Python, C++ runtime, external inference executable, or per-request model load
-is involved.
+`POST /v1/audio/transcriptions` using multipart requests and JSON/text/diarized
+responses. No Python, C++ runtime, or external inference executable is involved.
+Whisper stays resident; optional diarizer checkpoints are opened per request and
+closed after the request's single diarization pass. HTTP and the combined CLI
+use the same inference function and response renderer.
 
 The endpoint follows the supported subset of the
 [OpenAI transcription interface](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create).
@@ -37,18 +39,21 @@ supported request subset. When authentication is enabled, add
 | Field or behavior | Implemented behavior |
 | --- | --- |
 | `file` | Required file part; mono PCM16 WAV at 16 kHz, up to 120 seconds. |
-| `model` | Required: `whisper-large-v3-turbo` or `whisper-1`. Both select the locally loaded Turbo model. |
+| `model` | Required: `whisper-large-v3-turbo`, `whisper-1`, or `gpt-4o-transcribe-diarize`. All are local model aliases; the last enables Community-1. |
 | `language` | Optional lowercase model language code. Omission detects the language from the first non-silent window. |
-| `response_format` | `json` (default) or `text`. |
+| `response_format` | `json` (default), `text`, or `diarized_json` for the diarization model. |
 | `temperature` | Zero only; deterministic greedy decoding without temperature fallback. |
-| `stream` | Boolean accepted; ignored for this Whisper endpoint, which returns a non-streaming response. |
+| `stream` | Diarization model: `true` returns buffered SSE events. Whisper aliases: ignored, as on the hosted Whisper route. |
+| `chunking_strategy` | Diarization model: `auto`, required for audio longer than 30 seconds. Custom server-VAD settings are rejected. |
+| `known_speaker_names[]`, `known_speaker_references[]` | Up to four paired names and 2–10-second PCM16/16kHz WAV base64 data URLs; diarization model only. |
 | `prompt` | Empty or omitted only. Nonempty conditioning prompts return an explicit error. |
-| Timestamps, SRT, VTT, verbose/diarized JSON | Not implemented; requests return an explicit error. |
+| Word timestamps, SRT, VTT, verbose JSON, logprobs | Not implemented; requests return an explicit error. Diarized segment timestamps are supported. |
 | Compressed audio, stereo, other sample rates | Not implemented; rejected rather than misread or silently converted. |
 
 `whisper-1` is a compatibility **alias**, not a claim that the server runs
-OpenAI's hosted Whisper model. GPT transcription model names are rejected.
-Unknown fields and duplicate fields are rejected; options are never silently
+OpenAI's hosted Whisper model. `gpt-4o-transcribe-diarize` is also an interface
+alias, not OpenAI's proprietary model; other GPT model names are rejected.
+Unknown fields and duplicate scalar fields are rejected; options are never silently
 dropped except the documented Whisper `stream` behavior.
 
 Accepted recordings are processed in successive 30-second windows with bounded
@@ -58,12 +63,95 @@ overlap correction; speech crossing a boundary can lose continuity. Exact digita
 silence is skipped. If decoding exhausts its token context, the entire request
 fails with `422` instead of returning a silently truncated transcript.
 
-The separate Community-1 executable is not integrated into this endpoint.
-Speaker-attributed transcript segments and word alignment remain unsupported.
+## Diarized transcription
+
+Set `WHISPER_DIARIZATION_MODELS` to a directory containing the four
+[Community-1 checkpoint files](diarization.md), then request:
+
+```sh
+curl http://127.0.0.1:8080/v1/audio/transcriptions \
+  -F file=@speech.wav -F model=gpt-4o-transcribe-diarize \
+  -F response_format=diarized_json -F chunking_strategy=auto
+```
+
+The response implements the `TranscriptionDiarized` shape:
+
+```json
+{
+  "task": "transcribe",
+  "duration": 6.0,
+  "text": "Hello. Hi.",
+  "segments": [
+    {"type":"transcript.text.segment","id":"seg_001","start":0.1,"end":2.0,"speaker":"A","text":"Hello."},
+    {"type":"transcript.text.segment","id":"seg_002","start":3.0,"end":5.8,"speaker":"B","text":"Hi."}
+  ],
+  "usage": {"type":"duration","seconds":6.0}
+}
+```
+
+This is an illustrative schema example, not a benchmark transcript. `json` returns
+`text` and duration `usage`, without annotations. `text` returns only combined text.
+Usage reports actual input duration; it is not an OpenAI bill or token count.
+
+Whisper transcribes the complete recording once, in bounded 30-second windows,
+and Community-1 diarizes the complete recording once. The two stages run
+sequentially to bound peak memory; they do not decode individual speaker crops.
+Six selected cross-attention heads are captured during normal greedy decoding.
+Normalization, median filtering and dynamic time warping provide monotonic text
+alignment without a second transcription pass. One cached decoder consume of the
+end token supplies the alignment sentinel; it does not generate another transcript.
+These are model-derived estimates, not uniformly distributed or invented times.
+
+Subword pieces are grouped at whitespace boundaries. Each group is assigned to
+the exclusive speaker interval with the largest time overlap; ties and groups in
+gaps use the nearest interval. Consecutive groups from one speaker form a segment.
+Empty ASR results do not produce segments. Speaker
+labels are assigned in first emitted appearance order, retaining identity across
+later turns. Segment IDs are unique within a response. Concatenating segment texts
+exactly reconstructs the original ASR text, including whitespace. Segments after
+the first can begin with a space. ASR text is not regenerated or rewritten to fit
+speaker intervals. No synthetic confidence scores or token usage are generated.
+
+Up to four known-speaker references are accepted as paired repeated fields:
+
+```text
+known_speaker_names[]=agent
+known_speaker_references[]=data:audio/wav;base64,...
+```
+
+Names must be unique, nonempty and at most 63 UTF-8 bytes with no control
+characters. References must be canonical base64 WAV data URLs, not remote URLs;
+they are decoded in memory without network fetches or filesystem paths. The C
+segmentation/embedding model extracts the dominant clean voice and compares it to
+diarization centroids. Matching is one-to-one, requires cosine similarity above
+0.65 and a 0.05 margin over the next cluster; unmatched/ambiguous clusters stay
+anonymous. These local thresholds are experimental, not parity with OpenAI or
+speaker-identity certification. Reference names such as `A` cannot collide with
+generated anonymous labels.
+
+`stream=true` returns `text/event-stream`: text delta events, segment events for
+`diarized_json`, then one text done event. Deltas carry matching `segment_id`s for
+diarized output. **Events are buffered until the entire request completes**, not
+emitted token-by-token during inference. Done events omit optional token usage
+because this runtime cannot report OpenAI token billing. Errors before completion
+remain ordinary HTTP JSON errors. The five-second response-write deadline applies
+to the complete buffered event sequence.
+
+Alignment and diarization can misplace a speaker boundary, especially across long
+pauses or unclear speech. Whitespace grouping can produce coarse segments in
+languages written without spaces; multilingual word-boundary quality is not
+validated. No external acoustic forced-aligner model is run. The
+exclusive timeline chooses one speaker during overlap; it does not isolate
+simultaneous voices. No DER/WER equivalence to OpenAI or upstream pyannote is claimed.
+An absent model directory returns 503; diarization failure returns an error, not
+made-up single-speaker output. These features do not implement every option in
+the wider Audio API. Speech generation, translations, voices and voice-consent
+endpoints are not provided.
 
 ## Resource and security limits
 
-- One resident memory-mapped model and one persistent inference worker.
+- One resident memory-mapped Whisper model and one persistent inference worker,
+  with a fixed two-MiB stack. Diarizer workspaces are request-scoped.
 - One active upload/transcription/response; additional transcription requests get
   `429` and `Retry-After: 1`. No pending transcription queue is retained.
 - At most eight accepted connections; excess connections get `503`.
@@ -71,9 +159,11 @@ Speaker-attributed transcript segments and word alignment remain unsupported.
   2,048-byte per-part header limit, and at most 32 multipart parts.
 - Up to 120 seconds of audio and 262,144 output text bytes. Upload data stays in
   the bounded request buffer; filenames are never opened or used as filesystem paths.
+- At most 512 emitted speaker segments and four references, each up to 430,000
+  encoded bytes within the total upload cap. Serialized JSON/SSE is also bounded.
 - Absolute deadlines: ten seconds for headers, 30 seconds for the upload,
   300 seconds for inference by default, and five seconds for response writes.
-- Client disconnects and shutdown cancel inference at encoder-layer and decoder-token
+- Client disconnects and shutdown cancel inference at diarization-chunk, encoder-layer and decoder-token
   boundaries. In-flight numerical operations are not forcibly interrupted.
 - HTTP/1.1 with `Content-Length`, optional `Expect: 100-continue`, and one request
   per connection. Transfer encodings, including chunked uploads, are rejected.
@@ -92,7 +182,7 @@ production-load behavior require further validation.
 Errors use an OpenAI-style JSON envelope:
 
 ```json
-{"error":{"message":"Only json and text response formats are implemented.","type":"invalid_request_error","param":"response_format","code":"unsupported_parameter"}}
+{"error":{"message":"Use json, text, or diarized_json.","type":"invalid_request_error","param":"response_format","code":"unsupported_parameter"}}
 ```
 
 Typical status codes are `400` for invalid/unsupported input, `401` for invalid
@@ -109,11 +199,32 @@ language detection, text/JSON output, live health checks, and overload rejection
 A 42-second fixture with all speech after 30 seconds was transcribed successfully.
 The 120-second repeated-speech and near-25-MB upload tests also passed.
 
-The maximum completed test-run peak was **1,029,955,584 bytes cgroup memory** and
+The earlier ASR-only test-run maximum was **1,029,955,584 bytes cgroup memory** and
 **1,012,088,832 bytes process RSS**. These cover the resident server, HTTP handling,
 model cache, inference, and the C test client in the same execution cgroup. No
 configured swap was present, and model-cache residency was checked before startup.
 They are observed peaks, not proof of a platform-enforced 1.5-GB memory cap.
+
+The single-pass diarized endpoint was measured as an already-running service:
+one discarded warm-up followed by three requests. Its median was **19.238235
+seconds** for 27.27 seconds of audio. The transport-equivalent resident direct
+pipeline median was **19.515750 seconds**. Startup, model initialization and
+warm-up are excluded from both. All measured responses matched byte-for-byte;
+the diarized transcript text also matched the ASR-only endpoint exactly.
+
+The 26-second A–B–A fixture retained labels `A`, `B`, `A`. With an eight-second
+reference, SSE returned `agent`, `A`, `agent` in **18.693373 seconds**, preserving
+the complete ASR text and whitespace across delta events. This is a functional
+check, not part of the three-run cost median or a DER/WER evaluation.
+Before the long-audio check, the server process lifetime RSS high-water mark across warm-up, repeated requests
+and these checks was **1,001,713,664 bytes**. This is process RSS, not a new cgroup
+peak-memory acceptance result; it cannot certify the total 1.5-GB service target.
+See [resident measurements](../benchmarks/results/single-pass/README.md) and
+[cost assumptions](cost-comparison.md).
+
+A 42-second repeated-speech request with `chunking_strategy=auto` also passed,
+including transcript text after 30 seconds and exact segment-text concatenation.
+This functional check is excluded from the short-clip latency/cost median.
 
 Tests pass with GCC 12.2/OpenMP on Linux and Apple Clang on macOS. The deterministic
 HTTP suite also passes AddressSanitizer, UndefinedBehaviorSanitizer, and
@@ -131,6 +242,18 @@ make server OPENMP=-fopenmp
 OMP_NUM_THREADS=8 ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
 
+The transport-equivalent CLI calls the same `wt_transcribe` and `wt_render` code:
+
+```sh
+make diarized-cli OPENMP=-fopenmp
+OMP_NUM_THREADS=8 ./build/whisper-turbo-diarize \
+  turbo-q8.whtrbo /path/to/community-1 speech.wav en
+```
+
+Its default output is `diarized_json`, `chunking_strategy=auto`; its optional last
+argument selects language. The CLI has no reference-speaker argument; HTTP retains
+reference fields. Both use identical inference for equivalent options.
+
 Without OpenMP, omit `OPENMP=-fopenmp`; the server uses the portable single-threaded
 path on non-x86 platforms. The command is:
 
@@ -139,6 +262,10 @@ whisper-turbo-server MODEL.whtrbo [PORT [BIND_IPV4]]
 ```
 
 `OMP_NUM_THREADS` accepts 1–8. `WHISPER_REQUEST_TIMEOUT` accepts 1–3600 seconds.
+For diarization, set `WHISPER_DIARIZATION_MODELS=/path/to/community1/models`;
+the directory must contain all four checkpoint files described in
+[model setup](diarization.md). Mount this directory read-only in a container and
+set the environment variable to its container path.
 Set `WHISPER_API_KEY` in the environment to enable bearer authentication; do not
 put credentials in source or command-line arguments. Existing SIMD controls and
 opt-in `WHISPER_ACTIVATIONS=int8` also apply. FP32 activations remain the default.
@@ -160,7 +287,9 @@ make build/http-model-test
 `check-http` uses a deterministic C test backend, not model inference. It exercises
 multipart framing, binary uploads, malformed input, JSON escaping, authentication,
 repeated requests, overload, upload/inference deadlines, disconnect cancellation,
-and recovery. The production executable has no mock mode.
+and recovery. It also checks diarized JSON/SSE HTTP responses, repeated multipart
+reference fields, canonical base64 reference decoding, segment bounds, and SSE
+text assembly. The production executable has no mock mode.
 
 `http-model-test` requires an already-running, unauthenticated loopback server and
 the JFK fixture. It checks real transcripts without printing their contents,

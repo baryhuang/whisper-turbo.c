@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-10",
+  "compiler_cloud": "GCC 12.2.0, -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp",
+  "cpu": "Intel Xeon 6975P-C",
+  "threads": 8,
+  "cold_http_build_sha256": "6956b217b02ce5026a1f668b485b3421910df92335c877834024f7188136347c",
+  "cold_http_source_sha256": {
+    "src/server/api.c": "586e8b9df46d72feab41beda8866bc3b78230d1eb4739364221ed1bb36b989ca",
+    "src/server/diarized.c": "c5835e23f55e41486391db95f8714c56ed81646ef8e494a6d5d55d01d76cd552",
+    "src/server/http.c": "e7d60f7cb3aaa4b8abb8b46e5fd1ee008bed608f49faf3bc44fd6a50e29fc6d1",
+    "src/server/inference.c": "21a0839bf37db208d700fd731195f19bd6965fecac95c3c32625ae8ec40a2bf9",
+    "src/server/main.c": "02bdc4c9d245c8469ecdb2134964d9103dd09b24cf3b6030e20c72b01b0f5528",
+    "src/server/reference.c": "91f76dab02d2b1a299519dba013d5f3cdf7642df831e9c787e70a2212f119881",
+    "src/server/response.c": "872278a6e355561b1e1d475846068642a0b60abdfff40ebbf514f3f2f6667846",
+    "src/diarization/pipeline.c": "6c134712e15956b218a1a6114e1c491933d65e0c20cb3a15a15d935cace6cd8e"
+  },
+  "aba_initial_sse": {
+    "http_status": 200,
+    "request_seconds": 79.315653,
+    "audio_seconds": 26,
+    "reference_seconds": 8,
+    "segments": 7,
+    "speakers": [
+      "agent",
+      "agent",
+      "agent",
+      "A",
+      "agent",
+      "agent",
+      "agent"
+    ],
+    "speaker_identity_check": "pass",
+    "text_delta_separator_check": "fixed after this run; initial deltas omitted between-turn spaces",
+    "fresh_memory_measurement": false
+  },
+  "standalone_cli_aba": {
+    "identity_check": "pass",
+    "reported_elapsed_seconds": 7.218,
+    "der_evaluation": false
+  },
+  "local_tests": {
+    "strict_build": "pass",
+    "http_asan_ubsan": "pass",
+    "http_tsan": "pass",
+    "diarized_api_asan_ubsan": "pass"
+  },
+  "private_audio_and_transcripts_excluded": true,
+  "aba_final_sse": {
+    "http_status": 200,
+    "request_seconds": 83.706209,
+    "audio_seconds": 26,
+    "reference_seconds": 8,
+    "segments": 7,
+    "speakers": [
+      "agent",
+      "agent",
+      "agent",
+      "A",
+      "agent",
+      "agent",
+      "agent"
+    ],
+    "event_count": 15,
+    "text_delta_assembly": "pass",
+    "speaker_identity_check": "pass",
+    "fresh_memory_measurement": false
+  },
+  "final_build_sha256": "00a5287b4816dfb7e44dc312619e8cff0c645011333e55b06adedb2b38e8fb28",
+  "final_changed_source_sha256": {
+    "src/server/main.c": "382768cd9cbf43516c09a6a8943b0fe15f9b8c440e1b0c81c6ab463e167b4460",
+    "src/server/response.c": "4c2b35d21da474d868c568c03da956a01c2500af70eff818deef12b7ada11b7b"
+  }
+}
