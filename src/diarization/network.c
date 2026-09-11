@@ -25,6 +25,15 @@ __attribute__((target("avx2,fma"))) static float dot_avx(const float *a, const f
         r += a[limit + j] * b[limit + j];
     return r;
 }
+__attribute__((target("avx512f,fma"))) static float dot_avx512(const float *a, const float *b, size_t n) {
+    __m512 sum = _mm512_setzero_ps();
+    const size_t limit = n & ~(size_t)15;
+    for (size_t i = 0; i < limit; i += 16)
+        sum = _mm512_fmadd_ps(_mm512_loadu_ps(a+i), _mm512_loadu_ps(b+i), sum);
+    float r = _mm512_reduce_add_ps(sum);
+    for (size_t j = 0; j < n - limit; ++j) r += a[limit+j]*b[limit+j];
+    return r;
+}
 #endif
 float diar_dot(const float *a, const float *b, size_t n) {
 #if defined(__aarch64__)
@@ -37,7 +46,19 @@ float diar_dot(const float *a, const float *b, size_t n) {
         r += a[limit + j] * b[limit + j];
     return r;
 #elif defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
-    if (__builtin_cpu_supports("avx2") && __builtin_cpu_supports("fma"))
+    /* Opt-in until full diarization parity is established on the target CPU. */
+    /* Each inference thread resolves startup configuration once. getenv in
+       every short dot product otherwise erases much of the SIMD benefit. */
+    static _Thread_local int selected = -1;
+    if (selected < 0) {
+        const char *simd = getenv("WHISPER_DIAR_SIMD");
+        selected = __builtin_cpu_supports("avx2") && __builtin_cpu_supports("fma") ? 1 : 0;
+        if (simd && !strcmp(simd, "avx512") && __builtin_cpu_supports("avx512f") &&
+            __builtin_cpu_supports("fma")) selected = 2;
+    }
+    if (selected == 2)
+        return dot_avx512(a, b, n);
+    if (selected == 1)
         return dot_avx(a, b, n);
 #endif
     float sum = 0;
@@ -212,11 +233,28 @@ int diar_segment(const diar_checkpoint *m, const float *audio, float *prob) {
             const float *bh = w(m, name, 1, 512, 0, 0, 0);
             if (!wi || !wh || !bi || !bh)
                 goto fail;
+            /* Input projections have no time dependency. Batch these across
+               the window, leaving only recurrent state updates sequential.
+               Scratch is bounded to this fixed ten-second segmentation window. */
+            float *input_gates = NULL;
+            const char *batch = getenv("WHISPER_DIAR_BATCH_INPUT");
+            if (batch && !strcmp(batch, "1")) {
+                input_gates = malloc((size_t)t * 512 * sizeof(float));
+                if (!input_gates) goto fail;
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+                for (int at = 0; at < t; ++at)
+                    for (int j = 0; j < 512; ++j)
+                        input_gates[(size_t)at * 512 + j] =
+                            diar_dot(x + (size_t)at * ci, wi + (size_t)j * ci, ci);
+            }
             float h[128] = {0}, cell[128] = {0}, g[512];
             for (int step = 0; step < t; ++step) {
                 int at = rev ? t - 1 - step : step;
                 for (int j = 0; j < 512; ++j)
-                    g[j] = diar_dot(x + (size_t)at * ci, wi + (size_t)j * ci, ci) +
+                    g[j] = (input_gates ? input_gates[(size_t)at * 512 + j] :
+                            diar_dot(x + (size_t)at * ci, wi + (size_t)j * ci, ci)) +
                            diar_dot(h, wh + (size_t)j * 128, 128) + bi[j] + bh[j];
                 for (int j = 0; j < 128; ++j) {
                     cell[j] = sigmoid(g[128 + j]) * cell[j] + sigmoid(g[j]) * tanhf(g[256 + j]);
@@ -224,6 +262,7 @@ int diar_segment(const diar_checkpoint *m, const float *audio, float *prob) {
                     y[(size_t)at * 256 + rev * 128 + j] = h[j];
                 }
             }
+            free(input_gates);
         }
         free(x);
         x = y;

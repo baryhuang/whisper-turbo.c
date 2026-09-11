@@ -75,6 +75,14 @@ float wt_q8_row_auto(const unsigned char *p,const float *x,size_t n) {
     for(size_t g=0;g<n/128;g++)s+=cllm_whisper_turbo_bf16(p+130*g)*selected(p+130*g+2,x+128*g);
     return s;
 }
+int wt_decoder_q8_gemm(const unsigned char *w,const float *x,size_t rows,size_t k,
+                       size_t n,const float *bias,float *y) {
+    const char *activations=getenv("WHISPER_DECODER_ACTIVATIONS");
+    if(!activations || strcmp(activations,"int8"))return -1;
+    const char *simd=getenv("WHISPER_SIMD");
+    int mode=simd&&!strcmp(simd,"scalar")?0:simd&&!strcmp(simd,"avx2")?1:2;
+    return wt_w8a8_gemm(mode,w,x,rows,k,n,bias,y);
+}
 void wt_q8_gemm_auto(const unsigned char *w,const float *x,size_t rows,size_t k,
                        size_t n,const float *bias,float *y) {
     const char *activations=getenv("WHISPER_ACTIVATIONS");

@@ -1,0 +1,101 @@
+{
+	"items":	[{
+			"id":	"6930-75918-0000",
+			"reference":	"CONCORD RETURNED TO ITS PLACE AMIDST THE TENTS",
+			"row":	0,
+			"speaker":	6930,
+			"samples":	56080,
+			"duration":	3.505,
+			"flac_sha256":	"9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+			"wav_sha256":	"103c3f15eb3715ebc6243d142244128a3ac39b6bfae315baa6b8dc4a8be14aa8"
+		}, {
+			"id":	"6930-75918-0001",
+			"reference":	"THE ENGLISH FORWARDED TO THE FRENCH BASKETS OF FLOWERS OF WHICH THEY HAD MADE A PLENTIFUL PROVISION TO GREET THE ARRIVAL OF THE YOUNG PRINCESS THE FRENCH IN RETURN INVITED THE ENGLISH TO A SUPPER WHICH WAS TO BE GIVEN THE NEXT DAY",
+			"row":	1,
+			"speaker":	6930,
+			"samples":	227600,
+			"duration":	14.225,
+			"flac_sha256":	"3dfad7eb0793eddd5040d04f1f2f3046ceeee39e0ec461794856a350e1bd728e",
+			"wav_sha256":	"7a0c28ad2cca523cd7e7d72e360a3f314eeb905688358dbf6f150c0a87b87f76"
+		}, {
+			"id":	"6930-75918-0002",
+			"reference":	"CONGRATULATIONS WERE POURED IN UPON THE PRINCESS EVERYWHERE DURING HER JOURNEY",
+			"row":	2,
+			"speaker":	6930,
+			"samples":	80400,
+			"duration":	5.025,
+			"flac_sha256":	"74ecfd628f49dca71995972c075fcc9904df804d49a4eb5b11fb712b3584f789",
+			"wav_sha256":	"ca418189ed1db4ce1bf5e6940d51a9ce870d4d52f3ef9019ccdbb2189d1a0a9c"
+		}, {
+			"id":	"6930-75918-0003",
+			"reference":	"FROM THE RESPECT PAID HER ON ALL SIDES SHE SEEMED LIKE A QUEEN AND FROM THE ADORATION WITH WHICH SHE WAS TREATED BY TWO OR THREE SHE APPEARED AN OBJECT OF WORSHIP THE QUEEN MOTHER GAVE THE FRENCH THE MOST AFFECTIONATE RECEPTION FRANCE WAS HER NATIVE COUNTRY AND SHE HAD SUFFERED TOO MUCH UNHAPPINESS IN ENGLAND FOR ENGLAND TO HAVE MADE HER FORGET FRANCE",
+			"row":	3,
+			"speaker":	6930,
+			"samples":	373040,
+			"duration":	23.315,
+			"flac_sha256":	"0ec415739efc00adcbe70838f6c207ee4ae8b31639bad534138c3d26d890f58b",
+			"wav_sha256":	"166d138dc95c706e4eedbebb48f4ac4c8cb1b77ea796c0bc650da518308657e2"
+		}, {
+			"id":	"6930-75918-0004",
+			"reference":	"SHE TAUGHT HER DAUGHTER THEN BY HER OWN AFFECTION FOR IT THAT LOVE FOR A COUNTRY WHERE THEY HAD BOTH BEEN HOSPITABLY RECEIVED AND WHERE A BRILLIANT FUTURE OPENED BEFORE THEM",
+			"row":	4,
+			"speaker":	6930,
+			"samples":	177040,
+			"duration":	11.065,
+			"flac_sha256":	"e1c4755c2febfc6b77fde418821c57e2e980d84d4c79a73ff60c6e6dfc794eac",
+			"wav_sha256":	"af568c26be7892254398fc5ecc6a346dc28c3e5ef1123aa6cdf8a8dda3ce1c57"
+		}, {
+			"id":	"6930-75918-0005",
+			"reference":	"THE COUNT HAD THROWN HIMSELF BACK ON HIS SEAT LEANING HIS SHOULDERS AGAINST THE PARTITION OF THE TENT AND REMAINED THUS HIS FACE BURIED IN HIS HANDS WITH HEAVING CHEST AND RESTLESS LIMBS",
+			"row":	5,
+			"speaker":	6930,
+			"samples":	210560,
+			"duration":	13.16,
+			"flac_sha256":	"ccc0da025ef4f4596a4e70fbde291527d140364166d19d9bb516a48407b3491e",
+			"wav_sha256":	"414a1c8dcd58e71e979682b965d2c60768f74646c6417ffea18f840701352d63"
+		}, {
+			"id":	"6930-75918-0006",
+			"reference":	"THIS HAS INDEED BEEN A HARASSING DAY CONTINUED THE YOUNG MAN HIS EYES FIXED UPON HIS FRIEND",
+			"row":	6,
+			"speaker":	6930,
+			"samples":	93600,
+			"duration":	5.85,
+			"flac_sha256":	"4bed112ebfdba58ec061abd3fe013f89946863e9c51e8a83b50a5eb7afb9ce65",
+			"wav_sha256":	"b4ee5871dbb5084f596aa076453afc255f1416c83aec19d05e324ef4e062fc4d"
+		}, {
+			"id":	"6930-75918-0007",
+			"reference":	"YOU WILL BE FRANK WITH ME I ALWAYS AM",
+			"row":	7,
+			"speaker":	6930,
+			"samples":	53040,
+			"duration":	3.315,
+			"flac_sha256":	"059969de8f6b780e1a4982805e977c3e73e40d3759c8fa8cb0cb8fabd9eb5b27",
+			"wav_sha256":	"c6c28e12656aff6cec3484ed10cfc625d17d62f63a065b91ad3c510716e2c7e0"
+		}, {
+			"id":	"6930-75918-0008",
+			"reference":	"CAN YOU IMAGINE WHY BUCKINGHAM HAS BEEN SO VIOLENT I SUSPECT",
+			"row":	8,
+			"speaker":	6930,
+			"samples":	76560,
+			"duration":	4.785,
+			"flac_sha256":	"ac916dcbcbb3240dcdbf3523b300345e33cdc3ebdfdd3538be49f208c134c4dd",
+			"wav_sha256":	"01333d888f243ad4dcb166d6a3164c7c1e835bf65f9d92f15a59b63bec6792eb"
+		}, {
+			"id":	"6930-75918-0009",
+			"reference":	"IT IS YOU WHO ARE MISTAKEN RAOUL I HAVE READ HIS DISTRESS IN HIS EYES IN HIS EVERY GESTURE AND ACTION THE WHOLE DAY",
+			"row":	9,
+			"speaker":	6930,
+			"samples":	116480,
+			"duration":	7.28,
+			"flac_sha256":	"def314bf5fa2c02ce5101bda550ee003760e4f4c3aa6f96699c3110c66be2048",
+			"wav_sha256":	"0db8cfc26adedbb02e1b9606ae5e24500697fee0a1f4e11fe49db83c3a3c10e6"
+		}],
+	"dataset":	"openslr/librispeech_asr",
+	"config":	"clean",
+	"split":	"test",
+	"dataset_revision":	"71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+	"license":	"CC-BY-4.0",
+	"selection":	"Consecutive Hugging Face viewer rows; no filtering by duration or output.",
+	"offset":	0,
+	"count":	10
+}

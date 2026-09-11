@@ -54,6 +54,13 @@ build/http-test: tests/http_test.c $(HTTP_CORE) $(SERVER_HEADERS) | build
 build/http-model-test: tests/http_model_test.c src/server/api.c src/server/api.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Isrc/server $(filter %.c,$^) -o $@ $(LDFLAGS)
 
+.PHONY: check-cpu
+check-cpu: build/cpu-quant-test
+	./build/cpu-quant-test
+
+build/cpu-quant-test: tests/cpu_quant_test.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c $(HEADERS) $(X86_HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) $(filter %.c,$^) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
+
 .PHONY: check-http
 check-http: build/http-test build/diarized-api-test build/alignment-test build/pipeline-test build/diarization-pipeline-test build/search-test
 	./build/http-test
@@ -148,7 +155,7 @@ build/w8a8-bench: benchmarks/w8a8_bench.c benchmarks/encoder_reference.c src/x86
 build/attention-bench: benchmarks/attention_bench.c benchmarks/encoder_reference.c src/x86/whisper_turbo_q8.c src/x86/whisper_turbo_w8a8.c src/x86/whisper_turbo_attention.c src/generic/whisper_turbo_encoder.c $(HEADERS) $(X86_HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OPENMP) -Isrc/generic $(filter-out $(X86_INCLUDED),$(filter %.c,$^)) -o $@ $(LDFLAGS) $(OPENMP) $(LDLIBS)
 
-check: build/q8-bench build/w8a8-bench build/attention-bench build/diarization-test build/http-test build/diarized-api-test build/alignment-test build/pipeline-test build/diarization-pipeline-test build/search-test
+check: check-cpu build/q8-bench build/w8a8-bench build/attention-bench build/diarization-test build/http-test build/diarized-api-test build/alignment-test build/pipeline-test build/diarization-pipeline-test build/search-test
 	./build/q8-bench 1 0
 	./build/w8a8-bench 1 0
 	./build/attention-bench 1 1

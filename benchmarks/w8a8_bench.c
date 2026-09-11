@@ -61,7 +61,7 @@ int main(int argc,char **argv) {
             double nrmse=sqrt(err/(norm+1e-30));
             if(!isfinite(nrmse)||nrmse>0.02)return 1;
             printf("{\"case\":%d,\"mode\":\"%s\",\"threads\":%d,\"trial\":%d,\"seconds\":%.9f,\"nrmse\":%.9g,\"max_abs_error\":%.9g,\"scratch_bytes\":%zu,\"integer_parity\":true}\n",
-                which,names[mode],threads,trial,seconds,nrmse,max,m*k+m*k/128*4);
+                which,names[mode],threads,trial,seconds,nrmse,max,(size_t)WT_W8A8_SCRATCH_BYTES);
             fflush(stdout);
         }
     }

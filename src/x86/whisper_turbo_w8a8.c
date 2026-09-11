@@ -53,49 +53,53 @@ int32_t wt_i8_dot_vnni(const signed char *w,const signed char *x){return wt_i8_d
 #endif
 int wt_w8a8_gemm(int mode,const unsigned char *w,const float *x,size_t rows,
                   size_t k,size_t n,const float *bias,float *y) {
-    if(!rows||!k||k%128||rows>SIZE_MAX/k)return -1;
-    size_t groups=k/128,total=rows*groups;
-    signed char *q=malloc(rows*k);
-    float *scale=malloc(total*sizeof(float));
-    if(!q||!scale){free(q);free(scale);return -1;}
+    /* Cache-sized row batches reuse the same bounded workspace. No per-layer
+       malloc/free and no second resident model or unbounded thread-local cache.
+       5120 is the largest input width of the supported Turbo model. */
+    enum { TILE = WT_W8A8_TILE_ROWS, MAX_K = WT_W8A8_MAX_K };
+    if(!w||!x||!y||!rows||!k||k%128||k>MAX_K||!n||
+       rows>SIZE_MAX/k||rows>SIZE_MAX/n||n>SIZE_MAX/(k/128)/130)return -1;
+    size_t groups=k/128;
+    signed char q[TILE*MAX_K];
+    float scale[TILE*MAX_K/128];
+    /* Validate before writing any output, including errors in later tiles. */
     int bad=0;
 #ifdef _OPENMP
-#pragma omp parallel for reduction(|:bad) schedule(static)
+#pragma omp parallel for reduction(|:bad) schedule(static) if(rows*k >= 32768)
 #endif
-    for(size_t g=0;g<total;g++) {
-        float max=0;
-        for(size_t i=0;i<128;i++) {
-            float v=x[g*128+i];
-            if(!isfinite(v))bad=1;
-            else if(fabsf(v)>max)max=fabsf(v);
-        }
-        float s=max/127.0f;scale[g]=s;
-        for(size_t i=0;i<128;i++) {
-            float v=x[g*128+i];
-            long z=s>0&&isfinite(v)?lrintf(v/s):0;
-            if(z>127)z=127;
-            if(z< -127)z=-127;
-            q[g*128+i]=(signed char)z;
-        }
-    }
-    if(bad){free(q);free(scale);return -1;}
+    for(size_t i=0;i<rows*k;i++)bad |= !isfinite(x[i]);
+    if(bad)return -1;
     int32_t (*dot)(const signed char *,const signed char *)=wt_i8_dot_scalar;
     if(mode>=1&&wt_q8_has_avx2())dot=wt_i8_dot_avx2;
     if(mode>=2&&wt_has_vnni())dot=wt_i8_dot_vnni;
+    for(size_t first=0;first<rows;first+=TILE) {
+        size_t count=rows-first<TILE?rows-first:TILE;
+        for(size_t g=0;g<count*groups;g++) {
+            float max=0;
+            for(size_t i=0;i<128;i++)max=fmaxf(max,fabsf(x[first*k+g*128+i]));
+            float s=max/127.0f;scale[g]=s;
+            for(size_t i=0;i<128;i++) {
+                long z=s>0?lrintf(x[first*k+g*128+i]/s):0;
+                if(z>127)z=127;
+                if(z< -127)z=-127;
+                q[g*128+i]=(signed char)z;
+            }
+        }
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
-    for(size_t col=0;col<n;col++) {
-        const unsigned char *wr=w+col*groups*130;
-        for(size_t row=0;row<rows;row++) {
-            float sum=bias?bias[col]:0;
-            for(size_t g=0;g<groups;g++) {
-                const signed char *ww=(const signed char *)(const void *)(wr+g*130+2);
-                sum+=cllm_whisper_turbo_bf16(wr+g*130)*scale[row*groups+g]*
-                     (float)dot(ww,q+row*k+g*128);
+        for(size_t col=0;col<n;col++) {
+            const unsigned char *wr=w+col*groups*130;
+            for(size_t row=0;row<count;row++) {
+                float sum=bias?bias[col]:0;
+                for(size_t g=0;g<groups;g++) {
+                    const signed char *ww=(const signed char *)(const void *)(wr+g*130+2);
+                    sum+=cllm_whisper_turbo_bf16(wr+g*130)*scale[row*groups+g]*
+                         (float)dot(ww,q+row*k+g*128);
+                }
+                y[(first+row)*n+col]=sum;
             }
-            y[row*n+col]=sum;
         }
     }
-    free(q);free(scale);return 0;
+    return 0;
 }

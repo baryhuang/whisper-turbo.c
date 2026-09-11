@@ -11,4 +11,7 @@ float wt_q8_group_avx512(const unsigned char *, const float *);
 float wt_q8_group_auto(const unsigned char *, const float *);
 float wt_q8_row_auto(const unsigned char *, const float *, size_t);
 void wt_q8_gemm_auto(const unsigned char *,const float *,size_t,size_t,size_t,const float *,float *);
+/* Explicit opt-in, independent of encoder precision. Returns -1 without writing
+ * output when disabled or unsupported. */
+int wt_decoder_q8_gemm(const unsigned char *,const float *,size_t,size_t,size_t,const float *,float *);
 #endif

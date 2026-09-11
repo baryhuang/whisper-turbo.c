@@ -199,6 +199,10 @@ static void matrix_vector(const cllm_whisper_turbo_matrix *matrix,
                           const float *bias,
                           float *output)
 {
+#ifdef WHISPER_TURBO_HAVE_DECODER_Q8_GEMM
+    if (matrix->q8 && !whisper_turbo_decoder_q8_gemm(matrix->q8, input, 1,
+            matrix->columns, matrix->rows, bias, output)) return;
+#endif
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
@@ -212,6 +216,10 @@ static void matrix_rows(const cllm_whisper_turbo_matrix *matrix,
                         const float *bias,
                         float *output)
 {
+#ifdef WHISPER_TURBO_HAVE_DECODER_Q8_GEMM
+    if (matrix->q8 && !whisper_turbo_decoder_q8_gemm(matrix->q8, input, rows,
+            matrix->columns, matrix->rows, bias, output)) return;
+#endif
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
@@ -442,6 +450,27 @@ static int decoder_step_internal(const cllm_whisper_turbo_decoder_weights *weigh
     started = monotonic_seconds();
     *next_token = 0U;
     *next_logit = -INFINITY;
+#ifdef WHISPER_TURBO_HAVE_DECODER_Q8_GEMM
+    /* Quantize the hidden vector once for the entire vocabulary, not once per
+       output row. Keep deterministic first-token tie breaking and masking. */
+    float quantized_logits[CLLM_WHISPER_TURBO_VOCABULARY];
+    if (weights->token_embedding.q8 &&
+        !whisper_turbo_decoder_q8_gemm(weights->token_embedding.q8, norm, 1,
+            WIDTH, CLLM_WHISPER_TURBO_VOCABULARY, NULL, quantized_logits)) {
+        for (size_t row = 0; row < CLLM_WHISPER_TURBO_VOCABULARY; ++row) {
+            float logit = suppressed_tokens && suppressed_tokens[row]
+                ? -INFINITY : quantized_logits[row];
+            if (state->logits) state->logits[row] = logit;
+            if (logit > *next_logit) {
+                *next_logit = logit;
+                *next_token = (uint32_t)row;
+            }
+        }
+        metrics->output_head_seconds = monotonic_seconds() - started;
+        state->token_count += 1;
+        return 0;
+    }
+#endif
 #ifdef _OPENMP
 #pragma omp parallel
     {
