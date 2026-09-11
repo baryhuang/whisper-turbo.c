@@ -10,12 +10,12 @@ many short requests, not a tested one-hour upload.
 
 | Implementation / hosting | Result | Cost per 27.27 s of audio | Cost per audio hour |
 | --- | --- | ---: | ---: |
-| whisper-turbo.c, InstaCloud | Speaker-labeled text; **19.24 s** warm HTTP | **~$0.00127** | **~$0.168** |
+| whisper-turbo.c, InstaCloud (4 vCPU) | Speaker-labeled text; **35.74 s** warm HTTP | **~$0.00126** | **~$0.166** |
 | [OpenAI `gpt-4o-transcribe-diarize`](https://developers.openai.com/api/docs/pricing) | Speaker-labeled transcript | ~$0.00273 | ~$0.36 |
 | [AssemblyAI Universal-2 + diarization](https://www.assemblyai.com/pricing) | Speaker-labeled transcript | ~$0.00129 | $0.17 |
 | [AssemblyAI Universal-3.5 Pro + diarization](https://www.assemblyai.com/pricing) | Speaker-labeled transcript | ~$0.00174 | $0.23 |
 
-The native estimate assumes eight fully utilized CPUs and **1.1 GB RAM** during
+The native estimate assumes four fully utilized CPUs and **1.1 GB RAM** during
 the measured request, at [InstaCloud's published rates](https://instacloud.com/pricing).
 This is a consistent resource scenario, **not a metered bill or a measured RAM cap**.
 An always-on service also pays for resident memory between requests; idle time,
@@ -23,22 +23,38 @@ network, storage, account fees and credits are outside the active-request estima
 Hosted API rows use published prices, not measured requests. No equal-accuracy or
 hosted latency comparison is claimed. See [calculations and assumptions](docs/cost-comparison.md).
 
+## InstaCloud CPU scaling
+
+Warm HTTP transcription with diarization on Intel Xeon 6975P-C, INT8 weights
+and encoder activations. Each result is the median of three requests for the same
+27.27-second recording; startup and warm-up are excluded.
+
+| vCPUs / threads | Request time | Speedup vs. 4 CPUs | Estimated cost per clip | Estimated cost per audio hour |
+| ---: | ---: | ---: | ---: | ---: |
+| 4 | 35.74 s | 1.00× | ~$0.00126 | ~$0.166 |
+| 8 | 19.24 s | 1.86× | ~$0.00127 | ~$0.168 |
+
+Costs assume full utilization of the listed CPUs and 1.1 GB RAM during each
+request, at the rates above; idle costs are excluded. Eight CPUs finish sooner
+at nearly the same estimated cost per clip. These are separate runs on shared
+CPUs, not a guarantee of scaling on every workload. See the
+[4-CPU records](benchmarks/results/single-pass/runs-4cpu.json) and
+[8-CPU records](benchmarks/results/single-pass/runs.json).
+
 ## Resident CPU performance
 
-InstaCloud **Intel Xeon 6975P-C, eight threads**, opt-in INT8 encoder activations,
+InstaCloud **Intel Xeon 6975P-C, 4 vCPU, four threads**, INT8 weights and encoder activations,
 27.27-second recording. Each path keeps its model loaded, discards one warm-up,
 and measures three sequential requests. No restart or cache eviction occurs between
 requests. Startup and warm-up are not included.
 
 | Path | Work | Median request time | Measured range |
 | --- | --- | ---: | ---: |
-| HTTP API | ASR + alignment + diarization + JSON response | **19.24 s** | 19.11–19.26 s |
-| Direct calls to the shared pipeline | ASR + alignment + diarization + JSON rendering | **19.52 s** | 19.46–19.55 s |
+| HTTP API | ASR + alignment + diarization + JSON response | **35.74 s** | 35.54–36.30 s |
+| Direct CLI | ASR + alignment + diarization + JSON rendering | **35.27 s** | 35.24–35.31 s |
 
-The 1.4% difference does not establish a transport speed advantage; these are
-small samples on shared CPUs. Both produce identical output and perform one ASR
-window and one diarization pass for this recording. A two-speaker A–B–A fixture
-retains the returning speaker's identity without changing the full-recording ASR text.
+Both paths produce identical output and perform one ASR window and one diarization
+pass for this recording. Timings are based on small samples on shared CPUs.
 See [resident benchmark protocol and records](benchmarks/results/single-pass/README.md)
 and [API validation and limits](docs/http-api.md#validation). Broad accuracy,
 sustained-load behavior and AMD performance remain unverified.

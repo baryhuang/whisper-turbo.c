@@ -8,12 +8,19 @@ windows, independent of speaker count.
 
 ## Measurement protocol
 
-Intel Xeon 6975P-C, eight threads, GCC 12.2/OpenMP, INT8 encoder activations.
-Three measured direct calls: **19.515750, 19.547507, 19.460840 seconds**.
-Three measured HTTP requests: **19.238235, 19.114012, 19.255878 seconds**.
-Medians: **19.515750 seconds direct**, **19.238235 seconds HTTP**.
-All HTTP responses matched the direct output byte-for-byte. The complete text
-also matched an ASR-only request. See [machine-readable records](runs.json).
+Intel Xeon 6975P-C, **4 vCPU, four threads**, GCC 12.2/OpenMP, INT8 weights and
+encoder activations. No floating-point benchmark variant is included. Decoder
+activations and the diarizer retain their existing floating-point operations.
+The service has an 8,192 MiB memory ceiling, not a measured memory requirement.
+The guest exposes five logical CPUs; both processes are pinned to CPUs 0–3.
+
+Three measured direct calls: **35.308962, 35.237685, 35.273096 seconds**.
+Three measured HTTP requests: **36.298806, 35.537225, 35.739450 seconds**.
+Medians: **35.273096 seconds direct**, **35.739450 seconds HTTP**.
+All HTTP responses matched the direct output byte-for-byte. Transcript text and
+speaker segments also matched the earlier eight-thread result.
+See [four-CPU records](runs-4cpu.json); [earlier eight-thread records](runs.json)
+are retained separately.
 
 The service stays running with the Whisper model resident. Discard one complete
 warm-up request, then measure three sequential requests of the same 27.27-second
@@ -28,7 +35,7 @@ four calls. Compare its output with the HTTP response byte-for-byte.
 
 ```sh
 make build/resident-pipeline-bench OPENMP=-fopenmp
-OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 ./build/resident-pipeline-bench \
+OMP_NUM_THREADS=4 WHISPER_ACTIVATIONS=int8 taskset -c 0-3 ./build/resident-pipeline-bench \
   turbo-q8.whtrbo /path/to/community-1 speech.wav en
 ```
 
@@ -45,11 +52,3 @@ remains coarse for unspaced languages.
 Cost scenarios describe active request processing, not an always-on monthly bill.
 Resident memory continues to cost money between requests. Sustained throughput,
 idle utilization, network, storage and account fees must be accounted for separately.
-
-## Excluded observations
-
-Earlier startup-inclusive observations belong to a different measurement protocol
-and are excluded from the resident timing/cost comparison. A first resident run
-completed but its command gateway returned 502 and lost timing output; its JSON
-was recovered, but no timing from that run is used. Repeated tests persist their
-results on the benchmark volume independently of the command connection.
