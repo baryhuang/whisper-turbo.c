@@ -101,6 +101,24 @@ int main(void) {
     assert(!wt_filter_speech_words(&gated,&quiet,&e));
     assert(!gated.word_count && !gated.length && !gated.text[0] && gated.duration==300);
     wt_result_free(&gated);
+    /* Mere overlap does not validate a word stretching 27 s into silence.
+       Overlapping padded intervals must not count the same time twice. */
+    wt_result stretched = {.duration=300, .length=14, .word_count=3};
+    stretched.text=malloc(15); assert(stretched.text); memcpy(stretched.text,"Hello Hi Again",15);
+    stretched.words=calloc(3,sizeof(wt_word)); assert(stretched.words);
+    stretched.words[0]=(wt_word){0,5,0,10};
+    stretched.words[1]=(wt_word){5,3,90,119.8};
+    stretched.words[2]=(wt_word){8,6,210,211};
+    diar_interval speech_spans[]={{0,3,0},{2.9,6,0},{90,92.86,0},{210,210.1,0}};
+    diar_result speech_union={.activity=speech_spans,.activity_count=4};
+    assert(!wt_filter_speech_words(&stretched,&speech_union,&e));
+    assert(stretched.word_count==2 && !strcmp((char *)stretched.text,"Hello Again"));
+    assert(stretched.words[0].end==10 && stretched.words[1].end==211 && stretched.duration==300);
+    diar_interval duplicate_spans[]={{0,3,0},{0,3,0}};
+    diar_result duplicate_support={.activity=duplicate_spans,.activity_count=2};
+    assert(!wt_filter_speech_words(&stretched,&duplicate_support,&e));
+    assert(!stretched.word_count && !stretched.length);
+    wt_result_free(&stretched);
     puts("C alignment tests passed: DTW, bounds, A-B-A labels, unchanged text, SSE whitespace.");
     return 0;
 }

@@ -25,11 +25,20 @@ int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e)
             return wt_fail(e, 422, "Invalid speech alignment.", "file", "alignment_failed");
         previous_offset = word.offset + word.length;
         previous_end = word.end;
-        int active = 0;
-        for (size_t j = 0; j < speech->activity_count; ++j)
-            if (speech->activity[j].end + 0.25 > word.start &&
-                speech->activity[j].start - 0.25 < word.end) active = 1;
-        if (!active || !word.length) { ++removed; continue; }
+        /* A long DTW group can touch real speech yet extend through a silent
+           tail. Measure the UNION of padded activity, not just any overlap.
+           Preserve short boundary jitter; reject a group only when it has
+           over two seconds of unsupported time AND mostly lacks speech.
+           No timestamp is clipped or manufactured to make text appear valid. */
+        double covered = 0, covered_until = word.start;
+        for (size_t j = 0; j < speech->activity_count; ++j) {
+            double start = fmax(covered_until, speech->activity[j].start - 0.25);
+            double end = fmin(word.end, speech->activity[j].end + 0.25);
+            if (end > start) { covered += end - start; covered_until = end; }
+        }
+        double span = word.end - word.start;
+        if (covered <= 0 || !word.length ||
+            (span - covered > 2.0 && covered < span * 0.5)) { ++removed; continue; }
         memmove(r->text + length, r->text + word.offset, word.length);
         word.offset = length;
         length += word.length;

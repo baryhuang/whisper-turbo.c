@@ -147,7 +147,12 @@ These are model-derived estimates, not uniformly distributed or invented times.
 Subword pieces are grouped at whitespace boundaries. Each group is assigned to
 the exclusive speaker interval with the largest time overlap; ties and groups in
 gaps use the nearest interval. Before speaker assignment, aligned word groups
-with no overlap with padded acoustic speech activity are discarded. This prevents
+with no overlap with padded acoustic speech activity are discarded. A group is
+also discarded when more than two seconds of its span lack acoustic support and
+speech covers less than half the span. Padded intervals are unioned, not counted
+twice. This duration/acoustic heuristic is inspired by Whisper's
+[long-word/silence anomaly checks](https://github.com/openai/whisper/blob/main/whisper/transcribe.py),
+not a claim of upstream parity. It prevents
 silence hallucinations from borrowing a speaker label from distant real speech;
 it can also omit words when acoustic detection or alignment is wrong. Retained
 text and model-derived timestamps are unchanged. Consecutive groups from one
