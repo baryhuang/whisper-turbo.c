@@ -13,6 +13,25 @@ int wt_speech_window_active(const diar_result *speech, size_t offset, size_t use
     return 0;
 }
 
+size_t wt_language_window_offset(const diar_result *speech, size_t samples) {
+    /* Activity intervals are sorted and disjoint. Use the original 30-second
+       window with most supported speech, not a noisy opening with a brief
+       false-positive. Detection does not decode text or alter ASR offsets. */
+    size_t best_offset = 0;
+    double best_coverage = 0;
+    if (!speech) return 0;
+    for (size_t offset = 0; offset < samples; offset += 480000) {
+        double start = offset / 16000.0;
+        double end = fmin((offset + 480000) / 16000.0, samples / 16000.0);
+        double coverage = 0;
+        for (size_t i = 0; i < speech->activity_count; ++i)
+            coverage += fmax(0, fmin(end, speech->activity[i].end) -
+                                 fmax(start, speech->activity[i].start));
+        if (coverage > best_coverage) { best_offset = offset; best_coverage = coverage; }
+    }
+    return best_offset;
+}
+
 int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e) {
     if (!speech) return 0;
     size_t count = 0, length = 0, removed = 0, previous_offset = 0;

@@ -210,7 +210,12 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
         wt_fail(error, 503, "Inference allocation failed.", NULL, "resource_exhausted");
         goto done;
     }
-    for (size_t offset = 0; offset < samples; offset += WINDOW) {
+    const size_t language_offset = language ? 0 : wt_language_window_offset(speech, samples);
+    const size_t probe = language_offset != 0;
+    const size_t windows = (samples + WINDOW - 1) / WINDOW;
+    for (size_t pass = 0; pass < windows + probe; ++pass) {
+        int detecting_only = probe && pass == 0;
+        size_t offset = detecting_only ? language_offset : (pass - probe) * WINDOW;
         if (cancel && cancel(cancel_context))
             goto cancelled;
         size_t used = samples - offset < WINDOW ? samples - offset : WINDOW;
@@ -236,8 +241,8 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
         }
         if (!nonzero)
             continue; /* Exact digital silence; no energy-threshold speech gating. */
-        ++out->asr_windows;
-        if (getenv("WHISPER_DIAGNOSTICS"))
+        if (!detecting_only) ++out->asr_windows;
+        if (getenv("WHISPER_DIAGNOSTICS") && !detecting_only)
             fprintf(stderr, "ASR window=%zu/%zu\n", offset / WINDOW + 1,
                     (samples + WINDOW - 1) / WINDOW);
         if (cllm_whisper_turbo_log_mel(audio, WINDOW, m->mel_filters, mel, scratch,
@@ -265,6 +270,13 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
             for (uint32_t i = 50259; i < 50359; ++i)
                 if (language_token(i, NULL) && logits[i] > score) { language = i; score = logits[i]; }
             if (!language_token(language, NULL) || !isfinite(score)) goto failed;
+            if (getenv("WHISPER_DIAGNOSTICS"))
+                fprintf(stderr, "language: detected=%s window=%zu/%zu acoustic_probe=%d\n",
+                        wt_languages[language - 50259], offset / WINDOW + 1, windows, detecting_only);
+        }
+        if (detecting_only) {
+            cllm_whisper_turbo_decoder_state_free(&state);
+            continue;
         }
         if (cllm_whisper_turbo_decoder_consume(d, &state, language, NULL, &metrics) ||
             cllm_whisper_turbo_decoder_consume(d, &state, TASK, NULL, &metrics))

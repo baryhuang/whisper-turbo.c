@@ -40,7 +40,7 @@ supported request subset. When authentication is enabled, add
 | --- | --- |
 | `file` | Required file part; mono PCM16 WAV at 16 kHz, up to 300 seconds. |
 | `model` | Required: `whisper-large-v3-turbo`, `whisper-1`, or `gpt-4o-transcribe-diarize`. All are local model aliases; the last enables Community-1. |
-| `language` | Optional lowercase model language code. Omission detects the language from the first non-silent window. |
+| `language` | Optional lowercase model language code. Omission detects language automatically; diarized requests use the original 30-second window with the most acoustic speech activity, other requests use the first non-silent window. |
 | `response_format` | `json` (default), `text`, or `diarized_json` for the diarization model. |
 | `temperature` | Zero or omitted: starts with greedy decoding, with bounded internal quality-gated fallback. Other initial temperatures are rejected. |
 | `stream` | Diarization model: `true` returns buffered SSE events. Whisper aliases: ignored, as on the hosted Whisper route. |
@@ -126,7 +126,14 @@ Community-1 diarizes the complete recording once before Whisper's single
 full-recording ASR pass. In diarized mode, 30-second ASR windows without acoustic
 speech activity are skipped, with 250 ms padding around detected speech. The
 original windows and timestamps are retained; audio is not concatenated or
-transcribed per speaker. Overlap-aggregated segmentation, rather than an isolated
+transcribed per speaker. Automatic language detection uses the original window
+with the greatest unpadded speech coverage (earliest on ties). If this is not the
+opening window, one additional bounded encoder/language-token probe runs before
+ASR, reusing the same workspace and generating no text. This avoids locking the
+whole recording to a language selected from a quiet or noisy opening. Explicit
+language requests bypass the probe. This is not per-window language switching
+or a guarantee for mixed-language recordings.
+Overlap-aggregated segmentation, rather than an isolated
 positive mask, decides whether a recording contains speech. Activity gaps up to
 100 ms are merged and bursts shorter than 250 ms are rejected, following the
 default speech-duration settings documented by whisper.cpp. Very brief isolated

@@ -71,6 +71,17 @@ int main(void) {
     assert(wt_speech_window_active(&boundary, 0, 480000));
     assert(wt_speech_window_active(&boundary, 480000, 480000));
     assert(!wt_speech_window_active(&boundary, 960000, 480000));
+    assert(wt_language_window_offset(NULL, 4800000) == 0);
+    assert(wt_language_window_offset(&quiet, 4800000) == 0);
+    assert(wt_language_window_offset(&d, 480000) == 0);
+    diar_interval language_activity[] = {{0.5, 1.0, 0}, {151, 174, 0}, {181, 195, 0}};
+    diar_result language_speech = {.activity=language_activity, .activity_count=3};
+    assert(wt_language_window_offset(&language_speech, 4800000) == 5 * 480000);
+    /* A partial final window is clipped to actual samples; no padded duration. */
+    assert(wt_language_window_offset(&language_speech, 152 * 16000) == 5 * 480000);
+    diar_interval tied[] = {{1, 10, 0}, {31, 40, 0}};
+    diar_result tie = {.activity=tied, .activity_count=2};
+    assert(wt_language_window_offset(&tie, 960000) == 0);
     char names[32][64] = {{0}}; strcpy(names[0], "agent");
     wt_request req = {.diarize=1,.diarized_json=1,.stream=1}; wt_error e = {0};
     assert(!wt_assign_speakers(&r,&d,(const char (*)[64])names,&req,&e));
