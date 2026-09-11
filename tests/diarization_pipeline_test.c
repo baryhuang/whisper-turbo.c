@@ -17,6 +17,12 @@ int diar_segment(const diar_checkpoint *m, const float *a, float *p) {
 }
 void diar_powerset(const float *p, float *mask, size_t frames) {
     (void)p; memset(mask,0,frames*3*sizeof(float));
+    if (scenario == 5) return;
+    if (scenario == 6) {
+        /* One spurious frame at 2.2 s disagrees with overlapping windows. */
+        if (current == 2) mask[10*3] = 1;
+        return;
+    }
     if (current < 2 && scenario != 2) {
         for(size_t t=0;t<frames;++t) mask[t*3+(scenario==1 && t>=frames/2)]=1;
     } else {
@@ -47,10 +53,11 @@ int diar_cluster(const diar_plda *p,const float *e,size_t n,float *cent) {
 }
 int main(void) {
     float *audio=calloc(192000,sizeof(float)); assert(audio);
-    for(scenario=0;scenario<5;++scenario) {
+    for(scenario=0;scenario<7;++scenario) {
         chunk=0; diar_result r={0};
         int rc=diar_run("synthetic",audio,192000,0,&r,NULL,NULL);
         if(scenario==2 || scenario==3) assert(rc && !r.exclusive_count);
+        else if (scenario >= 5) assert(!rc && !r.speakers && !r.exclusive_count);
         else {
             assert(!rc && r.speakers==(scenario==1?2:1) && r.exclusive_count>0);
             for(size_t i=0;i<r.exclusive_count;++i) {

@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 static unsigned asr_calls, diar_calls;
-int wt_transcribe_aligned_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
-                              const char *language, wt_result *r, wt_error *e, wt_cancel cancel, void *context) {
+int wt_transcribe_speech_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
+                              const char *language, wt_result *r, wt_error *e, wt_cancel cancel, void *context,
+                              const diar_result *speech) {
     (void)engine; (void)pcm; (void)language; (void)e; (void)cancel; (void)context;
-    assert(samples == 26 * 16000); ++asr_calls;
+    assert(samples == 26 * 16000 && diar_calls == 1 && speech->exclusive_count == 3); ++asr_calls;
     r->text = malloc(15); assert(r->text); memcpy(r->text,"Hello Hi Again",15);
     r->length=14; r->duration=26; r->word_count=3; r->asr_windows=1;
     r->words=calloc(3,sizeof(wt_word)); assert(r->words);
@@ -23,7 +24,7 @@ int wt_transcribe_pcm(wt_engine *a,const unsigned char *b,size_t c,const char *d
 int diar_run(const char *directory,const float *audio,size_t samples,int only,diar_result *d,
               diar_cancel cancel,void *context) {
     (void)directory;(void)audio;(void)cancel;(void)context;
-    assert(asr_calls==1 && samples==26*16000 && !only); ++diar_calls;
+    assert(asr_calls==0 && samples==26*16000 && !only); ++diar_calls;
     d->exclusive=calloc(3,sizeof(diar_interval)); assert(d->exclusive);
     d->exclusive[0]=(diar_interval){0,8,0}; d->exclusive[1]=(diar_interval){9,17,1}; d->exclusive[2]=(diar_interval){18,26,0};
     d->exclusive_count=3;d->speakers=2;return 0;

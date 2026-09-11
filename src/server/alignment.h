@@ -14,4 +14,5 @@ int wt_alignment_words(const unsigned char *text, size_t text_length,
                        size_t capacity, size_t *count);
 int wt_assign_speakers(wt_result *, const diar_result *, const char names[32][64],
                        const wt_request *, wt_error *);
+int wt_speech_window_active(const diar_result *, size_t sample_offset, size_t used);
 #endif

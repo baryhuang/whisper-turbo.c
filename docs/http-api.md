@@ -122,9 +122,14 @@ This is an illustrative schema example, not a benchmark transcript. `json` retur
 `text` and duration `usage`, without annotations. `text` returns only combined text.
 Usage reports actual input duration; it is not an OpenAI bill or token count.
 
-Whisper transcribes the complete recording once, in bounded 30-second windows,
-and Community-1 diarizes the complete recording once. The two stages run
-sequentially to bound peak memory; they do not decode individual speaker crops.
+Community-1 diarizes the complete recording once before Whisper's single
+full-recording ASR pass. In diarized mode, 30-second ASR windows without acoustic
+speech activity are skipped, with 250 ms padding around detected speech. The
+original windows and timestamps are retained; audio is not concatenated or
+transcribed per speaker. Overlap-aggregated segmentation, rather than an isolated
+positive mask, decides whether a recording contains speech. This reduces
+silence hallucinations but does not guarantee recognition accuracy inside an
+active window. The stages run sequentially to bound peak memory.
 Six selected cross-attention heads are captured during accepted greedy decoding.
 After recovery, the winning token sequence is replayed through the cached decoder
 to capture its attention, without generating a new transcript or rerunning the encoder.

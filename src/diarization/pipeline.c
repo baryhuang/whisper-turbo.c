@@ -224,6 +224,37 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
     }
     if (cancel && cancel(context))
         goto done;
+    /* Use the same overlap-aggregated speaker-count decision as reconstruction.
+       An isolated positive frame in one 10 s window is not evidence of speech
+       if the other overlapping windows vote it down. */
+    size_t frames = (size_t)ceil(samples / 270.0) + DIAR_FRAMES;
+    votes = calloc(frames * 2, sizeof(float));
+    if (!votes) goto done;
+    for (size_t c = 0; c < chunks; ++c) {
+        size_t start = (size_t)nearbyint(c * 16000.0 / 270);
+        for (int t = 0; t < DIAR_FRAMES; ++t) {
+            const float *mask = masks + (c * DIAR_FRAMES + t) * 3;
+            votes[(start + t) * 2] += mask[0] + mask[1] + mask[2];
+            votes[(start + t) * 2 + 1] += 1;
+        }
+    }
+    size_t speech_frames = 0, valid_embeddings = 0;
+    for (size_t t = 0; t < frames; ++t)
+        if (t * 270 + 495.5 < samples && votes[t * 2 + 1] > 0 &&
+            nearbyint(votes[t * 2] / votes[t * 2 + 1]) > 0) ++speech_frames;
+    for (size_t i = 0; i < chunks * 3; ++i) {
+        double norm = 0;
+        for (size_t j = 0; j < 256; ++j) norm += (double)emb[i * 256 + j] * emb[i * 256 + j];
+        if (isfinite(norm) && norm > 0) ++valid_embeddings;
+    }
+    if (getenv("WHISPER_DIAGNOSTICS"))
+        fprintf(stderr, "diarization: consensus_speech_frames=%zu valid_embeddings=%zu training_embeddings=%zu\n",
+                speech_frames, valid_embeddings, train_n);
+    if (!speech_frames) {
+        out->chunks = chunks;
+        result = 0;
+        goto done;
+    }
     int k = 0;
     if (any) {
         if (!train_n) {
@@ -245,9 +276,7 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
             goto done;
         }
     }
-    size_t frames = (size_t)ceil(samples / 270.0) + DIAR_FRAMES;
     sums = calloc(frames * (size_t)(k ? k : 1), sizeof(float));
-    votes = calloc(frames * 2, sizeof(float));
     normal = calloc(frames, sizeof(uint32_t));
     exclusive = calloc(frames, sizeof(uint32_t));
     if (!sums || !votes || !normal || !exclusive)
@@ -263,8 +292,6 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
         size_t start = (size_t)nearbyint(c * 16000.0 / 270);
         for (int t = 0; t < DIAR_FRAMES; ++t) {
             size_t at = start + t;
-            votes[at * 2] += mask[t * 3] + mask[t * 3 + 1] + mask[t * 3 + 2];
-            votes[at * 2 + 1] += 1;
             for (int s = 0; s < 3; ++s)
                 if (labels[s] >= 0)
                     sums[at * k + labels[s]] += mask[t * 3 + s];

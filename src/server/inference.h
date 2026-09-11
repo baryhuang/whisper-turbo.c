@@ -2,6 +2,7 @@
 #define WT_INFERENCE_H
 #include "api.h"
 #include "whisper_turbo_image.h"
+#include "../diarization/pipeline.h"
 typedef struct {
     cllm_whisper_turbo_model model;
     unsigned threads;
@@ -12,4 +13,6 @@ int wt_transcribe_pcm(wt_engine *, const unsigned char *, size_t, const char *, 
                       wt_error *, wt_cancel, void *);
 int wt_transcribe_aligned_pcm(wt_engine *, const unsigned char *, size_t, const char *, wt_result *,
                               wt_error *, wt_cancel, void *);
+int wt_transcribe_speech_pcm(wt_engine *, const unsigned char *, size_t, const char *, wt_result *,
+                            wt_error *, wt_cancel, void *, const diar_result *);
 #endif

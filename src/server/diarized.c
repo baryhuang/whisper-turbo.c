@@ -151,11 +151,9 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
     omp_set_dynamic(0);
     omp_set_num_threads((int)engine->threads);
 #endif
-    /* A transport-independent combined path: one full-recording ASR pass,
-       one full-recording diarization pass, then alignment-based speaker labels.
-       Run sequentially to keep peak workspace bounded; never decode per turn. */
-    if (wt_transcribe_aligned_pcm(engine, pcm, samples, r->language, out, e, cancel, context))
-        return -1;
+    /* One full-recording diarization pass supplies speech activity, followed by
+       one full-recording ASR pass and alignment-based speaker assignment.
+       Workspaces stay sequential; never decode individual speaker turns. */
     diar_result d = {0};
     float *audio = malloc(samples * sizeof(float));
     if (!audio) {
@@ -181,6 +179,8 @@ int wt_transcribe(void *opaque, const wt_request *r, wt_result *out, wt_error *e
             wt_fail(e, 500, "Diarization failed; no speaker labels fabricated.", NULL, "diarization_error");
         goto failed;
     }
+    if (wt_transcribe_speech_pcm(engine, pcm, samples, r->language, out, e, cancel, context, &d))
+        goto failed;
     char names[32][64];
     if (reference_names(engine, r, &d, names, e, cancel, context) ||
         wt_assign_speakers(out, &d, (const char (*)[64])names, r, e))

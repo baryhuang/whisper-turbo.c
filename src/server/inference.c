@@ -166,7 +166,7 @@ done:
 }
 static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t samples,
                       const char *requested_language, wt_result *out, wt_error *error,
-                      wt_cancel cancel, void *cancel_context, int aligned) {
+                      wt_cancel cancel, void *cancel_context, int aligned, const diar_result *speech) {
     if (!pcm || !samples || samples > WT_AUDIO_LIMIT)
         return wt_fail(error, 413, "Audio exceeds the supported sample limit.", "file",
                        "audio_too_long");
@@ -214,6 +214,18 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
         if (cancel && cancel(cancel_context))
             goto cancelled;
         size_t used = samples - offset < WINDOW ? samples - offset : WINDOW;
+        /* Whole-input diarization supplies acoustic speech activity. Keep the
+           original 30 s windows and original timestamps; skip only windows
+           with no speech evidence (250 ms padding protects boundary speech).
+           This is not per-speaker crop transcription or a text blacklist. */
+        if (speech) {
+            if (!wt_speech_window_active(speech, offset, used)) {
+                if (getenv("WHISPER_DIAGNOSTICS"))
+                    fprintf(stderr, "ASR window=%zu/%zu skipped: no acoustic speech activity\n",
+                            offset / WINDOW + 1, (samples + WINDOW - 1) / WINDOW);
+                continue;
+            }
+        }
         memset(audio, 0, WINDOW * sizeof(float));
         unsigned nonzero = 0;
         for (size_t i = 0; i < used; ++i) {
@@ -419,10 +431,15 @@ done:
 int wt_transcribe_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
                        const char *language, wt_result *out, wt_error *error,
                        wt_cancel cancel, void *context) {
-    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 0);
+    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 0, NULL);
 }
 int wt_transcribe_aligned_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
                                const char *language, wt_result *out, wt_error *error,
                                wt_cancel cancel, void *context) {
-    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 1);
+    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 1, NULL);
+}
+int wt_transcribe_speech_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
+                            const char *language, wt_result *out, wt_error *error,
+                            wt_cancel cancel, void *context, const diar_result *speech) {
+    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 1, speech);
 }
