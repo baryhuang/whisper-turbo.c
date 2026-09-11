@@ -60,14 +60,14 @@ int main(void) {
     r.words[1] = (wt_word){5,3,11,12};
     r.words[2] = (wt_word){8,6,21,22};
     diar_interval turns[] = {{0,8,0},{9,17,1},{18,26,0}};
-    diar_result d = {.exclusive=turns,.exclusive_count=3,.speakers=2};
+    diar_result d = {.exclusive=turns,.exclusive_count=3,.activity=turns,.activity_count=3,.speakers=2};
     assert(wt_speech_window_active(NULL, 0, 480000));
     assert(wt_speech_window_active(&d, 0, 480000));
     assert(!wt_speech_window_active(&d, 480000, 480000));
     diar_result quiet = {0};
     assert(!wt_speech_window_active(&quiet, 0, 480000));
     diar_interval edge[] = {{29.9, 30.1, 0}};
-    diar_result boundary = {.exclusive=edge, .exclusive_count=1};
+    diar_result boundary = {.activity=edge, .activity_count=1};
     assert(wt_speech_window_active(&boundary, 0, 480000));
     assert(wt_speech_window_active(&boundary, 480000, 480000));
     assert(!wt_speech_window_active(&boundary, 960000, 480000));

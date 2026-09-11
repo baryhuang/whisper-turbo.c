@@ -23,6 +23,14 @@ void diar_powerset(const float *p, float *mask, size_t frames) {
         if (current == 2) mask[10*3] = 1;
         return;
     }
+    if (scenario == 7) {
+        for (size_t t = 0; t < frames; ++t) mask[t*3] = 1;
+        return;
+    }
+    if (scenario == 8) {
+        for (size_t t = 0; t < 40; ++t) mask[t*3] = 1;
+        return;
+    }
     if (current < 2 && scenario != 2) {
         for(size_t t=0;t<frames;++t) mask[t*3+(scenario==1 && t>=frames/2)]=1;
     } else {
@@ -34,7 +42,7 @@ int diar_embed(const diar_checkpoint *m, const float *a, const float *mask, floa
     (void)m; (void)a; (void)mask;
     for(int i=0;i<3*256;++i)e[i]=NAN;
     if(scenario==4 && current>=2) memset(e,0,3*256*sizeof(float));
-    if(current<2 && scenario!=2) {
+    if(scenario == 8 || (current<2 && scenario!=2 && scenario!=7)) {
         for(int s=0;s<(scenario==1?2:1);++s) {
             memset(e+s*256,0,256*sizeof(float)); e[s*256+s]=1;
         }
@@ -47,17 +55,20 @@ int diar_plda_open(diar_plda *p,const char *a,const char *b) {
 int diar_cluster(const diar_plda *p,const float *e,size_t n,float *cent) {
     (void)p;
     int k=scenario==1?2:1;
-    assert(n==(size_t)k*2); memcpy(cent,e,(size_t)k*256*sizeof(float));
+    if (scenario == 8) assert(n >= 1 && n <= 3);
+    else assert(n == (size_t)k*2);
+    memcpy(cent,e,(size_t)k*256*sizeof(float));
     if(scenario==3) cent[0]=NAN;
     return k;
 }
 int main(void) {
     float *audio=calloc(192000,sizeof(float)); assert(audio);
-    for(scenario=0;scenario<7;++scenario) {
+    for(scenario=0;scenario<9;++scenario) {
         chunk=0; diar_result r={0};
         int rc=diar_run("synthetic",audio,192000,0,&r,NULL,NULL);
-        if(scenario==2 || scenario==3) assert(rc && !r.exclusive_count);
-        else if (scenario >= 5) assert(!rc && !r.speakers && !r.exclusive_count);
+        if(scenario==7 || scenario==3) assert(rc && !r.exclusive_count);
+        else if (scenario==2 || scenario==5 || scenario==6)
+            assert(!rc && !r.speakers && !r.exclusive_count && !r.activity_count);
         else {
             assert(!rc && r.speakers==(scenario==1?2:1) && r.exclusive_count>0);
             for(size_t i=0;i<r.exclusive_count;++i) {

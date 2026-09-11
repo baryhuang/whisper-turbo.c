@@ -8,8 +8,8 @@ typedef struct {
     int speaker;
 } diar_interval;
 typedef struct {
-    diar_interval *segments, *exclusive;
-    size_t count, exclusive_count, chunks, training_embeddings;
+    diar_interval *segments, *exclusive, *activity;
+    size_t count, exclusive_count, activity_count, chunks, training_embeddings;
     int speakers, *chunk_counts;
     float centroids[32 * 256];
 } diar_result;

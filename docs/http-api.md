@@ -127,7 +127,13 @@ full-recording ASR pass. In diarized mode, 30-second ASR windows without acousti
 speech activity are skipped, with 250 ms padding around detected speech. The
 original windows and timestamps are retained; audio is not concatenated or
 transcribed per speaker. Overlap-aggregated segmentation, rather than an isolated
-positive mask, decides whether a recording contains speech. This reduces
+positive mask, decides whether a recording contains speech. Activity gaps up to
+100 ms are merged and bursts shorter than 250 ms are rejected, following the
+default speech-duration settings documented by whisper.cpp. Very brief isolated
+utterances can therefore be omitted. If real speech is too short for the usual
+two-second clean-embedding filter, finite nonzero embeddings supported by accepted
+speech activity are clustered instead; missing evidence still returns an error.
+This reduces
 silence hallucinations but does not guarantee recognition accuracy inside an
 active window. The stages run sequentially to bound peak memory.
 Six selected cross-attention heads are captured during accepted greedy decoding.

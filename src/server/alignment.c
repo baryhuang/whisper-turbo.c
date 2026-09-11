@@ -7,9 +7,9 @@
 
 int wt_speech_window_active(const diar_result *speech, size_t offset, size_t used) {
     if (!speech) return 1;
-    for (size_t i = 0; i < speech->exclusive_count; ++i)
-        if (speech->exclusive[i].end + 0.25 > offset / 16000.0 &&
-            speech->exclusive[i].start - 0.25 < (offset + used) / 16000.0) return 1;
+    for (size_t i = 0; i < speech->activity_count; ++i)
+        if (speech->activity[i].end + 0.25 > offset / 16000.0 &&
+            speech->activity[i].start - 0.25 < (offset + used) / 16000.0) return 1;
     return 0;
 }
 

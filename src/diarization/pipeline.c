@@ -120,6 +120,7 @@ static int intervals(const uint32_t *bits, size_t frames, int k, const int *labe
 void diar_result_free(diar_result *r) {
     free(r->segments);
     free(r->exclusive);
+    free(r->activity);
     free(r->chunk_counts);
     memset(r, 0, sizeof(*r));
 }
@@ -250,13 +251,59 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
     if (getenv("WHISPER_DIAGNOSTICS"))
         fprintf(stderr, "diarization: consensus_speech_frames=%zu valid_embeddings=%zu training_embeddings=%zu\n",
                 speech_frames, valid_embeddings, train_n);
-    if (!speech_frames) {
+    /* VAD-style short-burst filtering: merge gaps up to 100 ms, then require
+       250 ms of activity. These match whisper.cpp's documented VAD defaults;
+       no amplitude threshold or recognized-text blacklist is used. */
+    normal = calloc(frames, sizeof(uint32_t));
+    if (!normal) goto done;
+    for (size_t t = 0; t < frames; ++t)
+        normal[t] = votes[t * 2 + 1] > 0 &&
+                    nearbyint(votes[t * 2] / votes[t * 2 + 1]) > 0;
+    int activity_label = 0;
+    if (intervals(normal, frames, 1, &activity_label, samples / 16000.0,
+                  &out->activity, &out->activity_count)) goto done;
+    size_t merged = 0;
+    for (size_t i = 0; i < out->activity_count; ++i) {
+        diar_interval interval = out->activity[i];
+        if (merged && interval.start - out->activity[merged - 1].end <= 0.1)
+            out->activity[merged - 1].end = interval.end;
+        else out->activity[merged++] = interval;
+    }
+    out->activity_count = 0;
+    for (size_t i = 0; i < merged; ++i)
+        if (out->activity[i].end - out->activity[i].start >= 0.25)
+            out->activity[out->activity_count++] = out->activity[i];
+    if (getenv("WHISPER_DIAGNOSTICS"))
+        fprintf(stderr, "diarization: speech_activity_intervals=%zu\n", out->activity_count);
+    if (!out->activity_count) {
         out->chunks = chunks;
         result = 0;
         goto done;
     }
     int k = 0;
     if (any) {
+        if (!train_n && valid_embeddings) {
+            /* A recording may contain real short speech but no two-second
+               clean training window. Cluster its finite nonzero embeddings,
+               instead of fabricating a global single-speaker centroid. */
+            for (size_t i = 0; i < chunks * 3; ++i) {
+                double norm = 0;
+                for (size_t j = 0; j < 256; ++j) norm += (double)emb[i * 256 + j] * emb[i * 256 + j];
+                if (!isfinite(norm) || norm <= 0) continue;
+                int supported = 0;
+                size_t c = i / 3, channel = i % 3;
+                for (size_t t = 0; t < DIAR_FRAMES && !supported; ++t) {
+                    if (masks[(c * DIAR_FRAMES + t) * 3 + channel] <= 0) continue;
+                    double at = c + (t * 270 + 495.5) / 16000.0;
+                    for (size_t j = 0; j < out->activity_count; ++j)
+                        if (at >= out->activity[j].start && at < out->activity[j].end) supported = 1;
+                }
+                if (!supported) continue;
+                memcpy(train + train_n++ * 256, emb + i * 256, 256 * sizeof(float));
+            }
+            if (getenv("WHISPER_DIAGNOSTICS"))
+                fprintf(stderr, "diarization: sparse speech uses %zu finite embeddings\n", train_n);
+        }
         if (!train_n) {
             fprintf(stderr, "insufficient clean speech to estimate speakers; no "
                             "diarization emitted\n");
@@ -277,7 +324,7 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
         }
     }
     sums = calloc(frames * (size_t)(k ? k : 1), sizeof(float));
-    normal = calloc(frames, sizeof(uint32_t));
+    memset(normal, 0, frames * sizeof(uint32_t));
     exclusive = calloc(frames, sizeof(uint32_t));
     if (!sums || !votes || !normal || !exclusive)
         goto done;
