@@ -72,8 +72,9 @@ including `gpt-4o-transcribe-diarize`-shaped speaker-segment responses. All acce
 model names select local C inference, not OpenAI-hosted weights.
 
 The [experimental C-only Community-1 diarizer](docs/diarization.md) can run
-standalone or in the shared CLI/HTTP transcription pipeline. Whisper transcribes
-the recording once; Community-1 diarizes it once. Cross-attention alignment assigns
+standalone or in the combined CLI/HTTP transcription pipeline. Each audio window
+is encoded once; [quality-gated decoder retries](docs/http-api.md#decoding-and-recovery)
+reuse that output. Community-1 diarizes the recording once. Cross-attention alignment assigns
 the existing text to speakers without retranscribing turns. Overlapping voices
 are not separated.
 

@@ -449,9 +449,13 @@ static int decoder_step_internal(const cllm_whisper_turbo_decoder_weights *weigh
         float local_logit = -INFINITY;
 #pragma omp for nowait schedule(static)
         for (size_t row = 0U; row < CLLM_WHISPER_TURBO_VOCABULARY; ++row) {
-            if (suppressed_tokens != NULL && suppressed_tokens[row]) continue;
+            if (suppressed_tokens != NULL && suppressed_tokens[row]) {
+                if (state->logits) state->logits[row] = -INFINITY;
+                continue;
+            }
             const float logit = output_embedding_logit(
                 &weights->token_embedding, row, norm);
+            if (state->logits) state->logits[row] = logit;
             if (logit > local_logit ||
                 (logit == local_logit && row < local_token)) {
                 local_logit = logit;
@@ -467,9 +471,13 @@ static int decoder_step_internal(const cllm_whisper_turbo_decoder_weights *weigh
     }
 #else
     for (size_t row = 0U; row < CLLM_WHISPER_TURBO_VOCABULARY; ++row) {
-        if (suppressed_tokens != NULL && suppressed_tokens[row]) continue;
+        if (suppressed_tokens != NULL && suppressed_tokens[row]) {
+            if (state->logits) state->logits[row] = -INFINITY;
+            continue;
+        }
         const float logit = output_embedding_logit(
             &weights->token_embedding, row, norm);
+        if (state->logits) state->logits[row] = logit;
         if (logit > *next_logit) {
             *next_logit = logit;
             *next_token = (uint32_t)row;

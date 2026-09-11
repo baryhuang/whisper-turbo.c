@@ -42,7 +42,7 @@ supported request subset. When authentication is enabled, add
 | `model` | Required: `whisper-large-v3-turbo`, `whisper-1`, or `gpt-4o-transcribe-diarize`. All are local model aliases; the last enables Community-1. |
 | `language` | Optional lowercase model language code. Omission detects the language from the first non-silent window. |
 | `response_format` | `json` (default), `text`, or `diarized_json` for the diarization model. |
-| `temperature` | Zero only; deterministic greedy decoding without temperature fallback. |
+| `temperature` | Zero or omitted: starts with greedy decoding, with bounded internal quality-gated fallback. Other initial temperatures are rejected. |
 | `stream` | Diarization model: `true` returns buffered SSE events. Whisper aliases: ignored, as on the hosted Whisper route. |
 | `chunking_strategy` | Diarization model: `auto`, required for audio longer than 30 seconds. Custom server-VAD settings are rejected. |
 | `known_speaker_names[]`, `known_speaker_references[]` | Up to four paired names and 2–10-second PCM16/16kHz WAV base64 data URLs; diarization model only. |
@@ -60,8 +60,37 @@ Accepted recordings are processed in successive 30-second windows with bounded
 workspace. All accepted audio is processed, including speech after 30 seconds.
 Window text is joined without cross-window prompt conditioning or timestamp-based
 overlap correction; speech crossing a boundary can lose continuity. Exact digital
-silence is skipped. If decoding exhausts its token context, the entire request
-fails with `422` instead of returning a silently truncated transcript.
+silence is skipped. See [decoding and recovery](#decoding-and-recovery) for
+repetition, low-confidence and decoder-context handling.
+
+## Decoding and recovery
+
+Every window first uses greedy decoding. A completed candidate is rejected when
+its mean token log probability is below −1.0 or, for sequences longer than 32
+tokens, its last-32-token entropy is below 2.4. Entropy uses natural logarithms
+and includes the end-of-text token. A high no-speech probability (>0.6) combined
+with low confidence identifies a silent window; high no-speech probability alone
+does not discard confident text. No-speech probability is measured before token
+filtering.
+
+Rejected or context-exhausted output is retried with three quality-gated beams,
+then temperatures 0.2, 0.4, 0.6, 0.8 and 1.0 as needed. Each positive temperature
+evaluates five candidates sequentially and selects the highest-scoring candidate
+that passes the same checks. Sampling scores use the temperature-adjusted,
+filtered distribution. Fixed request-local seeds make retries reproducible on
+the same runtime; they do not guarantee identical output across hardware.
+
+Retries reuse the encoded audio and cross-attention cache. They do not switch
+precision, force another language, split the recording into shorter requests,
+or repeat diarization. Difficult audio can take longer because of decoder retries.
+Every accepted hypothesis must generate its own end-of-text token within the
+448-position context. If no completed candidate passes, the entire request
+returns `422` with code `decoding_failed`; partial text is not returned.
+
+These safeguards follow the [whisper.cpp decoding criteria](https://github.com/ggml-org/whisper.cpp/blob/927cfce34f31707e17f2bff35c349632fb9e2c3a/src/whisper.cpp).
+They are heuristics, not proof of recognition accuracy or absence of hallucinations.
+The HTTP API and combined diarized CLI use this policy; the basic encoder/decoder
+CLI retains its separate English greedy path.
 
 ## Diarized transcription
 
@@ -96,7 +125,9 @@ Usage reports actual input duration; it is not an OpenAI bill or token count.
 Whisper transcribes the complete recording once, in bounded 30-second windows,
 and Community-1 diarizes the complete recording once. The two stages run
 sequentially to bound peak memory; they do not decode individual speaker crops.
-Six selected cross-attention heads are captured during normal greedy decoding.
+Six selected cross-attention heads are captured during accepted greedy decoding.
+After recovery, the winning token sequence is replayed through the cached decoder
+to capture its attention, without generating a new transcript or rerunning the encoder.
 Normalization, median filtering and dynamic time warping provide monotonic text
 alignment without a second transcription pass. One cached decoder consume of the
 end token supplies the alignment sentinel; it does not generate another transcript.
