@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     if (diar_run(argv[1], audio, samples, only, &r, NULL, NULL)) {
         free(audio);
         fprintf(stderr, "Diarization failed; check model files and mono "
-                        "PCM16/16kHz WAV (up to 120 seconds).\n");
+                        "PCM16/16kHz WAV (up to 300 seconds).\n");
         return 1;
     }
     free(audio);

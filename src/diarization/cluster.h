@@ -1,7 +1,9 @@
 #ifndef DIAR_CLUSTER_H
 #define DIAR_CLUSTER_H
 #include <stddef.h>
-#define DIAR_MAX_EMBEDDINGS 336
+#include "../audio_limits.h"
+/* Three local speakers per overlapping ten-second window, one-second step. */
+#define DIAR_MAX_EMBEDDINGS (3U * (WT_MAX_AUDIO_SECONDS - 10U + 2U))
 typedef struct {
     double mean1[256], mean2[128], lda[256 * 128], mu[128], tr[128 * 128], phi[128];
 } diar_plda;

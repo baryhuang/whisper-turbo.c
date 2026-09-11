@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -31,6 +32,9 @@ static void suppression(const cllm_whisper_turbo_decoder_weights *d, unsigned ch
 static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t samples,
                       const char *requested_language, wt_result *out, wt_error *error,
                       wt_cancel cancel, void *cancel_context, int aligned) {
+    if (!pcm || !samples || samples > WT_AUDIO_LIMIT)
+        return wt_fail(error, 413, "Audio exceeds the supported sample limit.", "file",
+                       "audio_too_long");
     const cllm_whisper_turbo_model *m = &engine->model;
     const cllm_whisper_turbo_decoder_weights *d = &m->decoder;
 #ifdef _OPENMP
@@ -58,7 +62,8 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
     unsigned char *mask = malloc(CLLM_WHISPER_TURBO_VOCABULARY);
     unsigned char *text = malloc(WT_TEXT_LIMIT + 1);
     float *alignment = aligned ? malloc(6 * 448 * encoded_frames * sizeof(float)) : NULL;
-    wt_word *words = aligned ? calloc(4 * 448, sizeof(wt_word)) : NULL;
+    const size_t word_capacity = ((samples + WINDOW - 1) / WINDOW) * 448;
+    wt_word *words = aligned ? calloc(word_capacity, sizeof(wt_word)) : NULL;
     size_t word_count = 0;
     size_t length = 0;
     int result = -1;
@@ -84,6 +89,9 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
         if (!nonzero)
             continue; /* Exact digital silence; no energy-threshold speech gating. */
         ++out->asr_windows;
+        if (getenv("WHISPER_DIAGNOSTICS"))
+            fprintf(stderr, "ASR window=%zu/%zu\n", offset / WINDOW + 1,
+                    (samples + WINDOW - 1) / WINDOW);
         if (cllm_whisper_turbo_log_mel(audio, WINDOW, m->mel_filters, mel, scratch,
                                        scratch_count) ||
             cllm_whisper_turbo_encode_mel_cancel(m, mel, frames, 32, encoder, &encoder_metrics,
@@ -155,25 +163,11 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
             if (!real_frames) real_frames = 1;
             if (wt_align(alignment, state.token_count, token_count, real_frames,
                          encoded_frames, 448, bounds)) goto failed;
-            for (size_t first_token = 0; first_token < token_count;) {
-                size_t last = first_token + 1;
-                /* Keep subword pieces together. Space-prefixed token boundaries
-                   yield whole words for space-delimited languages. */
-                while (last < token_count) {
-                    unsigned char c = text[token_offsets[last]];
-                    if ((c == ' ' || c == '\n' || c == '\t') && bounds[last] > bounds[first_token]) break;
-                    ++last;
-                }
-                if (word_count == 4 * 448 || bounds[last] <= bounds[first_token]) {
-                    wt_fail(error, 422, "Cannot obtain a positive-duration text alignment.", "file", "alignment_failed");
-                    goto done;
-                }
-                size_t begin = token_offsets[first_token];
-                if (first_token == 0) begin = before;
-                words[word_count++] = (wt_word){begin, token_offsets[last] - begin,
-                    offset / 16000.0 + bounds[first_token] * 0.02,
-                    fmin(samples / 16000.0, offset / 16000.0 + bounds[last] * 0.02)};
-                first_token = last;
+            if (wt_alignment_words(text, length, token_offsets, bounds, token_count,
+                                    offset, samples, words, word_capacity, &word_count)) {
+                wt_fail(error, 422, "Cannot obtain a positive-duration text alignment.",
+                        "file", "alignment_failed");
+                goto done;
             }
         }
         cllm_whisper_turbo_decoder_state_free(&state);

@@ -84,6 +84,51 @@ fail:
     free(matrix); free(cost); free(trace); return -1;
 }
 
+int wt_alignment_words(const unsigned char *text, size_t text_length,
+                       const size_t *offsets, const size_t *bounds, size_t tokens,
+                       size_t sample_offset, size_t samples, wt_word *words,
+                       size_t capacity, size_t *count) {
+    if (!text || !offsets || !bounds || !tokens || tokens > 448 || !words || !count ||
+        *count > capacity || sample_offset >= samples || samples > WT_AUDIO_LIMIT)
+        return -1;
+    size_t used = samples - sample_offset;
+    if (used > 480000) used = 480000;
+    size_t frames = used / 320;
+    if (!frames) frames = 1;
+    for (size_t t = 0; t <= tokens; ++t) {
+        if (offsets[t] > text_length || bounds[t] >= frames ||
+            (t && (offsets[t] < offsets[t - 1] || bounds[t] < bounds[t - 1])))
+            return -1;
+    }
+    const size_t first_word = *count;
+    for (size_t first = 0; first < tokens;) {
+        size_t last = first + 1;
+        while (last < tokens) {
+            unsigned char c = offsets[last] < text_length ? text[offsets[last]] : 0;
+            if ((c == ' ' || c == '\n' || c == '\t') && bounds[last] > bounds[first]) break;
+            ++last;
+        }
+        if (bounds[last] == bounds[first]) {
+            /* DTW permits vertical steps: final tokens (often punctuation) can
+               share the terminal boundary. Keep them in the preceding positive
+               span of this window; do not fabricate a positive word duration. */
+            if (*count == first_word) return -1;
+            wt_word *previous = words + *count - 1;
+            previous->length = offsets[last] - previous->offset;
+            if (getenv("WHISPER_DIAGNOSTICS"))
+                fprintf(stderr, "alignment: merged %zu collapsed trailing tokens at sample offset %zu\n",
+                        last - first, sample_offset);
+        } else {
+            if (*count == capacity) return -1;
+            words[(*count)++] = (wt_word){offsets[first], offsets[last] - offsets[first],
+                sample_offset / 16000.0 + bounds[first] * 0.02,
+                fmin(samples / 16000.0, sample_offset / 16000.0 + bounds[last] * 0.02)};
+        }
+        first = last;
+    }
+    return 0;
+}
+
 int wt_assign_speakers(wt_result *r, const diar_result *d, const char names[32][64],
                        const wt_request *req, wt_error *e) {
     if (!r->word_count) return 0;

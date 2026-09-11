@@ -16,7 +16,8 @@ float *diar_wav_read(const char *path, size_t *samples) {
     unsigned char h[16];
     float *audio = NULL;
     long size;
-    if (fseek(f, 0, SEEK_END) || (size = ftell(f)) < 12 || size > 120 * 32000 + 1024 * 1024 ||
+    if (fseek(f, 0, SEEK_END) || (size = ftell(f)) < 12 ||
+        (unsigned long)size > WT_MAX_AUDIO_SAMPLES * 2U + 1024U * 1024U ||
         fseek(f, 0, SEEK_SET) || fread(h, 1, 12, f) != 12 || memcmp(h, "RIFF", 4) ||
         memcmp(h + 8, "WAVE", 4) || (uint64_t)le32(h + 4) + 8 != (uint64_t)size)
         goto done;
@@ -37,7 +38,7 @@ float *diar_wav_read(const char *path, size_t *samples) {
                 goto done;
             fmt = 1;
         } else if (!memcmp(h, "data", 4)) {
-            if (seen || !bytes || (bytes & 1) || bytes > 120 * 32000)
+            if (seen || !bytes || (bytes & 1) || bytes > WT_MAX_AUDIO_SAMPLES * 2U)
                 goto done;
             seen = 1;
             data = pos + 8;

@@ -65,7 +65,7 @@ Weights are separate from the application license. See
 OMP_NUM_THREADS=8 ./build/diarize-community /path/to/models conversation.wav
 ```
 
-Input must be mono PCM16 WAV at 16 kHz, between one sample and 120 seconds.
+Input must be mono PCM16 WAV at 16 kHz, between one sample and 300 seconds.
 Unsupported formats and longer recordings are rejected, not silently truncated.
 Very short speech may not provide enough clean audio for speaker clustering.
 
@@ -91,9 +91,11 @@ PLDA, centroid-linkage initialization, and VBx clustering. Community-1 clusterin
 parameters are `threshold=0.6`, `Fa=0.07`, and `Fb=0.8`.
 
 Workspaces are bounded to one neural-network window; clustering is limited to
-336 training embeddings and 32 output speakers. The CLI does not support forced
+876 training embeddings and 32 output speakers. The CLI does not support forced
 speaker counts, enrollment, streaming, resampling, or stereo downmixing.
-Insufficient clean speech produces an error instead of invented speaker labels.
+Missing embeddings in a local window are omitted from speaker voting; overlapping
+windows can supply the evidence. Insufficient clean speech across the recording
+produces an error instead of invented speaker labels.
 Detected silence produces empty timelines.
 
 The port is not certified as numerically equivalent to pyannote.audio. It uses

@@ -1,0 +1,112 @@
+{
+  "date": "2026-09-10",
+  "timezone": "America/Los_Angeles",
+  "source_commit": "eb0d95e2a459866f6a24d7a6c8e950efb39f1b84",
+  "platform": "InstaCloud",
+  "cpu": "Intel Xeon 6975P-C",
+  "configured_vcpus": 4,
+  "guest_logical_cpus": 5,
+  "cpu_affinity": "0-3",
+  "threads": 4,
+  "configured_memory_mib": 8192,
+  "compiler": "GCC 12.2.0",
+  "flags": "-O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp",
+  "whisper_weights": "int8",
+  "encoder_activations": "int8",
+  "decoder_activations": "fp32",
+  "floating_point_benchmark_variants": false,
+  "workload": "std30.wav",
+  "audio_seconds": 27.27,
+  "language": "en",
+  "response_format": "diarized_json",
+  "mode": "resident; one excluded warm-up followed by three measured requests; no restarts or cache eviction between requests",
+  "startup_time_included": false,
+  "warmup_time_included": false,
+  "direct_runs": [
+    {
+      "trial": 0,
+      "warmup": true,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 35.224538,
+      "success": true
+    },
+    {
+      "trial": 1,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 35.308962,
+      "success": true
+    },
+    {
+      "trial": 2,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 35.237685,
+      "success": true
+    },
+    {
+      "trial": 3,
+      "warmup": false,
+      "asr_windows": 1,
+      "diarization_passes": 1,
+      "seconds": 35.273096,
+      "success": true
+    }
+  ],
+  "http_runs": [
+    {
+      "trial": 0,
+      "status": 200,
+      "seconds": 39.103514,
+      "warmup": true
+    },
+    {
+      "trial": 1,
+      "status": 200,
+      "seconds": 36.298806,
+      "warmup": false
+    },
+    {
+      "trial": 2,
+      "status": 200,
+      "seconds": 35.537225,
+      "warmup": false
+    },
+    {
+      "trial": 3,
+      "status": 200,
+      "seconds": 35.73945,
+      "warmup": false
+    }
+  ],
+  "direct_median_seconds": 35.273096,
+  "http_median_seconds": 35.73945,
+  "json_byte_equivalence": true,
+  "previous_8thread_text_and_segments_equivalence": true,
+  "process_lifetime_peak_rss_bytes": 1001676800,
+  "memory_note": "Server process lifetime RSS peak after warm-up and three HTTP requests; not a cgroup peak-memory acceptance test.",
+  "cost_scenario": {
+    "request": 0.0012553839206999999,
+    "audio_hour": 0.1657272502574257,
+    "memory_assumption_bytes": 1100000000,
+    "cpu_assumption": 4,
+    "cpu_rate_per_minute_usd": 0.0004632,
+    "ram_rate_per_gb_minute_usd": 0.0002316,
+    "includes_idle": false,
+    "provider_metered": false
+  },
+  "source_sha256": {
+    "src/server/alignment.c": "0dfa96a4c56d27abd066a4c18c429dc88a42819a7d5cc6300ea6fb6e5236ec6b",
+    "src/server/diarized.c": "1fc5dddf5514ff2174b0266813ed2d47ccae8a3132c38a833831e4962edcbb7c",
+    "src/server/inference.c": "09a079d4331024aa6a1ac34473dd7c3e9218a23f4c53cc5cf11e85774413f4fe",
+    "src/generic/whisper_turbo_decoder.c": "c5cddf79d1695a383f1793de2a8bea4c13841a0909e4f0b18c7c99e0f5549ae6"
+  },
+  "binary_sha256": {
+    "whisper-turbo-server": "13a75abd34c1ed4df6928ba7eea7da4b1eaeff400cd0e4721a7b96adff5d6f14",
+    "resident-pipeline-bench": "b419a400a7267ed53ff3e0652157d594187e8bb210a69afa261d69f7547cfef3"
+  },
+  "private_audio_and_transcripts_excluded": true
+}

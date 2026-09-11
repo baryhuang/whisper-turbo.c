@@ -1,6 +1,7 @@
 #ifndef DIAR_PIPELINE_H
 #define DIAR_PIPELINE_H
 #include <stddef.h>
+#include "../audio_limits.h"
 typedef int (*diar_cancel)(void *);
 typedef struct {
     double start, end;

@@ -6,6 +6,39 @@
 #include <string.h>
 
 int main(void) {
+    /* A final token with a zero-duration DTW span must not discard the whole
+       recording. Preserve it in the preceding aligned group, with unchanged time. */
+    const unsigned char tail[] = "Hello there !";
+    size_t offsets[] = {0, 5, 11, 13}, collapsed[] = {0, 10, 20, 20};
+    wt_word grouped[4]; size_t grouped_count = 0;
+    assert(!wt_alignment_words(tail, 13, offsets, collapsed, 3, 0, 16000,
+                                grouped, 4, &grouped_count));
+    assert(grouped_count == 2 && grouped[1].offset == 5 && grouped[1].length == 8 &&
+           grouped[1].start == .2 && grouped[1].end == .4);
+    /* Do not invent time for an entirely collapsed window or borrow a span
+       from the previous ASR window. */
+    size_t all_zero[] = {0,0,0,0};
+    assert(wt_alignment_words(tail,13,offsets,all_zero,3,480000,960000,
+                               grouped,4,&grouped_count));
+    size_t descending[] = {0,10,9,20}; grouped_count = 0;
+    assert(wt_alignment_words(tail,13,offsets,descending,3,0,16000,grouped,4,&grouped_count));
+    assert(wt_alignment_words(tail,13,offsets,collapsed,3,0,16000,grouped,1,&grouped_count));
+    /* Final window of a five-minute request uses absolute, bounded timestamps. */
+    grouped_count = 0;
+    assert(!wt_alignment_words(tail,13,offsets,collapsed,3,4320000,4800000,
+                                grouped,4,&grouped_count));
+    assert(grouped[0].start == 270 && grouped[1].end == 270.4);
+    unsigned char many_text[4000]; size_t many_offsets[201], many_bounds[201];
+    wt_word *many_words=calloc(2000,sizeof(wt_word)); assert(many_words);
+    for(size_t i=0;i<2000;++i) {many_text[2*i]=' ';many_text[2*i+1]='a';}
+    size_t many_count=0;
+    for(size_t window=0;window<10;++window) {
+        for(size_t i=0;i<=200;++i) {many_offsets[i]=window*400+i*2;many_bounds[i]=i;}
+        assert(!wt_alignment_words(many_text,sizeof(many_text),many_offsets,many_bounds,
+                                    200,window*480000,4800000,many_words,2000,&many_count));
+    }
+    assert(many_count==2000 && many_words[1999].offset+many_words[1999].length==4000);
+    free(many_words);
     float q[6 * 8 * 30];
     size_t bounds[4];
     for (size_t h = 0; h < 6; ++h)

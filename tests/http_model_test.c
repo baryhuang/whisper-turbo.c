@@ -239,13 +239,13 @@ int main(int argc, char **argv) {
             for (const char *p = r; (p = strstr(p, "country")) != NULL; p += 7)
                 ++mentions;
             printf("HTTP_CONTENT {\"case\":\"%s\",\"text_bytes\":%zu,\"country_mentions\":%zu}\n",
-                   test ? "near_upload_limit" : "120s_repeated_speech", strlen(r), mentions);
+                   test ? "near_upload_limit" : "300s_repeated_speech", strlen(r), mentions);
             /* Each original JFK clip says 'country' twice. Require more content
              * than its first 30 seconds, not an arbitrary character count. */
             CHECK(mentions >= (test ? 2U : 8U) && strlen(r) > 50);
             printf("HTTP_RESULT {\"case\":\"%s\",\"audio_seconds\":%.3f,\"file_bytes\":%zu,"
                    "\"seconds\":%.6f,\"status\":200,\"transcript_checked\":true}\n",
-                   test ? "near_upload_limit" : "120s_repeated_speech", count / 16000.0, bytes,
+                   test ? "near_upload_limit" : "300s_repeated_speech", count / 16000.0, bytes,
                    now() - started);
             free(r);
             free(input);

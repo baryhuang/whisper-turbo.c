@@ -123,6 +123,23 @@ int main(void) {
     }
     assert(!wt_reference_wav((unsigned char *)url, pos, &pcm, &samples, &e) && samples == 32000);
     free(pcm);
+    /* Five-minute payload boundary, without model inference or private audio. */
+    size_t long_bytes=44+2*(WT_AUDIO_LIMIT+1U);
+    unsigned char *long_wav=calloc(long_bytes,1); assert(long_wav);
+    memcpy(long_wav,wav,44);
+    le(long_wav+4,(unsigned)long_bytes-10);
+    le(long_wav+40,2*WT_AUDIO_LIMIT);
+    const unsigned char *long_pcm=NULL; size_t long_samples=0;
+    assert(!wt_wav(long_wav,long_bytes-2,&long_pcm,&long_samples,&e));
+    assert(long_samples==4800000 && WT_MAX_AUDIO_SECONDS==300);
+    le(long_wav+4,(unsigned)long_bytes-8);
+    le(long_wav+40,2*(WT_AUDIO_LIMIT+1U));
+    assert(wt_wav(long_wav,long_bytes,&long_pcm,&long_samples,&e) && e.status==413);
+    free(long_wav);
+    result.segment_count=3; result.duration=300;
+    assert(!wt_render(&req,&result,&out,&n,&type)); free(out);
+    result.duration=300.01;
+    assert(wt_render(&req,&result,&out,&n,&type));
     url[pos - 1] = '!';
     assert(wt_reference_wav((unsigned char *)url, pos, &pcm, &samples, &e));
     free(wav);

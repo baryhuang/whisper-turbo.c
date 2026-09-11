@@ -13,12 +13,22 @@ static int assign(const float *e, const float *mask, const float *cent, int k, i
         return -1;
     double cost[3][32], min = INFINITY;
     int active[3] = {0};
+    for (int c = 0; c < k; ++c) {
+        double norm = 0;
+        for (int d = 0; d < 256; ++d) norm += (double)cent[c * 256 + d] * cent[c * 256 + d];
+        if (!isfinite(norm) || norm <= 0) return -1;
+    }
     for (int s = 0; s < 3; ++s) {
         double norm = 0;
         for (int d = 0; d < 256; ++d)
             norm += (double)e[s * 256 + d] * e[s * 256 + d];
         for (int t = 0; t < DIAR_FRAMES; ++t)
             active[s] += mask[t * 3 + s] > 0;
+        /* Short segmentation masks may have no samples after the embedding
+           network's temporal downsampling. NaNs are its documented missing-
+           evidence marker, not a failed recording. Other overlapping windows
+           can still provide speaker evidence at these times. */
+        if (!isfinite(norm) || norm <= 0) active[s] = 0;
         for (int c = 0; c < k; ++c) {
             double dot = 0, cnorm = 0;
             for (int d = 0; d < 256; ++d) {
@@ -30,8 +40,12 @@ static int assign(const float *e, const float *mask, const float *cent, int k, i
                 min = fmin(min, cost[s][c]);
         }
     }
-    if (!isfinite(min))
-        return -1;
+    if (!isfinite(min)) {
+        if (getenv("WHISPER_DIAGNOSTICS"))
+            fprintf(stderr, "diarization: local window has no usable embeddings; use overlapping evidence\n");
+        out[0] = out[1] = out[2] = -1;
+        return 0;
+    }
     for (int s = 0; s < 3; ++s)
         for (int c = 0; c < k; ++c) {
             if (!isfinite(cost[s][c]))
@@ -119,7 +133,7 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
     diar_checkpoint segmentation = {0}, embedding = {0};
     diar_plda *plda = NULL;
     char path[4096];
-    if (!audio || !samples || samples > 16000U * 120U || !directory || (cancel && cancel(context)))
+    if (!audio || !samples || samples > WT_MAX_AUDIO_SAMPLES || !directory || (cancel && cancel(context)))
         goto done;
     if (snprintf(path, sizeof(path), "%s/segmentation-pytorch_model.bin", directory) >=
             (int)sizeof(path) ||
@@ -269,7 +283,8 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
         for (int a = 0; a < count; ++a) {
             int best = -1;
             for (int s = 0; s < k; ++s)
-                if (!((used >> s) & 1) && (best < 0 || sums[t * k + s] > sums[t * k + best]))
+                if (!((used >> s) & 1) && sums[t * k + s] > 0 &&
+                    (best < 0 || sums[t * k + s] > sums[t * k + best]))
                     best = s;
             if (best < 0)
                 break;
@@ -283,6 +298,9 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
     }
     out->speakers = next;
     out->training_embeddings = train_n;
+    if (getenv("WHISPER_DIAGNOSTICS"))
+        fprintf(stderr, "diarization: chunks=%zu training_embeddings=%zu speakers=%d\n",
+                chunks, train_n, next);
     for (int i = 0; i < k; ++i)
         if (labels[i] >= 0)
             memcpy(out->centroids + labels[i] * 256, cent + i * 256, 256 * sizeof(float));

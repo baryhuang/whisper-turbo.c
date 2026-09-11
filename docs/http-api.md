@@ -38,7 +38,7 @@ supported request subset. When authentication is enabled, add
 
 | Field or behavior | Implemented behavior |
 | --- | --- |
-| `file` | Required file part; mono PCM16 WAV at 16 kHz, up to 120 seconds. |
+| `file` | Required file part; mono PCM16 WAV at 16 kHz, up to 300 seconds. |
 | `model` | Required: `whisper-large-v3-turbo`, `whisper-1`, or `gpt-4o-transcribe-diarize`. All are local model aliases; the last enables Community-1. |
 | `language` | Optional lowercase model language code. Omission detects the language from the first non-silent window. |
 | `response_format` | `json` (default), `text`, or `diarized_json` for the diarization model. |
@@ -157,7 +157,7 @@ endpoints are not provided.
 - At most eight accepted connections; excess connections get `503`.
 - A 25,000,000-byte multipart-body limit, 8,192-byte HTTP-header limit,
   2,048-byte per-part header limit, and at most 32 multipart parts.
-- Up to 120 seconds of audio and 262,144 output text bytes. Upload data stays in
+- Up to 300 seconds of audio and 262,144 output text bytes. Upload data stays in
   the bounded request buffer; filenames are never opened or used as filesystem paths.
 - At most 512 emitted speaker segments and four references, each up to 430,000
   encoded bytes within the total upload cap. Serialized JSON/SSE is also bounded.
@@ -192,6 +192,12 @@ inference cancellation/deadline. Errors do not unload the model; subsequent
 requests can continue.
 
 ## Validation
+
+Two five-minute PCM16 recordings passed complete diarized HTTP requests with
+automatic language detection and INT8 encoder activations on InstaCloud. Both
+processed all ten ASR windows and returned ordered speaker segments whose text
+concatenates exactly to the full transcript. See [five-minute validation](../benchmarks/results/long-audio/README.md)
+for results and accuracy limitations.
 
 On InstaCloud's Intel Xeon 6975P-C, with eight threads, the resident server passed
 real-model multipart requests, repeated-transcript checks, automatic English
@@ -270,6 +276,10 @@ Set `WHISPER_API_KEY` in the environment to enable bearer authentication; do not
 put credentials in source or command-line arguments. Existing SIMD controls and
 opt-in `WHISPER_ACTIVATIONS=int8` also apply. FP32 activations remain the default.
 
+Set `WHISPER_DIAGNOSTICS=1` for content-free ASR window, alignment, and diarization
+diagnostics on stderr. Leave it unset for normal operation; diagnostics do not
+include transcript text or uploaded audio.
+
 `Dockerfile.server` is the C-only container build recipe; the root `Dockerfile`
 is a separate benchmark image that includes whisper.cpp. Mount the model read-only
 at `/models/turbo-q8.whtrbo`, readable by UID 65534, and supply `WHISPER_API_KEY`
@@ -298,6 +308,6 @@ overload rejection, text output, and speech placed after 30 seconds. Its generat
 long-audio fixture exists only in memory.
 
 Optional `smoke`, `repeat`, and `limits` arguments select one real request, ten
-repeated requests, or the 120-second/near-upload-limit tests respectively. The
+repeated requests, or the 300-second/near-upload-limit tests respectively. The
 near-limit fixture adds a WAV metadata chunk; its actual speech duration is still
 11 seconds. All test clients are written in C.

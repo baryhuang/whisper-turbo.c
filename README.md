@@ -104,12 +104,12 @@ curl http://127.0.0.1:8080/v1/audio/transcriptions \
 Returns `{"text":"..."}`. Add `-F response_format=text` for plain text. `whisper-1`
 is an alias for the local Turbo model, not OpenAI's hosted model. The server keeps
 one model loaded, accepts one transcription at a time, and processes WAV recordings
-up to 120 seconds in bounded windows. See [API options and limits](docs/http-api.md).
+up to 300 seconds in bounded windows. See [API options and limits](docs/http-api.md).
 
 ## Audio and output
 
 The combined CLI uses exactly the same inference and response code as the HTTP
-diarization endpoint, including automatic language detection and the 120-second
+diarization endpoint, including automatic language detection and the 300-second
 limit:
 
 ```sh
@@ -124,7 +124,7 @@ Input must be mono 16-bit PCM WAV at 16 kHz. The older ASR-only command-line tra
 first 30 seconds, uses English greedy decoding, and prints text on a `TRANSCRIPT:`
 line alongside timing logs. Language detection, timestamps, and long-audio
 processing are not supported by that CLI. The HTTP server supports language
-detection and recordings up to 120 seconds.
+detection and recordings up to 300 seconds.
 
 ```text
 whisper-turbo-x86 MODEL.whtrbo AUDIO.wav [MAX_TOKENS] [fixed30|compact]

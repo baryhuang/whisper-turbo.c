@@ -3,6 +3,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc make libc6-
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY Makefile ./
+COPY src/audio_limits.h ./src/audio_limits.h
 COPY src/server ./src/server
 COPY src/generic ./src/generic
 COPY src/x86 ./src/x86

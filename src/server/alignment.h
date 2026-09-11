@@ -6,6 +6,12 @@
    and monotonic DTW. boundaries has text_tokens+1 entries (20ms frame indices). */
 int wt_align(float *scores, size_t positions, size_t text_tokens, size_t frames,
              size_t stride_frames, size_t stride_tokens, size_t *boundaries);
+/* Append whole-word groups from monotonic token boundaries. Tokens collapsed
+   onto an existing group's end are kept with that group, without inventing time. */
+int wt_alignment_words(const unsigned char *text, size_t text_length,
+                       const size_t *offsets, const size_t *boundaries, size_t tokens,
+                       size_t sample_offset, size_t samples, wt_word *words,
+                       size_t capacity, size_t *count);
 int wt_assign_speakers(wt_result *, const diar_result *, const char names[32][64],
                        const wt_request *, wt_error *);
 #endif

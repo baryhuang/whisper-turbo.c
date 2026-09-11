@@ -329,7 +329,7 @@ int wt_wav(const unsigned char *data, size_t n, const unsigned char **pcm, size_
             if (found++ || size < 2 || (size & 1))
                 goto invalid;
             if (size / 2 > WT_AUDIO_LIMIT)
-                return wt_fail(e, 413, "Audio exceeds the 120-second limit.", "file",
+                return wt_fail(e, 413, "Audio exceeds the 300-second limit.", "file",
                                "audio_too_long");
             *pcm = data + p;
             *samples = size / 2;

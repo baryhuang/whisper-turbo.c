@@ -4,10 +4,11 @@
 #include <stdatomic.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "../audio_limits.h"
 
 #define WT_UPLOAD_LIMIT 25000000U
 #define WT_TEXT_LIMIT 262144U
-#define WT_AUDIO_LIMIT (16000U * 120U)
+#define WT_AUDIO_LIMIT WT_MAX_AUDIO_SAMPLES
 #define WT_SEGMENT_LIMIT 512U
 typedef struct {
     int status;

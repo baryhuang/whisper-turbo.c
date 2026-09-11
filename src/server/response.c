@@ -35,7 +35,7 @@ int wt_render(const wt_request *req, const wt_result *r, char **out, size_t *len
     *length = 0;
     if (!r->text || r->length > WT_TEXT_LIMIT || r->segment_count > WT_SEGMENT_LIMIT ||
         (r->segment_count && !r->segments) || !isfinite(r->duration) || r->duration < 0 ||
-        r->duration > 120)
+        r->duration > WT_MAX_AUDIO_SECONDS)
         return -1;
     size_t total = 0;
     double previous = 0;
