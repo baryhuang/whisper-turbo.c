@@ -13,6 +13,36 @@ int wt_speech_window_active(const diar_result *speech, size_t offset, size_t use
     return 0;
 }
 
+int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e) {
+    if (!speech) return 0;
+    size_t count = 0, length = 0, removed = 0, previous_offset = 0;
+    double previous_end = 0;
+    for (size_t i = 0; i < r->word_count; ++i) {
+        wt_word word = r->words[i];
+        if (word.offset < previous_offset || word.offset > r->length || word.length > r->length - word.offset ||
+            !isfinite(word.start) || !isfinite(word.end) || word.start < previous_end ||
+            word.start >= word.end || word.end > r->duration)
+            return wt_fail(e, 422, "Invalid speech alignment.", "file", "alignment_failed");
+        previous_offset = word.offset + word.length;
+        previous_end = word.end;
+        int active = 0;
+        for (size_t j = 0; j < speech->activity_count; ++j)
+            if (speech->activity[j].end + 0.25 > word.start &&
+                speech->activity[j].start - 0.25 < word.end) active = 1;
+        if (!active || !word.length) { ++removed; continue; }
+        memmove(r->text + length, r->text + word.offset, word.length);
+        word.offset = length;
+        length += word.length;
+        r->words[count++] = word;
+    }
+    if (r->text) r->text[length] = 0;
+    r->word_count = count;
+    r->length = length;
+    if (removed && getenv("WHISPER_DIAGNOSTICS"))
+        fprintf(stderr, "alignment: removed %zu word groups without acoustic speech support\n", removed);
+    return 0;
+}
+
 /* C implementation of the cross-attention normalization / median-7 / DTW
    alignment method from OpenAI Whisper (MIT), whisper/timing.py. Capture uses
    the existing autoregressive pass, not a second teacher-forced inference. */

@@ -86,6 +86,21 @@ int main(void) {
     assert(!wt_render(&req,&r,&out,&n,&type));
     assert(strstr(out,"\"delta\":\" Hi\"") && strstr(out,"\"delta\":\" Again\""));
     free(out); wt_result_free(&r);
+    wt_result gated = {.duration=300, .length=14, .word_count=3};
+    gated.text=malloc(15); assert(gated.text); memcpy(gated.text,"Hello Hi Again",15);
+    gated.words=calloc(3,sizeof(wt_word)); assert(gated.words);
+    gated.words[0]=(wt_word){0,5,1,2};
+    gated.words[1]=(wt_word){5,3,119.8,119.88};
+    gated.words[2]=(wt_word){8,6,210,211};
+    diar_interval supported[]={{0,3,0},{209,212,0}};
+    diar_result support={.activity=supported,.activity_count=2};
+    assert(!wt_filter_speech_words(&gated,&support,&e));
+    assert(gated.duration==300 && gated.word_count==2 && gated.length==11);
+    assert(!strcmp((char *)gated.text,"Hello Again") && gated.words[1].offset==5);
+    assert(gated.words[1].start==210 && gated.words[1].end==211);
+    assert(!wt_filter_speech_words(&gated,&quiet,&e));
+    assert(!gated.word_count && !gated.length && !gated.text[0] && gated.duration==300);
+    wt_result_free(&gated);
     puts("C alignment tests passed: DTW, bounds, A-B-A labels, unchanged text, SSE whitespace.");
     return 0;
 }

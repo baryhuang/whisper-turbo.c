@@ -441,5 +441,6 @@ int wt_transcribe_aligned_pcm(wt_engine *engine, const unsigned char *pcm, size_
 int wt_transcribe_speech_pcm(wt_engine *engine, const unsigned char *pcm, size_t samples,
                             const char *language, wt_result *out, wt_error *error,
                             wt_cancel cancel, void *context, const diar_result *speech) {
-    return transcribe(engine, pcm, samples, language, out, error, cancel, context, 1, speech);
+    int rc = transcribe(engine, pcm, samples, language, out, error, cancel, context, 1, speech);
+    return rc ? rc : wt_filter_speech_words(out, speech, error);
 }

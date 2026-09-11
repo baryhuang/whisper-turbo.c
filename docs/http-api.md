@@ -146,13 +146,18 @@ These are model-derived estimates, not uniformly distributed or invented times.
 
 Subword pieces are grouped at whitespace boundaries. Each group is assigned to
 the exclusive speaker interval with the largest time overlap; ties and groups in
-gaps use the nearest interval. Consecutive groups from one speaker form a segment.
+gaps use the nearest interval. Before speaker assignment, aligned word groups
+with no overlap with padded acoustic speech activity are discarded. This prevents
+silence hallucinations from borrowing a speaker label from distant real speech;
+it can also omit words when acoustic detection or alignment is wrong. Retained
+text and model-derived timestamps are unchanged. Consecutive groups from one
+speaker form a segment.
 Empty ASR results do not produce segments. Speaker
 labels are assigned in first emitted appearance order, retaining identity across
 later turns. Segment IDs are unique within a response. Concatenating segment texts
-exactly reconstructs the original ASR text, including whitespace. Segments after
-the first can begin with a space. ASR text is not regenerated or rewritten to fit
-speaker intervals. No synthetic confidence scores or token usage are generated.
+exactly reconstructs the speech-supported text, including whitespace. Segments after
+the first can begin with a space. Text is not regenerated for individual speaker
+intervals. No synthetic confidence scores or token usage are generated.
 
 Up to four known-speaker references are accepted as paired repeated fields:
 
