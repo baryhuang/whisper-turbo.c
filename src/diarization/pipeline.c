@@ -274,7 +274,9 @@ int diar_run(const char *directory, const float *audio, size_t samples, int segm
         if (out->activity[i].end - out->activity[i].start >= 0.25)
             out->activity[out->activity_count++] = out->activity[i];
     if (getenv("WHISPER_DIAGNOSTICS"))
-        fprintf(stderr, "diarization: speech_activity_intervals=%zu\n", out->activity_count);
+        fprintf(stderr, "diarization: speech_activity_intervals=%zu first=%.3f last=%.3f\n",
+                out->activity_count, out->activity_count ? out->activity[0].start : 0,
+                out->activity_count ? out->activity[out->activity_count - 1].end : 0);
     if (!out->activity_count) {
         out->chunks = chunks;
         result = 0;
