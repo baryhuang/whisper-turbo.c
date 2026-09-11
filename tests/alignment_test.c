@@ -77,6 +77,10 @@ int main(void) {
     diar_interval language_activity[] = {{0.5, 1.0, 0}, {151, 174, 0}, {181, 195, 0}};
     diar_result language_speech = {.activity=language_activity, .activity_count=3};
     assert(wt_language_window_offset(&language_speech, 4800000) == 5 * 480000);
+    assert(wt_speech_window_coverage(&language_speech, 0, 480000) == 0.5);
+    assert(wt_speech_window_coverage(&language_speech, 5 * 480000, 480000) == 23);
+    assert(wt_speech_window_coverage(&language_speech, 5 * 480000, 2 * 16000) == 1);
+    assert(wt_speech_window_coverage(NULL, 0, 480000) == 0);
     /* A partial final window is clipped to actual samples; no padded duration. */
     assert(wt_language_window_offset(&language_speech, 152 * 16000) == 5 * 480000);
     diar_interval tied[] = {{1, 10, 0}, {31, 40, 0}};

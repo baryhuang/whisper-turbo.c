@@ -278,7 +278,29 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
             cllm_whisper_turbo_decoder_state_free(&state);
             continue;
         }
-        if (cllm_whisper_turbo_decoder_consume(d, &state, language, NULL, &metrics) ||
+        uint32_t window_language = language;
+        double coverage = wt_speech_window_coverage(speech, offset, used);
+        if (!requested_language[0] && speech && coverage >= 5.0) {
+            /* Multilingual windows already have SOT logits from their own
+               encoded audio. A confident local decision preserves language
+               switches without retranscription or translated text. Quiet or
+               ambiguous windows keep the strongest-speech fallback. */
+            float score = -INFINITY;
+            uint32_t detected = 0;
+            for (uint32_t i = 50259; i < 50359; ++i)
+                if (language_token(i, NULL) && logits[i] > score) { detected = i; score = logits[i]; }
+            if (!detected || !isfinite(score)) goto failed;
+            double total = 0;
+            for (uint32_t i = 50259; i < 50359; ++i)
+                if (language_token(i, NULL)) total += exp((double)logits[i] - score);
+            double probability = 1.0 / total;
+            if (probability >= 0.5) window_language = detected;
+            if (getenv("WHISPER_DIAGNOSTICS"))
+                fprintf(stderr, "language: window=%zu/%zu selected=%s detected=%s probability=%.3f speech_s=%.3f\n",
+                        offset / WINDOW + 1, windows, wt_languages[window_language - 50259],
+                        wt_languages[detected - 50259], probability, coverage);
+        }
+        if (cllm_whisper_turbo_decoder_consume(d, &state, window_language, NULL, &metrics) ||
             cllm_whisper_turbo_decoder_consume(d, &state, TASK, NULL, &metrics))
             goto failed;
         uint32_t token = NO_TIMESTAMPS, next = 0;
@@ -334,9 +356,9 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
             size_t recovered_count = 0;
             if (getenv("WHISPER_DIAGNOSTICS"))
                 fprintf(stderr, "decoder: greedy rejected; retry with %d quality-gated beams\n", WT_SEARCH_BEAMS);
-            if (beam_fallback(d, &state, language, mask, &metrics, cancel, cancel_context,
+            if (beam_fallback(d, &state, window_language, mask, &metrics, cancel, cancel_context,
                                recovered, &recovered_count) &&
-                sampling_fallback(d, &state, language, mask, logits, &metrics,
+                sampling_fallback(d, &state, window_language, mask, logits, &metrics,
                                    cancel, cancel_context, recovered, &recovered_count)) {
                 if (cancel && cancel(cancel_context)) goto cancelled;
                 wt_fail(error, 422, "No complete transcription passed decoder quality checks within the retry budget.",
@@ -349,7 +371,7 @@ static int transcribe(wt_engine *engine, const unsigned char *pcm, size_t sample
                cross caches. No encoder or diarization pass is repeated. */
             if (aligned) {
                 state.token_count = 0;
-                uint32_t prefix[] = {SOT, language, TASK, NO_TIMESTAMPS};
+                uint32_t prefix[] = {SOT, window_language, TASK, NO_TIMESTAMPS};
                 for (size_t p = 0; p < 4; ++p)
                     if (cllm_whisper_turbo_decoder_consume(d, &state, prefix[p], NULL, &metrics)) goto failed;
             }

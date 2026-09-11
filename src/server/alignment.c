@@ -13,6 +13,15 @@ int wt_speech_window_active(const diar_result *speech, size_t offset, size_t use
     return 0;
 }
 
+double wt_speech_window_coverage(const diar_result *speech, size_t offset, size_t used) {
+    double start = offset / 16000.0, end = (offset + used) / 16000.0, coverage = 0;
+    if (!speech) return 0;
+    for (size_t i = 0; i < speech->activity_count; ++i)
+        coverage += fmax(0, fmin(end, speech->activity[i].end) -
+                             fmax(start, speech->activity[i].start));
+    return coverage;
+}
+
 size_t wt_language_window_offset(const diar_result *speech, size_t samples) {
     /* Activity intervals are sorted and disjoint. Use the original 30-second
        window with most supported speech, not a noisy opening with a brief
@@ -21,12 +30,8 @@ size_t wt_language_window_offset(const diar_result *speech, size_t samples) {
     double best_coverage = 0;
     if (!speech) return 0;
     for (size_t offset = 0; offset < samples; offset += 480000) {
-        double start = offset / 16000.0;
-        double end = fmin((offset + 480000) / 16000.0, samples / 16000.0);
-        double coverage = 0;
-        for (size_t i = 0; i < speech->activity_count; ++i)
-            coverage += fmax(0, fmin(end, speech->activity[i].end) -
-                                 fmax(start, speech->activity[i].start));
+        size_t used = samples - offset < 480000 ? samples - offset : 480000;
+        double coverage = wt_speech_window_coverage(speech, offset, used);
         if (coverage > best_coverage) { best_offset = offset; best_coverage = coverage; }
     }
     return best_offset;

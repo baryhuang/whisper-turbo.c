@@ -40,7 +40,7 @@ supported request subset. When authentication is enabled, add
 | --- | --- |
 | `file` | Required file part; mono PCM16 WAV at 16 kHz, up to 300 seconds. |
 | `model` | Required: `whisper-large-v3-turbo`, `whisper-1`, or `gpt-4o-transcribe-diarize`. All are local model aliases; the last enables Community-1. |
-| `language` | Optional lowercase model language code. Omission detects language automatically; diarized requests use the original 30-second window with the most acoustic speech activity, other requests use the first non-silent window. |
+| `language` | Optional lowercase model language code. Omission detects language automatically; diarized requests use a speech-informed recording fallback and confident per-window detection, other requests use the first non-silent window. |
 | `response_format` | `json` (default), `text`, or `diarized_json` for the diarization model. |
 | `temperature` | Zero or omitted: starts with greedy decoding, with bounded internal quality-gated fallback. Other initial temperatures are rejected. |
 | `stream` | Diarization model: `true` returns buffered SSE events. Whisper aliases: ignored, as on the hosted Whisper route. |
@@ -131,8 +131,14 @@ with the greatest unpadded speech coverage (earliest on ties). If this is not th
 opening window, one additional bounded encoder/language-token probe runs before
 ASR, reusing the same workspace and generating no text. This avoids locking the
 whole recording to a language selected from a quiet or noisy opening. Explicit
-language requests bypass the probe. This is not per-window language switching
-or a guarantee for mixed-language recordings.
+language requests bypass the probe and remain fixed. In automatic diarized mode,
+windows with at least five seconds of acoustic speech may select their own
+language from existing SOT logits when its language-only softmax probability is
+at least 0.5. Quiet or uncertain windows retain the recording fallback. This
+preserves language changes without translating an entire conversation into the
+language detected at another time; it adds no encoder pass per window or
+per-speaker retranscription. As with faster-whisper's multilingual decoding,
+this is a heuristic, not a guarantee of mixed-language recognition accuracy.
 Overlap-aggregated segmentation, rather than an isolated
 positive mask, decides whether a recording contains speech. Activity gaps up to
 100 ms are merged and bursts shorter than 250 ms are rejected, following the
