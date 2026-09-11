@@ -1,5 +1,25 @@
 # whisper-turbo.c
 
+## LibriSpeech word error rate
+
+**September 11, 2026 — InstaCloud, Intel Xeon 6975P-C, 4 CPUs / 4 threads.**
+Transcription only, using Turbo INT8 weights. Both resident servers process the
+same **50 test-clean utterances: 328.27 seconds, 915 reference words, one English
+speaker**. Startup and one warm-up request per engine are excluded.
+
+| Engine | WER ↓ | Substitutions / deletions / insertions | Mean request time |
+| --- | ---: | ---: | ---: |
+| whisper-turbo.c | **3.72%** | 25 / 9 / 0 | 21.21 s |
+| whisper.cpp Q8_0 | **3.93%** | 26 / 10 / 0 | **11.99 s** |
+
+All 100 measured requests succeeded. The native result has two fewer word errors;
+whisper.cpp is 1.77× faster on this slice. **This single-speaker subset does not
+establish a general accuracy ranking or full-corpus WER.** Both outputs use the
+same Unicode normalization, but the engines have different decoding policies.
+See [results and exact configurations](benchmarks/results/librispeech-50/README.md),
+[the C benchmark](benchmarks/wer/README.md), and
+[published whisper.cpp comparisons](benchmarks/wer/README.md#dataset-and-published-results).
+
 ## ASR + diarization cost comparison
 
 USD, checked **September 10, 2026**. Native latency is the median of three

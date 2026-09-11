@@ -19,6 +19,13 @@ X86_INCLUDED := src/generic/whisper_turbo_encoder.c src/generic/whisper_turbo_de
 
 .PHONY: all clean check
 
+# Optional benchmark-only dependencies; normal service builds remain unchanged.
+.PHONY: wer-tools check-wer
+wer-tools:
+	$(MAKE) -C benchmarks/wer all
+check-wer:
+	$(MAKE) -C benchmarks/wer test
+
 HTTP_CORE := src/server/api.c src/server/http.c src/server/response.c src/server/reference.c
 DIAR_CORE := src/diarization/checkpoint.c src/diarization/network.c src/diarization/cluster.c src/diarization/audio.c src/diarization/pipeline.c
 DIAR_HEADERS := $(wildcard src/diarization/*.h) src/audio_limits.h

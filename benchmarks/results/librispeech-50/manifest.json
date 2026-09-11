@@ -1,0 +1,512 @@
+{
+  "items": [
+    {
+      "id": "6930-75918-0000",
+      "reference": "CONCORD RETURNED TO ITS PLACE AMIDST THE TENTS",
+      "row": 0,
+      "speaker": 6930,
+      "samples": 56080,
+      "duration": 3.505,
+      "flac_sha256": "9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+      "wav_sha256": "103c3f15eb3715ebc6243d142244128a3ac39b6bfae315baa6b8dc4a8be14aa8"
+    },
+    {
+      "id": "6930-75918-0001",
+      "reference": "THE ENGLISH FORWARDED TO THE FRENCH BASKETS OF FLOWERS OF WHICH THEY HAD MADE A PLENTIFUL PROVISION TO GREET THE ARRIVAL OF THE YOUNG PRINCESS THE FRENCH IN RETURN INVITED THE ENGLISH TO A SUPPER WHICH WAS TO BE GIVEN THE NEXT DAY",
+      "row": 1,
+      "speaker": 6930,
+      "samples": 227600,
+      "duration": 14.225,
+      "flac_sha256": "3dfad7eb0793eddd5040d04f1f2f3046ceeee39e0ec461794856a350e1bd728e",
+      "wav_sha256": "7a0c28ad2cca523cd7e7d72e360a3f314eeb905688358dbf6f150c0a87b87f76"
+    },
+    {
+      "id": "6930-75918-0002",
+      "reference": "CONGRATULATIONS WERE POURED IN UPON THE PRINCESS EVERYWHERE DURING HER JOURNEY",
+      "row": 2,
+      "speaker": 6930,
+      "samples": 80400,
+      "duration": 5.025,
+      "flac_sha256": "74ecfd628f49dca71995972c075fcc9904df804d49a4eb5b11fb712b3584f789",
+      "wav_sha256": "ca418189ed1db4ce1bf5e6940d51a9ce870d4d52f3ef9019ccdbb2189d1a0a9c"
+    },
+    {
+      "id": "6930-75918-0003",
+      "reference": "FROM THE RESPECT PAID HER ON ALL SIDES SHE SEEMED LIKE A QUEEN AND FROM THE ADORATION WITH WHICH SHE WAS TREATED BY TWO OR THREE SHE APPEARED AN OBJECT OF WORSHIP THE QUEEN MOTHER GAVE THE FRENCH THE MOST AFFECTIONATE RECEPTION FRANCE WAS HER NATIVE COUNTRY AND SHE HAD SUFFERED TOO MUCH UNHAPPINESS IN ENGLAND FOR ENGLAND TO HAVE MADE HER FORGET FRANCE",
+      "row": 3,
+      "speaker": 6930,
+      "samples": 373040,
+      "duration": 23.315,
+      "flac_sha256": "0ec415739efc00adcbe70838f6c207ee4ae8b31639bad534138c3d26d890f58b",
+      "wav_sha256": "166d138dc95c706e4eedbebb48f4ac4c8cb1b77ea796c0bc650da518308657e2"
+    },
+    {
+      "id": "6930-75918-0004",
+      "reference": "SHE TAUGHT HER DAUGHTER THEN BY HER OWN AFFECTION FOR IT THAT LOVE FOR A COUNTRY WHERE THEY HAD BOTH BEEN HOSPITABLY RECEIVED AND WHERE A BRILLIANT FUTURE OPENED BEFORE THEM",
+      "row": 4,
+      "speaker": 6930,
+      "samples": 177040,
+      "duration": 11.065,
+      "flac_sha256": "e1c4755c2febfc6b77fde418821c57e2e980d84d4c79a73ff60c6e6dfc794eac",
+      "wav_sha256": "af568c26be7892254398fc5ecc6a346dc28c3e5ef1123aa6cdf8a8dda3ce1c57"
+    },
+    {
+      "id": "6930-75918-0005",
+      "reference": "THE COUNT HAD THROWN HIMSELF BACK ON HIS SEAT LEANING HIS SHOULDERS AGAINST THE PARTITION OF THE TENT AND REMAINED THUS HIS FACE BURIED IN HIS HANDS WITH HEAVING CHEST AND RESTLESS LIMBS",
+      "row": 5,
+      "speaker": 6930,
+      "samples": 210560,
+      "duration": 13.16,
+      "flac_sha256": "ccc0da025ef4f4596a4e70fbde291527d140364166d19d9bb516a48407b3491e",
+      "wav_sha256": "414a1c8dcd58e71e979682b965d2c60768f74646c6417ffea18f840701352d63"
+    },
+    {
+      "id": "6930-75918-0006",
+      "reference": "THIS HAS INDEED BEEN A HARASSING DAY CONTINUED THE YOUNG MAN HIS EYES FIXED UPON HIS FRIEND",
+      "row": 6,
+      "speaker": 6930,
+      "samples": 93600,
+      "duration": 5.85,
+      "flac_sha256": "4bed112ebfdba58ec061abd3fe013f89946863e9c51e8a83b50a5eb7afb9ce65",
+      "wav_sha256": "b4ee5871dbb5084f596aa076453afc255f1416c83aec19d05e324ef4e062fc4d"
+    },
+    {
+      "id": "6930-75918-0007",
+      "reference": "YOU WILL BE FRANK WITH ME I ALWAYS AM",
+      "row": 7,
+      "speaker": 6930,
+      "samples": 53040,
+      "duration": 3.315,
+      "flac_sha256": "059969de8f6b780e1a4982805e977c3e73e40d3759c8fa8cb0cb8fabd9eb5b27",
+      "wav_sha256": "c6c28e12656aff6cec3484ed10cfc625d17d62f63a065b91ad3c510716e2c7e0"
+    },
+    {
+      "id": "6930-75918-0008",
+      "reference": "CAN YOU IMAGINE WHY BUCKINGHAM HAS BEEN SO VIOLENT I SUSPECT",
+      "row": 8,
+      "speaker": 6930,
+      "samples": 76560,
+      "duration": 4.785,
+      "flac_sha256": "ac916dcbcbb3240dcdbf3523b300345e33cdc3ebdfdd3538be49f208c134c4dd",
+      "wav_sha256": "01333d888f243ad4dcb166d6a3164c7c1e835bf65f9d92f15a59b63bec6792eb"
+    },
+    {
+      "id": "6930-75918-0009",
+      "reference": "IT IS YOU WHO ARE MISTAKEN RAOUL I HAVE READ HIS DISTRESS IN HIS EYES IN HIS EVERY GESTURE AND ACTION THE WHOLE DAY",
+      "row": 9,
+      "speaker": 6930,
+      "samples": 116480,
+      "duration": 7.28,
+      "flac_sha256": "def314bf5fa2c02ce5101bda550ee003760e4f4c3aa6f96699c3110c66be2048",
+      "wav_sha256": "0db8cfc26adedbb02e1b9606ae5e24500697fee0a1f4e11fe49db83c3a3c10e6"
+    },
+    {
+      "id": "6930-75918-0010",
+      "reference": "I CAN PERCEIVE LOVE CLEARLY ENOUGH",
+      "row": 10,
+      "speaker": 6930,
+      "samples": 48560,
+      "duration": 3.035,
+      "flac_sha256": "fa67866b5efc5df7fe35e2f27ad8f9d1f344f7848ce30d8b131f77a372f96add",
+      "wav_sha256": "59b07a4b926d378030f2de5bd64f9a8318b3bff3942e7a6e359832c6a38152dc"
+    },
+    {
+      "id": "6930-75918-0011",
+      "reference": "I AM CONVINCED OF WHAT I SAY SAID THE COUNT",
+      "row": 11,
+      "speaker": 6930,
+      "samples": 51120,
+      "duration": 3.195,
+      "flac_sha256": "20e49ab7c5b418f379e775f2966616d1bd60fa6ef5d1ffc6d99de5b075e75284",
+      "wav_sha256": "f5413a1368750191bbb12ced5bb5c7f605594254359ddbc8410941d9793c29a5"
+    },
+    {
+      "id": "6930-75918-0012",
+      "reference": "IT IS ANNOYANCE THEN",
+      "row": 12,
+      "speaker": 6930,
+      "samples": 31040,
+      "duration": 1.94,
+      "flac_sha256": "c158fe562a03db715f581485e9d372003163a272113f38fe45336415997d0b5f",
+      "wav_sha256": "fd64fa604791bb9e8adfee8278d4d86ac5cdfa79efeb4a61cd69b81b2a627e2f"
+    },
+    {
+      "id": "6930-75918-0013",
+      "reference": "IN THOSE VERY TERMS I EVEN ADDED MORE",
+      "row": 13,
+      "speaker": 6930,
+      "samples": 47040,
+      "duration": 2.94,
+      "flac_sha256": "83f99c357f446d1fddffc61c09f59eb8a41c82c5e4261db42c71396c537c409e",
+      "wav_sha256": "70ca35882b0be82fd315b7599bbdf20606017bd8b7a3daddb8be92879cd35dd9"
+    },
+    {
+      "id": "6930-75918-0014",
+      "reference": "BUT CONTINUED RAOUL NOT INTERRUPTED BY THIS MOVEMENT OF HIS FRIEND HEAVEN BE PRAISED THE FRENCH WHO ARE PRONOUNCED TO BE THOUGHTLESS AND INDISCREET RECKLESS EVEN ARE CAPABLE OF BRINGING A CALM AND SOUND JUDGMENT TO BEAR ON MATTERS OF SUCH HIGH IMPORTANCE",
+      "row": 14,
+      "speaker": 6930,
+      "samples": 269440,
+      "duration": 16.84,
+      "flac_sha256": "a0c581aa99f18fb4f427d40c9096f750ce6d6ef5d4721347d2bf5a36d2b5302d",
+      "wav_sha256": "1386cea0157763a917b46f4881d3f8c139158fb4ae1756098e720aaeba35b13d"
+    },
+    {
+      "id": "6930-75918-0015",
+      "reference": "THUS IT IS THAT THE HONOR OF THREE IS SAVED OUR COUNTRY'S OUR MASTER'S AND OUR OWN",
+      "row": 15,
+      "speaker": 6930,
+      "samples": 102080,
+      "duration": 6.38,
+      "flac_sha256": "93618408931cd8bcc83f064b61bf2413a0fbbed356f006ccfe80131d9966cf6d",
+      "wav_sha256": "174fc19452413e326b0d6eca2ad5f659eadef0f4ddb325884687dd64beb970c7"
+    },
+    {
+      "id": "6930-75918-0016",
+      "reference": "YES I NEED REPOSE MANY THINGS HAVE AGITATED ME TO DAY BOTH IN MIND AND BODY WHEN YOU RETURN TO MORROW I SHALL NO LONGER BE THE SAME MAN",
+      "row": 16,
+      "speaker": 6930,
+      "samples": 160240,
+      "duration": 10.015,
+      "flac_sha256": "1309ce10b1ea54782b53f116697ec58eaf84525b396db3daca3e9e2f47c4edf8",
+      "wav_sha256": "7dd7b99b09b009ffc8c6961eb4cd055cc001cd5fcf2dd2e2e45fea7f7f9c2677"
+    },
+    {
+      "id": "6930-75918-0017",
+      "reference": "BUT IN THIS FRIENDLY PRESSURE RAOUL COULD DETECT THE NERVOUS AGITATION OF A GREAT INTERNAL CONFLICT",
+      "row": 17,
+      "speaker": 6930,
+      "samples": 98560,
+      "duration": 6.16,
+      "flac_sha256": "1564e19057a9a89225cac9423544baa6f3fc71dd9dc8ba11f8ee86d5464bb1a4",
+      "wav_sha256": "936666f499ebc4d374b1959e2bdf8b314770be30d9d81475594d48222219d0f4"
+    },
+    {
+      "id": "6930-75918-0018",
+      "reference": "THE NIGHT WAS CLEAR STARLIT AND SPLENDID THE TEMPEST HAD PASSED AWAY AND THE SWEET INFLUENCES OF THE EVENING HAD RESTORED LIFE PEACE AND SECURITY EVERYWHERE",
+      "row": 18,
+      "speaker": 6930,
+      "samples": 172960,
+      "duration": 10.81,
+      "flac_sha256": "3f06a2712cadb8d5bca9618a1560112d7e1e0c229e0dd7f0c4f736f4bcb661b3",
+      "wav_sha256": "b2b90c9c9f7c688545ef9390a6e42d724d3ef46749da9a3566fa9578deee35ba"
+    },
+    {
+      "id": "6930-75918-0019",
+      "reference": "UPON THE LARGE SQUARE IN FRONT OF THE HOTEL THE SHADOWS OF THE TENTS INTERSECTED BY THE GOLDEN MOONBEAMS FORMED AS IT WERE A HUGE MOSAIC OF JET AND YELLOW FLAGSTONES",
+      "row": 19,
+      "speaker": 6930,
+      "samples": 186321,
+      "duration": 11.6450625,
+      "flac_sha256": "aaae97a4b13b4ccc8a59dcf5402bd5d63370116e21183c5b84fb4024eea7d755",
+      "wav_sha256": "f40231364b38057d9b7397907d48cc608eff5c3ef091d79aa3f84bb8d53180b4"
+    },
+    {
+      "id": "6930-75918-0020",
+      "reference": "BRAGELONNE WATCHED FOR SOME TIME THE CONDUCT OF THE TWO LOVERS LISTENED TO THE LOUD AND UNCIVIL SLUMBERS OF MANICAMP WHO SNORED AS IMPERIOUSLY AS THOUGH HE WAS WEARING HIS BLUE AND GOLD INSTEAD OF HIS VIOLET SUIT",
+      "row": 20,
+      "speaker": 6930,
+      "samples": 230400,
+      "duration": 14.4,
+      "flac_sha256": "30c19b924b666897aca99c621b821b82c69084a04140776770e86109129869ac",
+      "wav_sha256": "8ad4edbf25b6f8642776f5cd5d46cf421b1ff037db7294bef2e1713e76e846c3"
+    },
+    {
+      "id": "6930-76324-0000",
+      "reference": "GOLIATH MAKES ANOTHER DISCOVERY",
+      "row": 21,
+      "speaker": 6930,
+      "samples": 48400,
+      "duration": 3.025,
+      "flac_sha256": "dabb3c79473619bbc9768e13dfb4aaf9e1cc69d6dbad6272b1bdfc1a22d38cce",
+      "wav_sha256": "428b6bd1ef1f1bba4486d4717ab9b3431b20330a97e2cf6690d5d2454d38dab7"
+    },
+    {
+      "id": "6930-76324-0001",
+      "reference": "THEY WERE CERTAINLY NO NEARER THE SOLUTION OF THEIR PROBLEM",
+      "row": 22,
+      "speaker": 6930,
+      "samples": 51200,
+      "duration": 3.2,
+      "flac_sha256": "3c2d7791724330d1d1333b3c95d86d726b63a73a5a1b81bc898efe443b2393f6",
+      "wav_sha256": "eefb6e09630915d2d0e8ed41b8f4386de0912e6d7b51b188b90e69d2edf7febf"
+    },
+    {
+      "id": "6930-76324-0002",
+      "reference": "THE POOR LITTLE THINGS CRIED CYNTHIA THINK OF THEM HAVING BEEN TURNED TO THE WALL ALL THESE YEARS",
+      "row": 23,
+      "speaker": 6930,
+      "samples": 88960,
+      "duration": 5.56,
+      "flac_sha256": "6521d55d3303f486f51e59c30fecfb32d8ad325372fbe6e5078742326d74e988",
+      "wav_sha256": "f90e2dcc1a49b2177fbe1381ced13201ecc2b0f5dbd86efc21cf5a172c0f81d6"
+    },
+    {
+      "id": "6930-76324-0003",
+      "reference": "NOW WHAT WAS THE SENSE OF IT TWO INNOCENT BABIES LIKE THAT",
+      "row": 24,
+      "speaker": 6930,
+      "samples": 54160,
+      "duration": 3.385,
+      "flac_sha256": "414761fc394e0e079a3d36e194568e7f1305bf9cda3e057e2357df7727c8558b",
+      "wav_sha256": "32d0fc1390c1094c4ba1ee7a92eeb8936c7be6ec996c7facb1129c09d9f3570f"
+    },
+    {
+      "id": "6930-76324-0004",
+      "reference": "BUT JOYCE HAD NOT BEEN LISTENING ALL AT ONCE SHE PUT DOWN HER CANDLE ON THE TABLE AND FACED HER COMPANION",
+      "row": 25,
+      "speaker": 6930,
+      "samples": 98400,
+      "duration": 6.15,
+      "flac_sha256": "3fcbd1d65ba397bab3630c3fa3ac5dde588a8c36f9b67c59961d655ea571e0f8",
+      "wav_sha256": "c41b0ceb00f27161f451ad241a48c790d6c0c49f3272fbaa57de2fea76a29548"
+    },
+    {
+      "id": "6930-76324-0005",
+      "reference": "THE TWIN BROTHER DID SOMETHING SHE DIDN'T LIKE AND SHE TURNED HIS PICTURE TO THE WALL",
+      "row": 26,
+      "speaker": 6930,
+      "samples": 80560,
+      "duration": 5.035,
+      "flac_sha256": "c94db6c040859e6f0fda8f26594d9bcd66e3d55502afa25c70f523398b25b6ce",
+      "wav_sha256": "e4fae11ead32d4d2fdf297b589313812c31992eed041ddc1b74bc555e307d53f"
+    },
+    {
+      "id": "6930-76324-0006",
+      "reference": "HERS HAPPENED TO BE IN THE SAME FRAME TOO BUT SHE EVIDENTLY DIDN'T CARE ABOUT THAT",
+      "row": 27,
+      "speaker": 6930,
+      "samples": 71280,
+      "duration": 4.455,
+      "flac_sha256": "4873994e64812d4ea670632dcdc4d462244e97d92224b033381269ee3c630fd1",
+      "wav_sha256": "b15a8765c2c5c485a2125e4dc4609f278ba6be5776029ea082eb2fa94554423d"
+    },
+    {
+      "id": "6930-76324-0007",
+      "reference": "NOW WHAT HAVE YOU TO SAY CYNTHIA SPRAGUE",
+      "row": 28,
+      "speaker": 6930,
+      "samples": 45120,
+      "duration": 2.82,
+      "flac_sha256": "cd7d34d576578379ef74fabd2acb2236fc69ff61375325a93254b5448094df11",
+      "wav_sha256": "ac2c769ff5e206b4e5095de59e2e108bc63ed8ea36fce80da0cf3669c8dc0d65"
+    },
+    {
+      "id": "6930-76324-0008",
+      "reference": "I THOUGHT WE WERE STUMPED AGAIN WHEN I FIRST SAW THAT PICTURE BUT IT'S BEEN OF SOME USE AFTER ALL",
+      "row": 29,
+      "speaker": 6930,
+      "samples": 82960,
+      "duration": 5.185,
+      "flac_sha256": "1d240585e6c65cedc4798ccd486034f74493d85d4276ab19b061e75f15560fa3",
+      "wav_sha256": "e465b2737191afd072a172eed850e4304b868592e5377122dba247e65787c2bb"
+    },
+    {
+      "id": "6930-76324-0009",
+      "reference": "DO YOU SUPPOSE THE MINIATURE WAS A COPY OF THE SAME THING",
+      "row": 30,
+      "speaker": 6930,
+      "samples": 54480,
+      "duration": 3.405,
+      "flac_sha256": "41c7d8d77a79d8758ce4818151b1650bc9fe70e5d10df76d06ee40282c4f0e41",
+      "wav_sha256": "aa0d044115aa3ab61df2875dd8a0ff11b33ee145facda1ce9d2dea21dd26e451"
+    },
+    {
+      "id": "6930-76324-0010",
+      "reference": "WHAT IN THE WORLD IS THAT QUERIED JOYCE",
+      "row": 31,
+      "speaker": 6930,
+      "samples": 43040,
+      "duration": 2.69,
+      "flac_sha256": "0915b4c74b155a8a14881012a95001d82e77d9c2e7db3985a0d9add7857f579e",
+      "wav_sha256": "8f3518c80a85cef01a523aa73c1df41f63c0cd87e78893187805cf0808b5a247"
+    },
+    {
+      "id": "6930-76324-0011",
+      "reference": "THEY WORRY ME TERRIBLY AND BESIDES I'D LIKE TO SEE WHAT THIS LOVELY FURNITURE LOOKS LIKE WITHOUT SUCH QUANTITIES OF DUST ALL OVER IT GOOD SCHEME CYN",
+      "row": 32,
+      "speaker": 6930,
+      "samples": 147840,
+      "duration": 9.24,
+      "flac_sha256": "2cdf79b1c3c65fc09a7f924027ee817a1fb2528482b26ddb7fe2d3026569b16e",
+      "wav_sha256": "990d8b365dfec5b6025fce8549bdf7f8abe28f917f219269bd889ba47b451c2e"
+    },
+    {
+      "id": "6930-76324-0012",
+      "reference": "WE'LL COME IN HERE THIS AFTERNOON WITH OLD CLOTHES ON AND HAVE A REGULAR HOUSE CLEANING",
+      "row": 33,
+      "speaker": 6930,
+      "samples": 74480,
+      "duration": 4.655,
+      "flac_sha256": "c81b9fa9f8d46c598fe740c930906a413cae7a0d0be1ad884f3d55c2b182aadc",
+      "wav_sha256": "0bb0a953802df45517023c6fe623ea0f001e59c007310473f755164f514abb45"
+    },
+    {
+      "id": "6930-76324-0013",
+      "reference": "IT CAN'T HURT ANYTHING I'M SURE FOR WE WON'T DISTURB THINGS AT ALL",
+      "row": 34,
+      "speaker": 6930,
+      "samples": 68880,
+      "duration": 4.305,
+      "flac_sha256": "5b6e2652b4345e956fe348ede324fc52e82591fcd5c869f32a60cdf5d4794ce1",
+      "wav_sha256": "ea04063165b09ca861eed37399787e58a34325bb9f552d07ae265b30b5e212b3"
+    },
+    {
+      "id": "6930-76324-0014",
+      "reference": "THIS THOUGHT HOWEVER DID NOT ENTER THE HEADS OF THE ENTHUSIASTIC PAIR",
+      "row": 35,
+      "speaker": 6930,
+      "samples": 75520,
+      "duration": 4.72,
+      "flac_sha256": "a5c0586888f0621b3be9077eed1e2a8d192b2b5e274e68e2112a7e0fe3b949b0",
+      "wav_sha256": "c847c4549948cd1742a7a32c09dc15c4c1990ead6fa91efee08e427d8fddf037"
+    },
+    {
+      "id": "6930-76324-0015",
+      "reference": "SMUGGLING THE HOUSE CLEANING PARAPHERNALIA INTO THE CELLAR WINDOW UNOBSERVED THAT AFTERNOON PROVED NO EASY TASK FOR CYNTHIA HAD ADDED A WHISK BROOM AND DUST PAN TO THE OUTFIT",
+      "row": 36,
+      "speaker": 6930,
+      "samples": 198480,
+      "duration": 12.405,
+      "flac_sha256": "50e73f77a754627fcfcbed4c6fb6e04d9f67cd7e2a76d7d786e14cdec98de4ba",
+      "wav_sha256": "e8850ee679689e5cdf3f2bda04fb6d91e05bc338c865fddf917cfa2c2232ebe3"
+    },
+    {
+      "id": "6930-76324-0016",
+      "reference": "THE LURE PROVED TOO MUCH FOR HIM AND HE CAME SPORTING AFTER IT AS FRISKILY AS A YOUNG KITTEN MUCH TO CYNTHIA'S DELIGHT WHEN SHE CAUGHT SIGHT OF HIM",
+      "row": 37,
+      "speaker": 6930,
+      "samples": 147280,
+      "duration": 9.205,
+      "flac_sha256": "40a3291d441a7c91bd0bd25e2c966b9bbdc962a8c9eef2b5798a24a1c22f9d3f",
+      "wav_sha256": "2ca894fef15e418e35b300cfbde30fa9e02987bb81a35b34ddbe7fa111c29027"
+    },
+    {
+      "id": "6930-76324-0017",
+      "reference": "OH LET HIM COME ALONG SHE URGED I DO LOVE TO SEE HIM ABOUT THAT OLD HOUSE",
+      "row": 38,
+      "speaker": 6930,
+      "samples": 86560,
+      "duration": 5.41,
+      "flac_sha256": "36c1a8e9d5740adb6547ae1724b0f60bd9fa1fbf12d7079f2a0f4770b25568b8",
+      "wav_sha256": "e98b942f316ecf8808bf3ff89b5ca012f2c604d92a4f401a1a49cd300b4cf8da"
+    },
+    {
+      "id": "6930-76324-0018",
+      "reference": "HE MAKES IT SORT OF COZIER",
+      "row": 39,
+      "speaker": 6930,
+      "samples": 34240,
+      "duration": 2.14,
+      "flac_sha256": "5d0bbe35bc746b7bd8e82e8053847668d723dd67ca9497fc9bfb601bb829c267",
+      "wav_sha256": "c3556f2442b557de57431a568ee7fded61847dcf98da0971587a44eed8062524"
+    },
+    {
+      "id": "6930-76324-0019",
+      "reference": "NOW LET'S DUST THE FURNITURE AND PICTURES",
+      "row": 40,
+      "speaker": 6930,
+      "samples": 41200,
+      "duration": 2.575,
+      "flac_sha256": "1b27de4ded885cb9ca4ff68a3645c9c1e26a2c0d7399a0130caf3783a6fe37a4",
+      "wav_sha256": "99053e231e1c583bda3efacb665b78fd2cd2eb6dfe00a5f309b0b572651d845a"
+    },
+    {
+      "id": "6930-76324-0020",
+      "reference": "YET LITTLE AS IT WAS IT HAD ALREADY MADE A VAST DIFFERENCE IN THE ASPECT OF THE ROOM",
+      "row": 41,
+      "speaker": 6930,
+      "samples": 101040,
+      "duration": 6.315,
+      "flac_sha256": "b189c886b899598d76bab28426fa6b0245d617862e50978f9230958075551488",
+      "wav_sha256": "1e480816108145cb61ed40f7d3bdd6f8a93686164b1a8526f0c7c992e93d10ad"
+    },
+    {
+      "id": "6930-76324-0021",
+      "reference": "SURFACE DUST AT LEAST HAD BEEN REMOVED AND THE FINE OLD FURNITURE GAVE A HINT OF ITS REAL ELEGANCE AND POLISH",
+      "row": 42,
+      "speaker": 6930,
+      "samples": 117680,
+      "duration": 7.355,
+      "flac_sha256": "04f5048b3a9111360e4510e6cf7c1ddd7bc3214c22e2cec0a0f1ad6a8bad23d7",
+      "wav_sha256": "6762d39fd038825bbd8d3c8c41d8576a1c7eea7c5c32f4c044ac6f54eb114515"
+    },
+    {
+      "id": "6930-76324-0022",
+      "reference": "THEN SHE SUDDENLY REMARKED",
+      "row": 43,
+      "speaker": 6930,
+      "samples": 30320,
+      "duration": 1.895,
+      "flac_sha256": "e157e7794ab5943fe1a2513c9dffa829da0687c608fce596c16444fce2c0613b",
+      "wav_sha256": "d8d3c46433cd16a47e6f7e70ec2f36ae13d7a72d678ca5f6b07b91381eeda7c3"
+    },
+    {
+      "id": "6930-76324-0023",
+      "reference": "AND MY POCKET MONEY IS GETTING LOW AGAIN AND YOU HAVEN'T ANY LEFT AS USUAL",
+      "row": 44,
+      "speaker": 6930,
+      "samples": 77600,
+      "duration": 4.85,
+      "flac_sha256": "49d2767ab3754e8082cf2d5ab6621ee9e15cc5c5c9ef8e1ca1661ea5d56c5a90",
+      "wav_sha256": "91d56db171e251838c1859d1da5bdb9896b68ca51d3d2f0b08daf4ba05071108"
+    },
+    {
+      "id": "6930-76324-0024",
+      "reference": "THEY SAY ILLUMINATION BY CANDLE LIGHT IS THE PRETTIEST IN THE WORLD",
+      "row": 45,
+      "speaker": 6930,
+      "samples": 64800,
+      "duration": 4.05,
+      "flac_sha256": "5d8bd7d094fe646881a4848026dbf1a3748ec90f170b87d2f0836adcfd9b7f7f",
+      "wav_sha256": "2c5a2b39e692e8cd64702d298eb24f512b789473228f51f78734e9a86f89cf41"
+    },
+    {
+      "id": "6930-76324-0025",
+      "reference": "WHY IT'S GOLIATH AS USUAL THEY BOTH CRIED PEERING IN",
+      "row": 46,
+      "speaker": 6930,
+      "samples": 65920,
+      "duration": 4.12,
+      "flac_sha256": "0a881d418ec0db28711b47473c9578ee4809821c7ae807a7248149f704ec7601",
+      "wav_sha256": "d4ce7484b5f08c310d33fabc6a8fe5872d86979a4e9f9d21a82d84b396c41769"
+    },
+    {
+      "id": "6930-76324-0026",
+      "reference": "ISN'T HE THE GREATEST FOR GETTING INTO ODD CORNERS",
+      "row": 47,
+      "speaker": 6930,
+      "samples": 49360,
+      "duration": 3.085,
+      "flac_sha256": "58e45bebbee6a0edf553a3577532e98c57aaf5ab45c991a8d45e905b6f958079",
+      "wav_sha256": "7115c7d40cdf961dce7e8fbf5fbbedfae5d2692925c8b2884f1bd596157a792d"
+    },
+    {
+      "id": "6930-76324-0027",
+      "reference": "FORGETTING ALL THEIR WEARINESS THEY SEIZED THEIR CANDLES AND SCURRIED THROUGH THE HOUSE FINDING AN OCCASIONAL PAPER TUCKED AWAY IN SOME ODD CORNER",
+      "row": 48,
+      "speaker": 6930,
+      "samples": 132320,
+      "duration": 8.27,
+      "flac_sha256": "79263261b8f29b4f033553d19fff65eb9cc8ef0e3ecbebd696702ec9ee332ffb",
+      "wav_sha256": "03da241e113b761e34961e66d338cf89db9ddc89fa3eb0a8cd4464c6c95a3a2a"
+    },
+    {
+      "id": "6930-76324-0028",
+      "reference": "WELL I'M CONVINCED THAT THE BOARDED UP HOUSE MYSTERY HAPPENED NOT EARLIER THAN APRIL SIXTEENTH EIGHTEEN SIXTY ONE AND PROBABLY NOT MUCH LATER",
+      "row": 49,
+      "speaker": 6930,
+      "samples": 158000,
+      "duration": 9.875,
+      "flac_sha256": "9c5d9ee0be21b450df770e4bde09c2c910d7517bd715675c05bca76cd3ddd2f3",
+      "wav_sha256": "5708af271397a2f0c42f5c58dd6dbb142e505050a48f12a58cbefa8c4513a4f8"
+    }
+  ],
+  "dataset": "openslr/librispeech_asr",
+  "config": "clean",
+  "split": "test",
+  "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+  "license": "CC-BY-4.0",
+  "selection": "Consecutive Hugging Face viewer rows; no filtering by duration or output.",
+  "offset": 0,
+  "count": 50
+}

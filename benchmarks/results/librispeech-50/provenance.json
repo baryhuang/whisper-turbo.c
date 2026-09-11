@@ -1,0 +1,118 @@
+{
+  "measured_date": "2026-09-11",
+  "host": {
+    "provider": "InstaCloud",
+    "cpu": "Intel Xeon 6975P-C",
+    "allocated_vcpus": 4,
+    "guest_logical_cpus": 5,
+    "affinity": "0-3",
+    "threads": 4,
+    "concurrent_inference_requests": 1
+  },
+  "dataset": {
+    "name": "LibriSpeech test-clean",
+    "revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+    "selection": "Hugging Face clean/test rows 0-49",
+    "utterances": 50,
+    "speakers": 1,
+    "speaker_id": 6930,
+    "audio_seconds": 328.2650625,
+    "reference_words": 915,
+    "license": "CC-BY-4.0"
+  },
+  "native": {
+    "revision": "65a9d8126102df421ac62b157243c34f0aad6a66",
+    "source_archive_sha256": "455eb1be0a6706b1a1211040c8f3e9aaad8cb965ad53396110e87cdd35f214a7",
+    "model_sha256": "bab4e97984f15276de3b7dbdce70624b0600d102619ce561d0a35cf9f2bba3b3",
+    "weights": "Q8",
+    "encoder_activations": "int8",
+    "compiler_flags": "-O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -fopenmp",
+    "language": "en",
+    "decoder": "greedy, quality-gated three-beam retry, five candidates at each fallback temperature",
+    "initial_temperature": 0,
+    "fallback_temperatures": [
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1
+    ],
+    "timestamp_decoding": false,
+    "diagnostics": true
+  },
+  "whisper_cpp": {
+    "revision": "927cfce34f31707e17f2bff35c349632fb9e2c3a",
+    "source_archive_sha256": "41b664fee09e79176ac277b5237debec34f8d74af3c7d71f333f1ec67989ecde",
+    "model_sha256": "317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1",
+    "weights": "Q8_0",
+    "build": {
+      "CMAKE_BUILD_TYPE": "Release",
+      "GGML_NATIVE": true,
+      "GGML_BLAS": false,
+      "GGML_CUDA": false,
+      "GGML_VULKAN": false
+    },
+    "gpu": false,
+    "flash_attention": true,
+    "language": "en",
+    "beam_size": 5,
+    "best_of": 5,
+    "initial_temperature": 0,
+    "temperature_increment": 0.2,
+    "timestamp_decoding": true,
+    "no_context": true,
+    "external_vad": false
+  },
+  "timing": {
+    "method": "Sum of per-utterance libcurl HTTP request wall times; one sequential request per utterance",
+    "excluded": [
+      "model loading",
+      "server startup",
+      "one warm-up request per engine",
+      "FLAC conversion",
+      "audio hashing",
+      "offline scoring"
+    ],
+    "order": [
+      "native",
+      "whisper.cpp"
+    ],
+    "measured_requests_per_engine": 50
+  },
+  "scorer": {
+    "language": "C11",
+    "unicode_library": "GNU libunistring 1.0",
+    "normalization": "Locale-independent lowercase, NFKD, keep Unicode letters/numbers/underscore/whitespace, collapse whitespace",
+    "metric": "100 * sum(sentence-local Levenshtein edit distance) / sum(reference words)",
+    "tie_break": "substitute, delete, insert",
+    "failure_policy": "Empty hypothesis; count all reference words as deletions; also report failed requests",
+    "incomplete_run_policy": "Reject",
+    "score_source_sha256": "dd3123de34c15fe170a91eb47b7841074705c25847bed8f9daaf753e058c1a90",
+    "tool_source_sha256": "467966fc81411c9dd42acaa2bf084250f24b71c8acea70da17aa5b2b0130d423"
+  },
+  "tools": {
+    "gcc": "12.2.0",
+    "cmake": "3.25.1",
+    "cjson": "1.7.15",
+    "libcurl": "7.88.1",
+    "libsndfile": "1.2.0",
+    "openssl": "3.0.20",
+    "libunistring": "1.0"
+  },
+  "validation": {
+    "linux_c_tests": true,
+    "local_c_tests": true,
+    "local_asan_ubsan": true,
+    "local_clang_static_analysis": true,
+    "independent_per_utterance_edit_distances": true,
+    "cross_platform_rescoring_identical": true,
+    "all_audio_hashes_checked": true
+  },
+  "limitations": [
+    "50-utterance single-speaker subset, not the full 2620-utterance test-clean split",
+    "English read speech only; no Chinese or diarization accuracy claim",
+    "Different shipping decoders; not isolated quantization-error measurement",
+    "Basic Unicode normalization is not Whisper EnglishTextNormalizer",
+    "Single request per item on shared CPUs; not a repeated latency distribution"
+  ]
+}
