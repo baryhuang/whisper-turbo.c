@@ -152,7 +152,7 @@ WhisperX's published transcription speed alone is not used to estimate the full
 pipeline: alignment and diarization add work. The hosted price avoids conflating
 GPU-hours with audio-hours or presenting GPU throughput as a CPU benchmark.
 
-## Hosted API prices
+## Cloud API prices
 
 The OpenAI comparator is
 [`gpt-4o-transcribe-diarize`](https://developers.openai.com/api/docs/models/gpt-4o-transcribe-diarize),
@@ -173,3 +173,41 @@ speaker diarization adding $0.02/audio-hour to either. Totals are $0.17 and $0.2
 not streaming or Sync API prices. Free credits, custom discounts and other
 optional add-ons are excluded. API latency, accuracy and actual billed amounts
 were not measured, and no private recordings were submitted to either vendor.
+
+### Azure, Google Cloud and AWS batch transcription
+
+Published USD prices checked September 11, 2026, for transcription **with speaker
+diarization**, sorted by cost per audio hour. These are Cloud API charges, not
+VM rental estimates. Rates assume mono audio and exclude storage, network, taxes,
+free credits, commitments and negotiated discounts.
+
+| Service / tier | Published rate | Cost per audio hour |
+| --- | ---: | ---: |
+| Azure Speech Standard batch, East US | $0.180 / hour | $0.180 |
+| Google Cloud Speech-to-Text V2 dynamic batch | $0.003 / minute | $0.180 |
+| Amazon Transcribe Standard batch, US East (N. Virginia) | $0.006 / minute | $0.360 |
+
+**Azure:** The [Azure Retail Prices API](https://prices.azure.com/api/retail/prices?$filter=armRegionName%20eq%20%27eastus%27%20and%20meterName%20eq%20%27S1%20Speech%20to%20Text%20Batch%27)
+lists `S1 Speech to Text Batch` at $0.180 per hour in `eastus`, meter
+`48ff31f2-a620-5227-8bc7-4c67b026040e`, with a zero-unit tier minimum.
+The [Speech pricing page](https://azure.microsoft.com/en-us/pricing/details/speech/)
+includes diarization in batch pricing at no extra charge; the batch rate requires
+Speech-to-text REST API v3.2 or later. This is not the real-time or Fast
+Transcription tier.
+
+**Google Cloud:** [V2 pricing](https://cloud.google.com/speech-to-text/pricing)
+lists Standard dynamic batch at $0.003 per minute: $0.003 × 60 = **$0.180/audio-hour**.
+Use a diarization-capable model and supported language/region, such as
+[Chirp 3 with English (US) in the US multi-region](https://docs.cloud.google.com/speech-to-text/docs/models/chirp-3).
+Diarization is part of the recognition configuration, without a separate listed
+add-on charge. The discounted
+[`DYNAMIC_BATCHING` processing strategy](https://docs.cloud.google.com/speech-to-text/docs/reference/rest/v2/projects.locations.recognizers/batchRecognize)
+allows up to 24 hours for completion. Ordinary V2 Standard recognition is
+$0.016 per minute (**$0.960/audio-hour**) at the first usage tier; it is not the
+discounted mode selected in the README.
+
+**AWS:** [Amazon Transcribe pricing](https://aws.amazon.com/transcribe/pricing/)
+lists Standard batch at $0.006 per minute in its US East (N. Virginia) example:
+$0.006 × 60 = **$0.360/audio-hour**. Speaker diarization is included in Standard
+pricing. This excludes Call Analytics, medical transcription, custom language
+models and content-redaction add-ons.

@@ -17,51 +17,49 @@ Speaker labels distinguish voices, not real-world identities. Overlapping voices
 are not separated. All model aliases run locally; audio is not sent to OpenAI.
 See [API capabilities and limits](docs/http-api.md).
 
-## Transcription and speaker-labeling costs
+## Transcription with speaker diarization: cost comparison
 
-| Service | Hosting / hardware | Cost per audio hour |
+Speaker diarization labels who spoke when. All prices below include it and are
+sorted from lowest to highest.
+
+| Product | Delivery | USD / audio hour |
 | --- | --- | ---: |
-| whisper-turbo.c | Self-hosted CPU; InstaCloud estimate | **~$0.136** |
-| [WhisperX + pyannote via Whipscribe](https://whipscribe.com/pricing) | Hosted GPU; $24 / 5,000-minute pack | $0.288 |
-| [OpenAI gpt-4o-transcribe-diarize](https://developers.openai.com/api/docs/pricing) | Hosted API | ~$0.360 |
-| [AssemblyAI Universal-2 + diarization](https://www.assemblyai.com/pricing) | Hosted API | $0.170 |
-| [AssemblyAI Universal-3.5 Pro + diarization](https://www.assemblyai.com/pricing) | Hosted API | $0.230 |
+| whisper-turbo.c | Self-hosted CPU | **~$0.136** |
+| [AssemblyAI Universal-2 + diarization](https://www.assemblyai.com/pricing) | Cloud API | $0.170 |
+| [Azure Speech + diarization](https://azure.microsoft.com/en-us/pricing/details/speech/) | Cloud API | $0.180 |
+| [Google Cloud Speech-to-Text V2 + diarization](https://cloud.google.com/speech-to-text/pricing) | Cloud API | $0.180 |
+| [AssemblyAI Universal-3.5 Pro + diarization](https://www.assemblyai.com/pricing) | Cloud API | $0.230 |
+| [Whipscribe (WhisperX + pyannote)](https://whipscribe.com/pricing) | Hosted service | $0.288 |
+| [Amazon Transcribe + diarization](https://aws.amazon.com/transcribe/pricing/) | Cloud API | $0.360 |
+| [OpenAI gpt-4o-transcribe-diarize](https://developers.openai.com/api/docs/pricing) | Cloud API | ~$0.360 |
 
-USD, checked September 11, 2026. Native cost is an active-processing estimate
-from a short two-speaker test, assuming 8 fully utilized vCPUs and 1.1 GB RAM;
-startup and idle costs are excluded. Hosted services use published prices.
-Whipscribe includes speaker labels; $0.288/hour assumes full use of its
-5,000-minute pack. It [runs WhisperX on GPUs](https://whipscribe.com/blog/whisperx-vs-whipscribe-2026);
-this is a hosted-product price, not a self-hosted compute estimate.
-Workloads and model quality differ. See [measurements and cost assumptions](docs/cost-comparison.md).
+Prices checked September 11, 2026. `~` denotes an estimate, not a fixed price.
 
-WhisperX also runs without a GPU, including alignment and speaker labeling.
-Its CPU setting `--device cpu --compute_type int8` applies INT8 to transcription,
-not to the separate diarization model.
-See [WhisperX CPU usage](https://github.com/m-bain/whisperX/blob/v3.8.6/README.md#usage--command-line).
+- **whisper-turbo.c:** estimated InstaCloud compute cost from a short two-speaker
+  test, using 8 fully utilized vCPUs and 1.1 GB RAM. Excludes startup and idle time.
+- **Whipscribe:** $0.288/hour requires full use of a $24 / 5,000-minute pack.
+  This is a packaged service using WhisperX + pyannote, not a price for self-hosted
+  WhisperX. The pack also includes API access.
+- **Cloud APIs:** published provider prices. Azure (East US) and AWS (US East,
+  N. Virginia) use Standard batch pricing. Google uses discounted dynamic batch
+  with up to 24-hour turnaround. OpenAI supplies an estimated per-minute rate.
+
+These compare costs, not equal accuracy or turnaround. Storage, network, taxes,
+free credits and negotiated discounts are excluded. See
+[sources and cost assumptions](docs/cost-comparison.md).
+
+WhisperX itself supports both CPU and GPU execution. Whipscribe
+[runs it on GPUs](https://whipscribe.com/blog/whisperx-vs-whipscribe-2026).
+For self-hosting, WhisperX's
+[`--device cpu --compute_type int8`](https://github.com/m-bain/whisperX/blob/v3.8.6/README.md#usage--command-line)
+setting quantizes transcription, not the separate diarization model.
 
 ## Setup and compilation
 
 Requires a C11 compiler, Make, POSIX APIs, libm, and zlib development headers.
-For multithreaded x86 inference,
-use a compiler with OpenMP support:
+For multithreaded x86 inference, use a compiler with OpenMP support.
 
-```sh
-make server OPENMP=-fopenmp
-OMP_NUM_THREADS=8 ./build/whisper-turbo-server turbo-q8.whtrbo 8080
-```
-
-The server binds to loopback by default. Set `WHISPER_API_KEY` before binding to a
-non-loopback address, and use a TLS reverse proxy for remote access. See
-[server configuration](docs/http-api.md#build-and-run).
-
-To prepare the model and use the standalone CLI:
-
-```sh
-make x86-tools OPENMP=-fopenmp
-./build/import-ggml ggml-large-v3-turbo.bin turbo-q8.whtrbo
-OMP_NUM_THREADS=8 ./build/whisper-turbo-x86 turbo-q8.whtrbo speech.wav 448 fixed30
-```
+### Prepare the model
 
 Weights are not included. The importer accepts the original GGML F16/F32
 large-v3-turbo checkpoint, not a prequantized GGML model. The checkpoint SHA-256 is:
@@ -70,33 +68,40 @@ large-v3-turbo checkpoint, not a prequantized GGML model. The checkpoint SHA-256
 1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69
 ```
 
+Build the tools and convert the checkpoint once:
+
+```sh
+make x86-tools server OPENMP=-fopenmp
+./build/import-ggml ggml-large-v3-turbo.bin turbo-q8.whtrbo
+```
+
 The converted INT8 model is 847,660,800 bytes. The output path must not already
-exist. See [model identities](docs/pins.json) for checkpoint details.
+exist. See [model identities](docs/pins.json) for additional model metadata.
 
-For the portable runtime without OpenMP:
-
-```sh
-make
-./build/whisper-turbo-transcribe turbo-q8.whtrbo speech.wav 448 fixed30
-```
-
-### Tests
+### Start the server
 
 ```sh
-make check
+OMP_NUM_THREADS=8 ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
 
-Runs deterministic C checks for quantized kernels, attention parity, HTTP behavior,
-and diarization. Diarization checks require zlib development headers and the library.
-
-The root Dockerfile builds a benchmark image containing an external, pinned
-whisper.cpp comparison executable. Its C++ toolchain is not required by the
-native application.
+The server binds to loopback by default. Set `WHISPER_API_KEY` before binding to a
+non-loopback address, and use a TLS reverse proxy for remote access. Include
+`-H "Authorization: Bearer $WHISPER_API_KEY"` in requests when authentication is
+enabled. See [server configuration](docs/http-api.md#build-and-run).
+Without OpenMP, omit `OPENMP=-fopenmp` when building.
 
 ## HTTP transcription
 
-For a speaker-labeled transcript, start the server with
-`WHISPER_DIARIZATION_MODELS=/path/to/community-1` and send:
+For a speaker-labeled transcript, download the four
+[Community-1 model files](docs/diarization.md#model-files), then start the server
+with `WHISPER_DIARIZATION_MODELS` set:
+
+```sh
+OMP_NUM_THREADS=8 WHISPER_DIARIZATION_MODELS=/path/to/community-1 \
+  ./build/whisper-turbo-server turbo-q8.whtrbo 8080
+```
+
+Run the request in another terminal:
 
 ```sh
 curl http://127.0.0.1:8080/v1/audio/transcriptions \
@@ -122,22 +127,24 @@ is an alias for the local Turbo model, not OpenAI's hosted model. The server kee
 one model loaded, accepts one transcription at a time, and processes WAV recordings
 up to 300 seconds in bounded windows. See [API options and limits](docs/http-api.md).
 
-## Audio and output
+## Command-line transcription
 
 The combined CLI uses exactly the same inference and response code as the HTTP
 diarization endpoint, including automatic language detection and the 300-second
 limit:
 
 ```sh
-OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 ./build/whisper-turbo-diarize \
+make diarized-cli OPENMP=-fopenmp
+OMP_NUM_THREADS=8 ./build/whisper-turbo-diarize \
   turbo-q8.whtrbo /path/to/community-1 speech.wav en
 ```
 
 It writes diarized JSON to stdout and pass counts/timing to stderr. Omit `en` for
-automatic language detection. Build with `make diarized-cli OPENMP=-fopenmp`.
+automatic language detection. INT8 activation settings are optional; see
+[CPU options](#cpu-options).
 
-Input must be mono 16-bit PCM WAV at 16 kHz. The older ASR-only command-line transcriber processes only the
-first 30 seconds, uses English greedy decoding, and prints text on a `TRANSCRIPT:`
+Input must be mono 16-bit PCM WAV at 16 kHz. The ASR-only command-line transcriber
+processes only the first 30 seconds, uses English greedy decoding, and prints text on a `TRANSCRIPT:`
 line alongside timing logs. Language detection, timestamps, and long-audio
 processing are not supported by that CLI. The HTTP server supports language
 detection and recordings up to 300 seconds.
@@ -150,6 +157,13 @@ whisper-turbo-x86 MODEL.whtrbo AUDIO.wav [MAX_TOKENS] [fixed30|compact]
 risk of truncating the transcript. `fixed30` uses the full 30-second encoder
 window. `compact` uses a shorter window for short clips and can change results.
 
+For the portable ASR-only runtime without OpenMP:
+
+```sh
+make build/whisper-turbo-transcribe
+./build/whisper-turbo-transcribe turbo-q8.whtrbo speech.wav 448 fixed30
+```
+
 ## CPU options
 
 CPU features are detected automatically. The x86 runtime includes AVX2/FMA,
@@ -159,16 +173,33 @@ AVX-512, and VNNI kernels with a scalar fallback.
 | --- | --- |
 | `OMP_NUM_THREADS=8` | Use eight threads in an OpenMP build. |
 | `WHISPER_SIMD=scalar`, `avx2`, or `avx512` | Select a CPU path, subject to hardware support. |
-| `WHISPER_ACTIVATIONS=int8` | Enable experimental INT8 encoder activations; decoder activations remain FP32. |
+| `WHISPER_ACTIVATIONS=int8` | Enable experimental INT8 encoder activations. |
+| `WHISPER_DECODER_ACTIVATIONS=int8` | Enable experimental INT8 decoder projections and vocabulary head. |
+| `WHISPER_DIAR_SIMD=avx512` | Enable FP32 AVX-512 diarization kernels on supported CPUs, with fallback. |
+| `WHISPER_DIAR_BATCH_INPUT=1` | Batch LSTM input projections during diarization. |
 | `WHISPER_ATTENTION_PACK=0` | Disable attention K/V packing, which is enabled by default. |
 
-INT8 weights are used with FP32 activations by default. INT8 encoder activations
-have limited transcription-accuracy validation and are opt-in:
+INT8 weights are used with FP32 activations by default. Encoder and decoder INT8
+activation settings are independently opt-in and have limited accuracy validation.
+They do not quantize attention, normalization or the diarization model.
+The optimized benchmark below enables both, plus the two diarization options:
 
 ```sh
-OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 \
-  ./build/whisper-turbo-x86 turbo-q8.whtrbo speech.wav 448 fixed30
+OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 WHISPER_DECODER_ACTIVATIONS=int8 \
+  WHISPER_DIAR_SIMD=avx512 WHISPER_DIAR_BATCH_INPUT=1 \
+  WHISPER_DIARIZATION_MODELS=/path/to/community-1 \
+  ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
+
+## Tests
+
+```sh
+make check
+```
+
+Runs deterministic C checks for quantized kernels, attention parity, HTTP behavior,
+alignment and diarization. The root Dockerfile is for benchmarks and includes an
+external whisper.cpp executable; its C++ toolchain is not required by this application.
 
 ## Benchmark details
 
@@ -223,16 +254,6 @@ See [results and exact configurations](benchmarks/results/librispeech-50/README.
 [published whisper.cpp comparisons](benchmarks/wer/README.md#dataset-and-published-results).
 
 ### Inference architecture
-
-Run Whisper large-v3-turbo speech recognition on CPU with a native C11 runtime,
-INT8 model weights, and AVX2/AVX-512 acceleration. Model conversion and inference
-require no Python or C++ dependencies.
-
-The application provides a command-line transcriber and a [C HTTP server](docs/http-api.md)
-with `POST /v1/audio/transcriptions`, multipart uploads, and JSON/text responses.
-The endpoint supports a documented subset of the OpenAI transcription interface,
-including `gpt-4o-transcribe-diarize`-shaped speaker-segment responses. All accepted
-model names select local C inference, not OpenAI-hosted weights.
 
 The [experimental C-only Community-1 diarizer](docs/diarization.md) can run
 standalone or in the combined CLI/HTTP transcription pipeline. Each audio window
