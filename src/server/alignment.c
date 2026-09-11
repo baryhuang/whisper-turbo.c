@@ -17,6 +17,9 @@ int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e)
     if (!speech) return 0;
     size_t count = 0, length = 0, removed = 0, previous_offset = 0;
     double previous_end = 0;
+    double speech_end = 0;
+    for (size_t j = 0; j < speech->activity_count; ++j)
+        speech_end = fmax(speech_end, speech->activity[j].end + 0.25);
     for (size_t i = 0; i < r->word_count; ++i) {
         wt_word word = r->words[i];
         if (word.offset < previous_offset || word.offset > r->length || word.length > r->length - word.offset ||
@@ -25,20 +28,13 @@ int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e)
             return wt_fail(e, 422, "Invalid speech alignment.", "file", "alignment_failed");
         previous_offset = word.offset + word.length;
         previous_end = word.end;
-        /* A long DTW group can touch real speech yet extend through a silent
-           tail. Measure the UNION of padded activity, not just any overlap.
-           Preserve short boundary jitter; reject a group only when it has
-           over two seconds of unsupported time AND mostly lacks speech.
-           No timestamp is clipped or manufactured to make text appear valid. */
-        double covered = 0, covered_until = word.start;
-        for (size_t j = 0; j < speech->activity_count; ++j) {
-            double start = fmax(covered_until, speech->activity[j].start - 0.25);
-            double end = fmin(word.end, speech->activity[j].end + 0.25);
-            if (end > start) { covered += end - start; covered_until = end; }
-        }
+        /* Suppress only the terminal silent tail. Internal activity gaps have
+           imperfect recall for distant voices: deleting their words damages
+           real conversations. Do not clip timestamps to make text look valid. */
         double span = word.end - word.start;
-        if (covered <= 0 || !word.length ||
-            (span - covered > 2.0 && covered < span * 0.5)) { ++removed; continue; }
+        double trailing = fmax(0, word.end - speech_end);
+        if (!speech->activity_count || !word.length || word.start >= speech_end ||
+            (trailing > 2.0 && trailing > span * 0.5)) { ++removed; continue; }
         memmove(r->text + length, r->text + word.offset, word.length);
         word.offset = length;
         length += word.length;
@@ -48,7 +44,7 @@ int wt_filter_speech_words(wt_result *r, const diar_result *speech, wt_error *e)
     r->word_count = count;
     r->length = length;
     if (removed && getenv("WHISPER_DIAGNOSTICS"))
-        fprintf(stderr, "alignment: removed %zu word groups without acoustic speech support\n", removed);
+        fprintf(stderr, "alignment: removed %zu word groups in terminal acoustic silence\n", removed);
     return 0;
 }
 
