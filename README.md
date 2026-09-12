@@ -22,6 +22,11 @@ See [API capabilities and limits](docs/http-api.md).
 Speaker diarization labels who spoke when. All prices below include it and are
 sorted from lowest to highest.
 
+**Benchmark configuration:** the whisper-turbo.c estimate uses opt-in
+`WHISPER_ACTIVATIONS=int8` and `WHISPER_DECODER_ACTIVATIONS=int8`, plus the
+[diarization CPU options](#cpu-options). The default FP32-activation startup
+command below does not reproduce this latency or cost estimate.
+
 | Product | Delivery | USD / audio hour |
 | --- | --- | ---: |
 | whisper-turbo.c | Self-hosted CPU | **~$0.136** |
@@ -83,6 +88,20 @@ exist. See [model identities](docs/pins.json) for additional model metadata.
 ```sh
 OMP_NUM_THREADS=8 ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
+
+This command uses INT8 weights with **FP32 encoder and decoder activations** when
+the activation environment variables are unset. The README benchmarks enable
+experimental INT8 activations; default request latency can be substantially higher.
+To opt into INT8 encoder activations:
+
+```sh
+OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 \
+  ./build/whisper-turbo-server turbo-q8.whtrbo 8080
+```
+
+Decoder INT8 activations are a separate opt-in. See [CPU options](#cpu-options)
+for the full optimized benchmark command and accuracy limitations. Measure your
+workload with the chosen settings before setting client and reverse-proxy timeouts.
 
 The server binds to loopback by default. Set `WHISPER_API_KEY` before binding to a
 non-loopback address, and use a TLS reverse proxy for remote access. Include
@@ -182,7 +201,9 @@ AVX-512, and VNNI kernels with a scalar fallback.
 INT8 weights are used with FP32 activations by default. Encoder and decoder INT8
 activation settings are independently opt-in and have limited accuracy validation.
 They do not quantize attention, normalization or the diarization model.
-The optimized benchmark below enables both, plus the two diarization options:
+The CPU performance and cost benchmarks enable both, plus the two diarization
+options; the 50-utterance accuracy comparison enables only encoder INT8 activations.
+To use the CPU performance benchmark settings:
 
 ```sh
 OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 WHISPER_DECODER_ACTIVATIONS=int8 \
@@ -190,6 +211,13 @@ OMP_NUM_THREADS=8 WHISPER_ACTIVATIONS=int8 WHISPER_DECODER_ACTIVATIONS=int8 \
   WHISPER_DIARIZATION_MODELS=/path/to/community-1 \
   ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
+
+For historical latency context, the 11-second JFK fixture took **73.23 s with
+default FP32 activations** and **14.35 s with INT8 encoder activations** on an
+eight-thread Xeon. These were individual cold-weight HTTP requests, not a
+controlled comparison or a general speedup guarantee. See
+[recorded measurements and limitations](benchmarks/results/instacloud-http/README.md).
+INT8 activations remain opt-in pending wider accuracy validation.
 
 ## Tests
 
@@ -211,7 +239,10 @@ subsets below are not representative of every language or recording condition.
 ### CPU performance
 
 **September 11, 2026 — Intel Xeon 6975P-C, 8 shared vCPUs / 8 threads.**
-Warm HTTP inference with one resident model.
+Warm HTTP inference with one resident model, `WHISPER_ACTIVATIONS=int8` and
+`WHISPER_DECODER_ACTIVATIONS=int8`. Combined processing also sets
+`WHISPER_DIAR_SIMD=avx512` and `WHISPER_DIAR_BATCH_INPUT=1`.
+**These are opt-in settings; default FP32-activation latency is not measured here.**
 
 | Workload | Audio duration | Processing time | Estimated $/audio hour |
 | --- | ---: | ---: | ---: |
@@ -222,8 +253,7 @@ ASR: **1.1952% WER** on this 251-word subset. The combined fixture produces
 timestamped text with A–B–A speaker labels. Combined times average two requests;
 ASR times sum ten.
 
-INT8 weights and encoder activations, opt-in INT8 decoder projections, AVX-512
-diarization and batched LSTM input projections. **Diarization remains FP32.**
+**Diarization remains FP32.**
 See [settings and results](docs/cpu-optimizations.md)
 and [raw measurements](benchmarks/results/cpu-optimizations/measurements.json).
 
@@ -239,6 +269,10 @@ duration; startup and idle costs are excluded. See
 Transcription only, using Turbo INT8 weights. Both resident servers process the
 same **50 test-clean utterances: 328.27 seconds, 915 reference words, one English
 speaker**. Startup and one warm-up request per engine are excluded.
+
+The native server sets **`WHISPER_ACTIVATIONS=int8`**; decoder activations remain
+FP32. Its WER and latency below apply to that opt-in configuration, not the
+default FP32 encoder path. See [CPU options](#cpu-options) for activation controls.
 
 | Engine | WER ↓ | Substitutions / deletions / insertions | Mean request time |
 | --- | ---: | ---: | ---: |

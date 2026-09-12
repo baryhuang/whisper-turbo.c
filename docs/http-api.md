@@ -314,6 +314,15 @@ make server OPENMP=-fopenmp
 OMP_NUM_THREADS=8 ./build/whisper-turbo-server turbo-q8.whtrbo 8080
 ```
 
+With activation environment variables unset, this uses INT8 weights and FP32
+encoder/decoder activations. The README's native benchmarks enable experimental
+`WHISPER_ACTIVATIONS=int8`; its latest CPU performance and cost results also enable
+`WHISPER_DECODER_ACTIVATIONS=int8`. Default request latency can be substantially
+higher. See [CPU options and the optimized startup command](../README.md#cpu-options)
+for the exact settings and limited accuracy validation. Measure representative
+requests with your chosen settings when configuring client and reverse-proxy
+timeouts; increasing `WHISPER_REQUEST_TIMEOUT` does not extend those external limits.
+
 The transport-equivalent CLI calls the same `wt_transcribe` and `wt_render` code:
 
 ```sh
@@ -340,7 +349,9 @@ the directory must contain all four checkpoint files described in
 set the environment variable to its container path.
 Set `WHISPER_API_KEY` in the environment to enable bearer authentication; do not
 put credentials in source or command-line arguments. Existing SIMD controls and
-opt-in `WHISPER_ACTIVATIONS=int8` also apply. FP32 activations remain the default.
+the independent opt-ins `WHISPER_ACTIVATIONS=int8` (encoder) and
+`WHISPER_DECODER_ACTIVATIONS=int8` (decoder) also apply. FP32 activations remain
+the default for both.
 
 Set `WHISPER_DIAGNOSTICS=1` for content-free ASR window, alignment, and diarization
 diagnostics on stderr. Leave it unset for normal operation; diagnostics do not
