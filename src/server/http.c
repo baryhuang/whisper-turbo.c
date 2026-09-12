@@ -435,17 +435,42 @@ int wt_serve(const wt_server_options *options, wt_backend backend, void *context
                 .changed = PTHREAD_COND_INITIALIZER};
     for (int i = 0; i < CONNECTIONS; ++i)
         s.clients[i].fd = -1;
-    int listener = socket(AF_INET, SOCK_STREAM, 0), enabled = 1;
-    if (listener < 0)
-        return -1;
-    setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof(enabled));
-    struct sockaddr_in address = {.sin_family = AF_INET,
-                                  .sin_port = htons((uint16_t)options->port)};
-    if (inet_pton(AF_INET, options->host, &address.sin_addr) != 1 ||
-        bind(listener, (struct sockaddr *)&address, sizeof(address)) || listen(listener, 8)) {
-        perror("listen");
-        close(listener);
-        return -1;
+    /* A bare "::" (or any address containing ':') requests a dual-stack
+       IPv6 listener that also accepts IPv4-mapped connections. Cloud
+       routers that speak IPv6-only to backends (InstaCloud's edge among
+       them) never reach an IPv4-only bind, so this path is required for
+       non-loopback cloud deployment; loopback/IPv4 hosts keep the
+       original AF_INET path unchanged. */
+    int listener, enabled = 1;
+    if (strchr(options->host, ':') != NULL) {
+        listener = socket(AF_INET6, SOCK_STREAM, 0);
+        if (listener < 0)
+            return -1;
+        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof(enabled));
+        int v6only = 0;
+        setsockopt(listener, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, sizeof(v6only));
+        struct sockaddr_in6 address6 = {.sin6_family = AF_INET6,
+                                        .sin6_port = htons((uint16_t)options->port)};
+        if (inet_pton(AF_INET6, options->host, &address6.sin6_addr) != 1 ||
+            bind(listener, (struct sockaddr *)&address6, sizeof(address6)) ||
+            listen(listener, 8)) {
+            perror("listen");
+            close(listener);
+            return -1;
+        }
+    } else {
+        listener = socket(AF_INET, SOCK_STREAM, 0);
+        if (listener < 0)
+            return -1;
+        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof(enabled));
+        struct sockaddr_in address = {.sin_family = AF_INET,
+                                      .sin_port = htons((uint16_t)options->port)};
+        if (inet_pton(AF_INET, options->host, &address.sin_addr) != 1 ||
+            bind(listener, (struct sockaddr *)&address, sizeof(address)) || listen(listener, 8)) {
+            perror("listen");
+            close(listener);
+            return -1;
+        }
     }
     pthread_t inference;
     pthread_attr_t inference_attr;
