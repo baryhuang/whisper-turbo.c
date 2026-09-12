@@ -27,7 +27,7 @@ static unsigned number(const char *value, unsigned maximum) {
 int main(int argc, char **argv) {
     if (argc < 2 || argc > 4) {
         fprintf(stderr,
-                "usage: %s MODEL.whtrbo [PORT [BIND_IPV4]]\n"
+                "usage: %s MODEL.whtrbo [PORT [BIND_HOST]]\n"
                 "Environment: WHISPER_API_KEY, OMP_NUM_THREADS (1-8), WHISPER_REQUEST_TIMEOUT "
                 "(1-3600 seconds), WHISPER_DIARIZATION_MODELS (checkpoint directory).\n",
                 argv[0]);
