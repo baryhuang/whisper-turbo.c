@@ -1,0 +1,39 @@
+# Cloud deploy image: builds the native C server only (fast, small build
+# context); the converted INT8 Whisper Turbo model is fetched, verified,
+# and produced on first boot into a persistent volume, instead of being
+# baked into the image. This avoids downloading/converting the ~1.5 GB
+# GGML checkpoint inside the (often time- and size-constrained) remote
+# image build step that most container-hosting platforms use, and works
+# with any host that gives you a container plus a persistent disk
+# (Railway, Fly, Render, InstaCloud, etc.) rather than requiring the
+# model to be pre-mounted at build time.
+#
+# Usage:
+#   docker build -f Dockerfile.cloud -t whisper-turbo-cloud .
+#   docker run -p 8080:8080 -v whisper-data:/data whisper-turbo-cloud
+#
+# The listen port and bind address are controlled by the PORT and
+# BIND_HOST environment variables (defaults: 8080, "::" for dual-stack —
+# required by any router/edge that reaches the container over IPv6 only).
+FROM debian:bookworm-slim AS build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      gcc make libc6-dev zlib1g-dev libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY Makefile ./
+COPY src ./src
+COPY tools ./tools
+RUN make server OPENMP=-fopenmp CFLAGS='-O3 -std=c11 -Wall -Wextra -Wpedantic -Werror'
+RUN make build/import-ggml OPENMP=-fopenmp CFLAGS='-O3 -std=c11 -Wall -Wextra -Wpedantic -Werror'
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libgomp1 zlib1g curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/build/whisper-turbo-server /usr/local/bin/whisper-turbo-server
+COPY --from=build /src/build/import-ggml /usr/local/bin/import-ggml
+COPY docker-entrypoint.cloud.sh /usr/local/bin/docker-entrypoint.cloud.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.cloud.sh
+ENV OMP_NUM_THREADS=8
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.cloud.sh"]
